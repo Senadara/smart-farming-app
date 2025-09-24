@@ -140,7 +140,7 @@ class _RingkasanInvState extends State<RingkasanInv> {
   @override
   Widget build(BuildContext context) {
     final dateStr = DateFormat('EEEE, d MMMM y').format(_currentTime);
-    final timeStr = DateFormat('HH.mm').format(_currentTime);
+    // final timeStr = DateFormat('HH.mm').format(_currentTime);
 
     List<PieChartSectionData> sections = [];
     for (int i = 0; i < _pieData.length; i++) {
@@ -179,7 +179,7 @@ class _RingkasanInvState extends State<RingkasanInv> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      '$dateStr | $timeStr',
+                      '$dateStr',
                       style: regular12.copyWith(color: green1),
                     ),
                   ),

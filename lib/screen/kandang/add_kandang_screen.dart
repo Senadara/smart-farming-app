@@ -687,8 +687,6 @@ class AddKandangScreenState extends State<AddKandangScreen> {
   }
 
   Future<void> _createObjekBudidaya(String namaId) async {
-    print('_createObjekBudidaya called with namaId: $namaId');
-
     setState(() {
       isLoadingObjek = true;
     });
@@ -700,22 +698,9 @@ class AddKandangScreenState extends State<AddKandangScreen> {
         'jenisBudidayaId': selectedJenisHewan,
       });
 
-      print(
-          'Create objek response: ${response['status']}, message: ${response['message']}');
-
       if (response['status']) {
-        // Simply increment the jumlah controller by 1
-        final currentJumlah = int.tryParse(_jumlahController.text) ?? 0;
-        final newJumlah = currentJumlah + 1;
-
-        // Update totalExistingObjek for validation
-        totalExistingObjek = newJumlah;
-
-        setState(() {
-          _jumlahController.text = newJumlah.toString();
-        });
-
-        print('Updated jumlah from $currentJumlah to $newJumlah');
+        // Update jumlah hewan after successful creation
+        await _updateJumlahHewan();
 
         // Refresh the grid after successful creation
         await _fetchObjekBudidaya();
@@ -732,11 +717,41 @@ class AddKandangScreenState extends State<AddKandangScreen> {
         showAppToast(context, response['message'] ?? 'Gagal menambahkan objek');
       }
     } catch (e) {
-      print('Error in _createObjekBudidaya: $e');
       setState(() {
         isLoadingObjek = false;
       });
       showAppToast(context, 'Terjadi kesalahan: $e');
+    }
+  }
+
+  Future<void> _updateJumlahHewan() async {
+    try {
+      // Get current count of objects in this kandang
+      final response = await _objekBudidayaService
+          .getObjekBudidayaByUnitBudidaya(widget.idKandang!);
+
+      if (response['status'] && response['data'] != null) {
+        final List<dynamic> existingObjek = response['data'];
+        final int currentCount = existingObjek.length;
+
+        // Update total existing objects count
+        totalExistingObjek = currentCount;
+
+        // Update the unit budidaya with the new count
+        final updateResponse = await _unitBudidayaService.updateUnitBudidaya({
+          'id': widget.idKandang,
+          'jumlah': currentCount.toString(),
+        });
+
+        if (updateResponse['status']) {
+          // Update the local controller
+          setState(() {
+            _jumlahController.text = currentCount.toString();
+          });
+        }
+      }
+    } catch (e) {
+      print('Error updating jumlah hewan: $e');
     }
   }
 
@@ -866,10 +881,15 @@ class AddKandangScreenState extends State<AddKandangScreen> {
 
                               // Validate capacity against current animal count when editing individual type
                               if (widget.isEdit &&
-                                  jenisPencatatan == 'Individu') {
-                                // Use totalExistingObjek which contains the actual count of animals
-                                if (capacity < totalExistingObjek) {
-                                  return 'Kapasitas tidak boleh kurang dari jumlah hewan saat ini ($totalExistingObjek ekor)';
+                                  jenisPencatatan == 'Individu' &&
+                                  allObjekBudidaya.isNotEmpty) {
+                                final currentAnimalCount = allObjekBudidaya
+                                    .where((objek) =>
+                                        objek['isAvailable'] == true &&
+                                        objek['id'] != null)
+                                    .length;
+                                if (capacity < currentAnimalCount) {
+                                  return 'Kapasitas tidak boleh kurang dari jumlah hewan saat ini ($currentAnimalCount ekor)';
                                 }
                               }
 
@@ -956,7 +976,7 @@ class AddKandangScreenState extends State<AddKandangScreen> {
                             }),
                         const SizedBox(height: 16),
                         if (widget.isEdit && jenisPencatatan == 'Individu') ...[
-                          Text("Daftar Slot Kandang Kosong",
+                          Text("Daftar Hewan di Kandang",
                               style: bold18.copyWith(color: dark1)),
                           const SizedBox(height: 8),
                           Text(
