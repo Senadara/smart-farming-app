@@ -1,5 +1,39 @@
 import 'package:flutter/material.dart';
 
+// ===================================================
+// TELKOM INDONESIA COLOR PALETTE
+// ===================================================
+
+// // Gradasi pengganti green (menggunakan turunan Telkom Red)
+// Color green1 = const Color(0xFFB00000); // Merah tua (bold)
+// Color green2 = const Color(0xFFD71920); // Merah medium
+// Color green3 = const Color(0xFFFFB3B3); // Merah muda terang
+// Color green4 = const Color(0xFFFFE5E5); // Merah sangat terang (hampir putih)
+
+// // Gradasi pengganti yellow (tone warm dari Telkom Red)
+// Color yellow = const Color(0xFFFF4D4D); // Merah terang kekuningan
+// Color yellow1 = const Color(0xFFFFCCCC); // Latar terang
+// Color yellow2 = const Color(0xFFFF9999); // Tone menengah
+// Color grey = const Color(0xFFE6E6E6); // Netral abu terang
+
+// // Gradasi pengganti dark (netral Telkom)
+// Color dark1 = const Color(0xFF1A1A1A); // Hitam Telkom (paling gelap)
+// Color dark2 = const Color(0xFF4D4D4D); // Abu tua
+// Color dark3 = const Color(0xFF808080); // Abu medium
+// Color dark4 = const Color(0xFFCCCCCC); // Abu terang
+
+// // Gradasi pengganti blue (aksen Telkom yang ramah)
+// Color blue1 = const Color(0xFFFF6666); // Merah muda ke oranye
+// Color blue2 = const Color(0xFFE60000); // Telkom Red utama
+// Color blue3 = const Color(0xFFFFB3B3); // Warna latar merah lembut
+// Color blue4 = const Color(0xFFB00000); // Red dark
+
+// // Gradasi merah utama Telkom
+// Color red = const Color(0xFFE60000); // Telkom Red (utama)
+// Color red2 = const Color(0xFFFFCCCC); // Soft Red background
+// Color purple = const Color(0xFF800000); // Merah keunguan (dark accent)
+// Color white = Colors.white;
+
 // Colors
 Color green1 = const Color(0xFF00623A);
 Color green2 = const Color(0xFF3B9C0B);
