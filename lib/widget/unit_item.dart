@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/theme.dart';
 
 class UnitItem extends StatelessWidget {
@@ -67,7 +68,7 @@ class UnitItem extends StatelessWidget {
           ),
           const SizedBox(height: 4),
           Divider(
-            color: green1,
+            color: TelkomColors.primary,
             thickness: 0.5,
             height: 0,
           ),

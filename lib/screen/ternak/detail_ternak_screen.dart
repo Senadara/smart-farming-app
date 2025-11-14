@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_farming_app/screen/ternak/add_ternak_screen.dart';
@@ -113,7 +114,7 @@ class _DetailTernakScreenState extends State<DetailTernakScreen> {
             TextButton(
               key: const Key('deleteButton'),
               onPressed: () => Navigator.of(context).pop(true),
-              style: TextButton.styleFrom(foregroundColor: Colors.red),
+              style: TextButton.styleFrom(foregroundColor: TelkomColors.error),
               child: const Text('Hapus'),
             ),
           ],

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_farming_app/theme.dart';
 
@@ -41,22 +42,22 @@ class _RingkasanInvState extends State<RingkasanInv> {
     _pieData = [
       {'color': green2, 'value': widget.itemTersedia, 'title': 'Item Tersedia'},
       {
-        'color': const Color(0xFFFFD233),
+        'color': TelkomColors.secondary,
         'value': widget.seringDigunakan,
         'title': 'Sering Digunakan'
       },
       {
-        'color': const Color(0xFFFF9F0A),
+        'color': TelkomColors.secondary,
         'value': widget.jarangDigunakan,
         'title': 'Jarang Digunakan'
       },
       {
-        'color': const Color(0xFFE84BE5),
+        'color': TelkomColors.secondary,
         'value': widget.stokRendah,
         'title': 'Stok Rendah'
       },
       {
-        'color': const Color(0xFF2C6CFF),
+        'color': TelkomColors.secondary,
         'value': widget.itemBaru,
         'title': 'Item Baru'
       },
@@ -87,12 +88,12 @@ class _RingkasanInvState extends State<RingkasanInv> {
           'title': 'Item Tersedia'
         },
         {
-          'color': const Color(0xFFFFD233),
+          'color': TelkomColors.secondary,
           'value': widget.seringDigunakan,
           'title': 'Sering Digunakan'
         },
         {
-          'color': const Color(0xFFFF9F0A),
+          'color': TelkomColors.secondary,
           'value': widget.jarangDigunakan,
           'title': 'Jarang Digunakan'
         },
@@ -175,7 +176,7 @@ class _RingkasanInvState extends State<RingkasanInv> {
                     padding:
                         const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFDFF3EA),
+                      color: green3,
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(

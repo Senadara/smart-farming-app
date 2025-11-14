@@ -9,6 +9,7 @@ import 'package:smart_farming_app/screen/ternak/add_ternak_screen.dart';
 import 'package:smart_farming_app/service/auth_service.dart';
 import 'package:smart_farming_app/service/dashboard_service.dart';
 import 'package:smart_farming_app/theme.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
 import 'package:smart_farming_app/utils/detail_laporan_redirect.dart';
 import 'package:smart_farming_app/widget/dashboard_grid.dart';
@@ -35,9 +36,9 @@ class _HomeScreenState extends State<HomeScreen> {
   String? _userRole;
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorPerkebunanKey =
-      GlobalKey<RefreshIndicatorState>();
+  GlobalKey<RefreshIndicatorState>();
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorPeternakanKey =
-      GlobalKey<RefreshIndicatorState>();
+  GlobalKey<RefreshIndicatorState>();
 
   @override
   void initState() {
@@ -189,7 +190,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MenuItem(
                   title: 'Manajamen Kebun',
                   icon: 'set/hydroponics-filled.png',
-                  backgroundColor: Colors.green,
+                  backgroundColor: green1,
                   iconColor: Colors.white,
                   onTap: () => context.push('/manajemen-kebun').then((_) {
                     _fetchData(isRefresh: true);
@@ -198,17 +199,17 @@ class _HomeScreenState extends State<HomeScreen> {
                 MenuItem(
                   title: 'Manajamen Jenis Tanaman',
                   icon: 'set/appleSeed-filled.png',
-                  backgroundColor: Colors.blue,
+                  backgroundColor: blue4,
                   iconColor: Colors.white,
                   onTap: () =>
                       context.push('/manajemen-jenis-tanaman').then((_) {
-                    _fetchData(isRefresh: true);
-                  }),
+                        _fetchData(isRefresh: true);
+                      }),
                 ),
                 MenuItem(
                   title: 'Manajamen Komoditas',
                   icon: 'set/fruitbag-filled.png',
-                  backgroundColor: Colors.cyan,
+                  backgroundColor: blue1,
                   iconColor: Colors.white,
                   onTap: () => context.push('/manajemen-komoditas').then((_) {
                     _fetchData(isRefresh: true);
@@ -217,7 +218,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MenuItem(
                   title: 'Manajemen Hama Kebun',
                   icon: 'set/slugEating-filled.png',
-                  backgroundColor: Colors.amber,
+                  backgroundColor: yellow,
                   iconColor: Colors.white,
                   onTap: () => context.push('/laporan-hama'),
                 ),
@@ -228,17 +229,17 @@ class _HomeScreenState extends State<HomeScreen> {
               key: const Key('aktivitasTerbaruPerkebunan'),
               title: 'Aktivitas Terbaru',
               reports:
-                  (_perkebunanData?['aktivitasTerbaru'] as List<dynamic>? ?? [])
-                      .map((aktivitas) => {
-                            'text': aktivitas['judul'] ?? '-',
-                            'time': aktivitas['createdAt'],
-                            'icon': aktivitas['userAvatarUrl'] ?? '-',
-                            'tipe': aktivitas['tipe'] ?? 'unknown',
-                            'jenisBudidaya':
-                                aktivitas['jenisBudidayaTipe'] ?? 'unknown',
-                            'id': aktivitas['id'],
-                          })
-                      .toList(),
+              (_perkebunanData?['aktivitasTerbaru'] as List<dynamic>? ?? [])
+                  .map((aktivitas) => {
+                'text': aktivitas['judul'] ?? '-',
+                'time': aktivitas['createdAt'],
+                'icon': aktivitas['userAvatarUrl'] ?? '-',
+                'tipe': aktivitas['tipe'] ?? 'unknown',
+                'jenisBudidaya':
+                aktivitas['jenisBudidayaTipe'] ?? 'unknown',
+                'id': aktivitas['id'],
+              })
+                  .toList(),
               onViewAll: () => context.push('/riwayat-aktivitas').then((_) {
                 _fetchData(isRefresh: true);
               }),
@@ -259,11 +260,11 @@ class _HomeScreenState extends State<HomeScreen> {
               title: 'Daftar Kebun',
               items: (_perkebunanData?['daftarKebun'] as List<dynamic>? ?? [])
                   .map((kebun) => {
-                        'id': kebun['id'],
-                        'name': kebun['nama'],
-                        'category': kebun['JenisBudidaya']['nama'],
-                        'icon': kebun['gambar'],
-                      })
+                'id': kebun['id'],
+                'name': kebun['nama'],
+                'category': kebun['JenisBudidaya']['nama'],
+                'icon': kebun['gambar'],
+              })
                   .toList(),
               type: 'basic',
               onItemTap: (context, item) {
@@ -282,11 +283,11 @@ class _HomeScreenState extends State<HomeScreen> {
               title: 'Daftar Jenis Tanaman',
               items: (_perkebunanData?['daftarTanaman'] as List<dynamic>? ?? [])
                   .map((tanaman) => {
-                        'id': tanaman['id'],
-                        'name': tanaman['nama'],
-                        'isActive': tanaman['status'],
-                        'icon': tanaman['gambar'],
-                      })
+                'id': tanaman['id'],
+                'name': tanaman['nama'],
+                'isActive': tanaman['status'],
+                'icon': tanaman['gambar'],
+              })
                   .toList(),
               type: 'basic',
               onItemTap: (context, item) {
@@ -297,22 +298,22 @@ class _HomeScreenState extends State<HomeScreen> {
               },
               onViewAll: () =>
                   context.push('/manajemen-jenis-tanaman').then((_) {
-                _fetchData(isRefresh: true);
-              }),
+                    _fetchData(isRefresh: true);
+                  }),
             ),
             const SizedBox(height: 12),
             ListItem(
               key: const Key('daftarKomoditasPerkebunan'),
               title: 'Daftar Komoditas',
               items:
-                  (_perkebunanData?['daftarKomoditas'] as List<dynamic>? ?? [])
-                      .map((komoditas) => {
-                            'id': komoditas['id'],
-                            'name': komoditas['nama'],
-                            'category': komoditas['JenisBudidaya']['nama'],
-                            'icon': komoditas['gambar'],
-                          })
-                      .toList(),
+              (_perkebunanData?['daftarKomoditas'] as List<dynamic>? ?? [])
+                  .map((komoditas) => {
+                'id': komoditas['id'],
+                'name': komoditas['nama'],
+                'category': komoditas['JenisBudidaya']['nama'],
+                'icon': komoditas['gambar'],
+              })
+                  .toList(),
               type: 'basic',
               onViewAll: () => context.push('/manajemen-komoditas').then((_) {
                 _fetchData(isRefresh: true);
@@ -434,7 +435,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MenuItem(
                   title: 'Manajemen Kandang',
                   icon: 'set/farm-filled.png',
-                  backgroundColor: Colors.brown,
+                  backgroundColor: green1,
                   iconColor: Colors.white,
                   onTap: () => context.push('/manajemen-kandang').then((_) {
                     _fetchData(isRefresh: true);
@@ -443,7 +444,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MenuItem(
                   title: 'Manajemen Jenis Ternak',
                   icon: 'set/chicken-filled.png',
-                  backgroundColor: Colors.orange,
+                  backgroundColor: blue4,
                   iconColor: Colors.white,
                   onTap: () => context.push('/manajemen-ternak').then((_) {
                     _fetchData(isRefresh: true);
@@ -452,7 +453,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 MenuItem(
                   title: 'Manajemen Komoditas',
                   icon: 'set/dozenEggs-filled.png',
-                  backgroundColor: Colors.teal,
+                  backgroundColor: blue1,
                   iconColor: Colors.white,
                   onTap: () => context.push('/manajemen-komoditas').then((_) {
                     _fetchData(isRefresh: true);
@@ -465,17 +466,17 @@ class _HomeScreenState extends State<HomeScreen> {
               key: const Key('aktivitasTerbaruPeternakan'),
               title: 'Aktivitas Terbaru',
               reports:
-                  (_peternakanData?['aktivitasTerbaru'] as List<dynamic>? ?? [])
-                      .map((aktivitas) => {
-                            'id': aktivitas['id'],
-                            'text': aktivitas['judul'] ?? '-',
-                            'time': aktivitas['createdAt'],
-                            'icon': aktivitas['userAvatarUrl'] ?? '-',
-                            'tipe': aktivitas['tipe'] ?? 'unknown',
-                            'jenisBudidaya':
-                                aktivitas['jenisBudidayaTipe'] ?? 'unknown',
-                          })
-                      .toList(),
+              (_peternakanData?['aktivitasTerbaru'] as List<dynamic>? ?? [])
+                  .map((aktivitas) => {
+                'id': aktivitas['id'],
+                'text': aktivitas['judul'] ?? '-',
+                'time': aktivitas['createdAt'],
+                'icon': aktivitas['userAvatarUrl'] ?? '-',
+                'tipe': aktivitas['tipe'] ?? 'unknown',
+                'jenisBudidaya':
+                aktivitas['jenisBudidayaTipe'] ?? 'unknown',
+              })
+                  .toList(),
               onViewAll: () => context.push('/riwayat-aktivitas').then((_) {
                 _fetchData(isRefresh: true);
               }),
@@ -496,11 +497,11 @@ class _HomeScreenState extends State<HomeScreen> {
               title: 'Daftar Kandang',
               items: (_peternakanData?['daftarKandang'] as List<dynamic>? ?? [])
                   .map((kandang) => {
-                        'id': kandang['id'],
-                        'name': kandang['nama'],
-                        'category': kandang['JenisBudidaya']['nama'],
-                        'icon': kandang['gambar'],
-                      })
+                'id': kandang['id'],
+                'name': kandang['nama'],
+                'category': kandang['JenisBudidaya']['nama'],
+                'icon': kandang['gambar'],
+              })
                   .toList(),
               type: 'basic',
               onItemTap: (context, item) {
@@ -519,11 +520,11 @@ class _HomeScreenState extends State<HomeScreen> {
               title: 'Daftar Jenis Ternak',
               items: (_peternakanData?['daftarTernak'] as List<dynamic>? ?? [])
                   .map((ternak) => {
-                        'id': ternak['id'],
-                        'name': ternak['nama'],
-                        'isActive': ternak['status'],
-                        'icon': ternak['gambar'],
-                      })
+                'id': ternak['id'],
+                'name': ternak['nama'],
+                'isActive': ternak['status'],
+                'icon': ternak['gambar'],
+              })
                   .toList(),
               type: 'basic',
               onItemTap: (context, item) {
@@ -541,14 +542,14 @@ class _HomeScreenState extends State<HomeScreen> {
               key: const Key('daftarKomoditasPeternakan'),
               title: 'Daftar Komoditas',
               items:
-                  (_peternakanData?['daftarKomoditas'] as List<dynamic>? ?? [])
-                      .map((komoditas) => {
-                            'id': komoditas['id'],
-                            'name': komoditas['nama'],
-                            'category': komoditas['JenisBudidaya']['nama'],
-                            'icon': komoditas['gambar'],
-                          })
-                      .toList(),
+              (_peternakanData?['daftarKomoditas'] as List<dynamic>? ?? [])
+                  .map((komoditas) => {
+                'id': komoditas['id'],
+                'name': komoditas['nama'],
+                'category': komoditas['JenisBudidaya']['nama'],
+                'icon': komoditas['gambar'],
+              })
+                  .toList(),
               type: 'basic',
               onViewAll: () => context.push('/manajemen-komoditas').then((_) {
                 _fetchData(isRefresh: true);
@@ -609,243 +610,243 @@ class _HomeScreenState extends State<HomeScreen> {
         height: 70,
         child: _userRole == "pjawab"
             ? FloatingActionButton(
-                onPressed: () {
-                  showModalBottomSheet(
-                    context: context,
-                    isScrollControlled: true,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius:
-                          BorderRadius.vertical(top: Radius.circular(20)),
+          onPressed: () {
+            showModalBottomSheet(
+              context: context,
+              isScrollControlled: true,
+              shape: const RoundedRectangleBorder(
+                borderRadius:
+                BorderRadius.vertical(top: Radius.circular(20)),
+              ),
+              builder: (context) {
+                if (_selectedTabIndex == 0) {
+                  // Perkebunan
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: white,
+                      borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(20)),
                     ),
-                    builder: (context) {
-                      if (_selectedTabIndex == 0) {
-                        // Perkebunan
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: white,
-                            borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(20)),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text("Aksi Cepat",
+                            style: semibold16.copyWith(
+                              color: dark1,
+                            )),
+                        const SizedBox(height: 10),
+                        const Divider(
+                            height: 1, color: Color(0xFFE8E8E8)),
+                        ListTile(
+                          key: const Key('tambahKebun'),
+                          leading: Image.asset(
+                            'assets/icons/set/hydroponics-filled.png',
+                            width: 30,
+                            color: green1,
                           ),
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text("Aksi Cepat",
-                                  style: semibold16.copyWith(
-                                    color: dark1,
-                                  )),
-                              const SizedBox(height: 10),
-                              const Divider(
-                                  height: 1, color: Color(0xFFE8E8E8)),
-                              ListTile(
-                                key: const Key('tambahKebun'),
-                                leading: Image.asset(
-                                  'assets/icons/set/hydroponics-filled.png',
-                                  width: 30,
-                                  color: green1,
-                                ),
-                                title: const Text("Tambah Kebun"),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  context.push('/tambah-kebun',
-                                      extra: AddKebunScreen(
-                                        isEdit: false,
-                                        onKebunAdded: _fetchData,
-                                      ));
-                                },
-                              ),
-                              const Divider(
-                                  height: 1, color: Color(0xFFE8E8E8)),
-                              ListTile(
-                                key: const Key('tambahTanaman'),
-                                leading: Image.asset(
-                                  'assets/icons/set/appleSeed-filled.png',
-                                  width: 30,
-                                  color: green1,
-                                ),
-                                title: const Text("Tambah Jenis Tanaman"),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  context.push('/tambah-tanaman',
-                                      extra: AddTanamanScreen(
-                                        isEdit: false,
-                                        onTanamanAdded: _fetchData,
-                                      ));
-                                },
-                              ),
-                              const Divider(
-                                  height: 1, color: Color(0xFFE8E8E8)),
-                              ListTile(
-                                key: const Key('tambahKomoditasTanaman'),
-                                leading: Image.asset(
-                                    'assets/icons/set/fruitbag-filled.png',
-                                    width: 30,
-                                    color: green1),
-                                title: const Text("Tambah Komoditas Tanaman"),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  context.push('/tambah-komoditas-tanaman',
-                                      extra: AddKomoditasTanamanScreen(
-                                        isEdit: false,
-                                        onKomoditasTanamanAdded: _fetchData,
-                                      ));
-                                },
-                              ),
-                            ],
+                          title: const Text("Tambah Kebun"),
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.push('/tambah-kebun',
+                                extra: AddKebunScreen(
+                                  isEdit: false,
+                                  onKebunAdded: _fetchData,
+                                ));
+                          },
+                        ),
+                        const Divider(
+                            height: 1, color: Color(0xFFE8E8E8)),
+                        ListTile(
+                          key: const Key('tambahTanaman'),
+                          leading: Image.asset(
+                            'assets/icons/set/appleSeed-filled.png',
+                            width: 30,
+                            color: green1,
                           ),
-                        );
-                      } else {
-                        // Peternakan
-                        return Container(
-                          decoration: BoxDecoration(
-                            color: white,
-                            borderRadius: const BorderRadius.vertical(
-                                top: Radius.circular(20)),
-                          ),
-                          padding: const EdgeInsets.all(16.0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "Aksi Cepat",
-                                style: semibold16.copyWith(
-                                  color: dark1,
-                                ),
-                              ),
-                              const SizedBox(height: 10),
-                              const Divider(
-                                  height: 1, color: Color(0xFFE8E8E8)),
-                              ListTile(
-                                key: const Key('tambahKandang'),
-                                leading: Image.asset(
-                                  'assets/icons/set/farm-filled.png',
-                                  width: 30,
-                                  color: green1,
-                                ),
-                                title: const Text("Tambah Kandang"),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  context.push('/tambah-kandang',
-                                      extra: AddKandangScreen(
-                                        isEdit: false,
-                                        onKandangAdded: _fetchData,
-                                      ));
-                                },
-                              ),
-                              const Divider(
-                                  height: 1, color: Color(0xFFE8E8E8)),
-                              ListTile(
-                                key: const Key('tambahTernak'),
-                                leading: Image.asset(
-                                  'assets/icons/set/chicken-filled.png',
-                                  width: 30,
-                                  color: green1,
-                                ),
-                                title: const Text("Tambah Jenis Ternak"),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  context.push('/tambah-ternak',
-                                      extra: AddTernakScreen(
-                                        isEdit: false,
-                                        onTernakAdded: _fetchData,
-                                      ));
-                                },
-                              ),
-                              const Divider(
-                                  height: 1, color: Color(0xFFE8E8E8)),
-                              ListTile(
-                                key: const Key('tambahKomoditasTernak'),
-                                leading: Image.asset(
-                                  'assets/icons/set/dozenEggs-filled.png',
-                                  width: 30,
-                                  color: green1,
-                                ),
-                                title: const Text("Tambah Komoditas Ternak"),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  context.push('/tambah-komoditas-ternak',
-                                      extra: AddKomoditasTernakScreen(
-                                        isEdit: false,
-                                        onKomoditasAdded: _fetchData,
-                                      ));
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      }
-                    },
+                          title: const Text("Tambah Jenis Tanaman"),
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.push('/tambah-tanaman',
+                                extra: AddTanamanScreen(
+                                  isEdit: false,
+                                  onTanamanAdded: _fetchData,
+                                ));
+                          },
+                        ),
+                        const Divider(
+                            height: 1, color: Color(0xFFE8E8E8)),
+                        ListTile(
+                          key: const Key('tambahKomoditasTanaman'),
+                          leading: Image.asset(
+                              'assets/icons/set/fruitbag-filled.png',
+                              width: 30,
+                              color: green1),
+                          title: const Text("Tambah Komoditas Tanaman"),
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.push('/tambah-komoditas-tanaman',
+                                extra: AddKomoditasTanamanScreen(
+                                  isEdit: false,
+                                  onKomoditasTanamanAdded: _fetchData,
+                                ));
+                          },
+                        ),
+                      ],
+                    ),
                   );
-                },
-                backgroundColor: green1,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(100),
-                ),
-                child: const Icon(Icons.add, size: 30, color: Colors.white),
-              )
+                } else {
+                  // Peternakan
+                  return Container(
+                    decoration: BoxDecoration(
+                      color: white,
+                      borderRadius: const BorderRadius.vertical(
+                          top: Radius.circular(20)),
+                    ),
+                    padding: const EdgeInsets.all(16.0),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          "Aksi Cepat",
+                          style: semibold16.copyWith(
+                            color: dark1,
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        const Divider(
+                            height: 1, color: Color(0xFFE8E8E8)),
+                        ListTile(
+                          key: const Key('tambahKandang'),
+                          leading: Image.asset(
+                            'assets/icons/set/farm-filled.png',
+                            width: 30,
+                            color: green1,
+                          ),
+                          title: const Text("Tambah Kandang"),
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.push('/tambah-kandang',
+                                extra: AddKandangScreen(
+                                  isEdit: false,
+                                  onKandangAdded: _fetchData,
+                                ));
+                          },
+                        ),
+                        const Divider(
+                            height: 1, color: Color(0xFFE8E8E8)),
+                        ListTile(
+                          key: const Key('tambahTernak'),
+                          leading: Image.asset(
+                            'assets/icons/set/chicken-filled.png',
+                            width: 30,
+                            color: green1,
+                          ),
+                          title: const Text("Tambah Jenis Ternak"),
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.push('/tambah-ternak',
+                                extra: AddTernakScreen(
+                                  isEdit: false,
+                                  onTernakAdded: _fetchData,
+                                ));
+                          },
+                        ),
+                        const Divider(
+                            height: 1, color: Color(0xFFE8E8E8)),
+                        ListTile(
+                          key: const Key('tambahKomoditasTernak'),
+                          leading: Image.asset(
+                            'assets/icons/set/dozenEggs-filled.png',
+                            width: 30,
+                            color: green1,
+                          ),
+                          title: const Text("Tambah Komoditas Ternak"),
+                          onTap: () {
+                            Navigator.pop(context);
+                            context.push('/tambah-komoditas-ternak',
+                                extra: AddKomoditasTernakScreen(
+                                  isEdit: false,
+                                  onKomoditasAdded: _fetchData,
+                                ));
+                          },
+                        ),
+                      ],
+                    ),
+                  );
+                }
+              },
+            );
+          },
+          backgroundColor: green1,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(100),
+          ),
+          child: const Icon(Icons.add, size: 30, color: Colors.white),
+        )
             : null,
       ),
       body: _isLoading
           ? const Center(
-              child: CircularProgressIndicator(),
-            )
+        child: CircularProgressIndicator(),
+      )
           : SafeArea(
-              child: _isLoading &&
-                      (_perkebunanData == null || _peternakanData == null)
-                  ? const Center(child: CircularProgressIndicator())
-                  : NestedScrollView(
-                      headerSliverBuilder:
-                          (BuildContext context, bool innerBoxIsScrolled) {
-                        return <Widget>[
-                          const SliverToBoxAdapter(
-                            child: BannerWidget(
-                              title:
-                                  'Kelola Perkebunan dan Peternakan dengan FarmCenter.',
-                              subtitle:
-                                  'Pantau, lapor, dan tingkatkan hasil panen produk budidaya mu!',
-                              showDate: true,
-                            ),
-                          ),
-                          SliverPersistentHeader(
-                            delegate: _SliverAppBarDelegate(
-                              Container(
-                                color: Colors.white,
-                                child: Tabs(
-                                  key: const Key('homeTabs'),
-                                  onTabChanged: _onTabChanged,
-                                  selectedIndex: _selectedTabIndex,
-                                  tabTitles: tabList,
-                                ),
-                              ),
-                              60.0,
-                            ),
-                            pinned: true,
-                          ),
-                        ];
-                      },
-                      body: Column(
-                        children: [
-                          const SizedBox(height: 12),
-                          Expanded(
-                            child: PageView(
-                              controller: _pageController,
-                              onPageChanged: (index) {
-                                setState(() {
-                                  _selectedTabIndex = index;
-                                });
-                              },
-                              children: [
-                                _buildPerkebunanContent(),
-                                _buildPeternakanContent(),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
+        child: _isLoading &&
+            (_perkebunanData == null || _peternakanData == null)
+            ? const Center(child: CircularProgressIndicator())
+            : NestedScrollView(
+          headerSliverBuilder:
+              (BuildContext context, bool innerBoxIsScrolled) {
+            return <Widget>[
+              const SliverToBoxAdapter(
+                child: BannerWidget(
+                  title:
+                  'Kelola Perkebunan dan Peternakan dengan FarmCenter.',
+                  subtitle:
+                  'Pantau, lapor, dan tingkatkan hasil panen produk budidaya mu!',
+                  showDate: true,
+                ),
+              ),
+              SliverPersistentHeader(
+                delegate: _SliverAppBarDelegate(
+                  Container(
+                    color: Colors.white,
+                    child: Tabs(
+                      key: const Key('homeTabs'),
+                      onTabChanged: _onTabChanged,
+                      selectedIndex: _selectedTabIndex,
+                      tabTitles: tabList,
                     ),
-            ),
+                  ),
+                  60.0,
+                ),
+                pinned: true,
+              ),
+            ];
+          },
+          body: Column(
+            children: [
+              const SizedBox(height: 12),
+              Expanded(
+                child: PageView(
+                  controller: _pageController,
+                  onPageChanged: (index) {
+                    setState(() {
+                      _selectedTabIndex = index;
+                    });
+                  },
+                  children: [
+                    _buildPerkebunanContent(),
+                    _buildPeternakanContent(),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 }

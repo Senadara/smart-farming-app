@@ -1,64 +1,56 @@
 import 'package:flutter/material.dart';
-
-// ===================================================
-// TELKOM INDONESIA COLOR PALETTE
-// ===================================================
-
-// // Gradasi pengganti green (menggunakan turunan Telkom Red)
-// Color green1 = const Color(0xFFB00000); // Merah tua (bold)
-// Color green2 = const Color(0xFFD71920); // Merah medium
-// Color green3 = const Color(0xFFFFB3B3); // Merah muda terang
-// Color green4 = const Color(0xFFFFE5E5); // Merah sangat terang (hampir putih)
-
-// // Gradasi pengganti yellow (tone warm dari Telkom Red)
-// Color yellow = const Color(0xFFFF4D4D); // Merah terang kekuningan
-// Color yellow1 = const Color(0xFFFFCCCC); // Latar terang
-// Color yellow2 = const Color(0xFFFF9999); // Tone menengah
-// Color grey = const Color(0xFFE6E6E6); // Netral abu terang
-
-// // Gradasi pengganti dark (netral Telkom)
-// Color dark1 = const Color(0xFF1A1A1A); // Hitam Telkom (paling gelap)
-// Color dark2 = const Color(0xFF4D4D4D); // Abu tua
-// Color dark3 = const Color(0xFF808080); // Abu medium
-// Color dark4 = const Color(0xFFCCCCCC); // Abu terang
-
-// // Gradasi pengganti blue (aksen Telkom yang ramah)
-// Color blue1 = const Color(0xFFFF6666); // Merah muda ke oranye
-// Color blue2 = const Color(0xFFE60000); // Telkom Red utama
-// Color blue3 = const Color(0xFFFFB3B3); // Warna latar merah lembut
-// Color blue4 = const Color(0xFFB00000); // Red dark
-
-// // Gradasi merah utama Telkom
-// Color red = const Color(0xFFE60000); // Telkom Red (utama)
-// Color red2 = const Color(0xFFFFCCCC); // Soft Red background
-// Color purple = const Color(0xFF800000); // Merah keunguan (dark accent)
-// Color white = Colors.white;
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 
 // Colors
-Color green1 = const Color(0xFF00623A);
-Color green2 = const Color(0xFF3B9C0B);
-Color green3 = const Color(0xFFEEE3D4);
-Color green4 = const Color(0xFFDBE4D6);
+Color green1 = TelkomColors.primary;
+Color green2 = TelkomColors.primary;
+Color green3 = TelkomColors.card;
+Color green4 = TelkomColors.card;
 
-Color yellow = const Color(0xFFFF9306);
-Color yellow1 = const Color(0xFFEEE3D4);
-Color yellow2 = const Color(0xFFFAC96C);
-Color grey = const Color(0xFFD9D9D9);
+Color yellow =  TelkomColors.primary;
+Color yellow1 = TelkomColors.card;
+Color yellow2 = TelkomColors.secondary;
+Color grey = TelkomColors.border;
 
-Color dark1 = const Color(0xFF494953);
-Color dark2 = const Color(0xFF4A4A4A);
-Color dark3 = const Color(0xFF999798);
-Color dark4 = const Color(0xFFEDEDED);
+Color dark1 = TelkomColors.textPrimary;
+Color dark2 = TelkomColors.textPrimary;
+Color dark3 = TelkomColors.textSecondary;
+Color dark4 = TelkomColors.border;
 
-Color blue1 = const Color(0xFF37B7FF);
-Color blue2 = const Color(0xFF177BFF);
-Color blue3 = const Color(0xFFE0E1EE);
-Color blue4 = const Color(0xFF2E8BFF);
+Color blue1 = TelkomColors.primary;
+Color blue2 = TelkomColors.secondary;
+Color blue3 = TelkomColors.card;
+Color blue4 = TelkomColors.primary;
 
-Color red = const Color(0xFFE84140);
-Color red2 = const Color(0xFFEEDFDF);
-Color purple = const Color(0xFF87027B);
-Color white = Colors.white;
+Color red = TelkomColors.primary;
+Color red2 = TelkomColors.card;
+Color purple = TelkomColors.secondary;
+Color white = TelkomColors.background;
+
+// Color green1 = const Color(0xFF00623A);
+// Color green2 = const Color(0xFF3B9C0B);
+// Color green3 = const Color(0xFFEEE3D4);
+// Color green4 = const Color(0xFFDBE4D6);
+//
+// Color yellow = const Color(0xFFFF9306);
+// Color yellow1 = const Color(0xFFEEE3D4);
+// Color yellow2 = const Color(0xFFFAC96C);
+// Color grey = const Color(0xFFD9D9D9);
+//
+// Color dark1 = const Color(0xFF494953);
+// Color dark2 = const Color(0xFF4A4A4A);
+// Color dark3 = const Color(0xFF999798);
+// Color dark4 = const Color(0xFFEDEDED);
+//
+// Color blue1 = const Color(0xFF37B7FF);
+// Color blue2 = const Color(0xFF177BFF);
+// Color blue3 = const Color(0xFFE0E1EE);
+// Color blue4 = const Color(0xFF2E8BFF);
+//
+// Color red = const Color(0xFFE84140);
+// Color red2 = const Color(0xFFEEDFDF);
+// Color purple = const Color(0xFF87027B);
+// Color white = Colors.white;
 
 // Typography
 TextStyle _textStyle(double size, FontWeight weight,

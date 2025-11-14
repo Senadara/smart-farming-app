@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_farming_app/service/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -126,7 +127,7 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: TelkomColors.background,
       body: Stack(
         children: [
           // Logo selalu di tengah layar
@@ -154,7 +155,7 @@ class _SplashScreenState extends State<SplashScreen>
                 child: Text(
                   'Ups! Tidak ada koneksi internet.\nSilakan periksa jaringan Anda dan coba lagi.',
                   key: const Key('no_internet_message'),
-                  style: bold16.copyWith(color: Colors.red),
+                  style: bold16.copyWith(color: TelkomColors.primary),
                   textAlign: TextAlign.center,
                 ),
               ),

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/theme.dart';
 
 class CustomButton extends StatelessWidget {
@@ -39,7 +40,8 @@ class CustomButton extends StatelessWidget {
                 height: 20,
                 width: 20,
                 child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                  valueColor:
+                      AlwaysStoppedAnimation<Color>(TelkomColors.background),
                   strokeWidth: 2.0,
                 ),
               )

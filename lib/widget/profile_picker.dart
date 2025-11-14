@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/image_builder.dart';
 
@@ -23,7 +24,7 @@ class ProfileImagePicker extends StatelessWidget {
       children: [
         CircleAvatar(
             radius: 50,
-            backgroundColor: Colors.grey[200],
+            backgroundColor: TelkomColors.card,
             backgroundImage: image != null ? FileImage(image!) : null,
             child: imageUrl != null && imageUrl!.isNotEmpty
                 ? ClipOval(
@@ -33,7 +34,8 @@ class ProfileImagePicker extends StatelessWidget {
                         url: imageUrl!,
                         fit: BoxFit.cover))
                 : image == null
-                    ? const Icon(Icons.person, size: 50, color: Colors.grey)
+                    ? const Icon(Icons.person,
+                        size: 50, color: TelkomColors.inactive)
                     : null),
         if (!isDisabled)
           Positioned(
@@ -46,9 +48,10 @@ class ProfileImagePicker extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: yellow,
                   shape: BoxShape.circle,
-                  border: Border.all(color: Colors.white, width: 2),
+                  border: Border.all(color: TelkomColors.background, width: 2),
                 ),
-                child: const Icon(Icons.edit, size: 16, color: Colors.white),
+                child: const Icon(Icons.edit,
+                    size: 16, color: TelkomColors.background),
               ),
             ),
           ),

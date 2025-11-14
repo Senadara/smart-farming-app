@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:flutter/services.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:flutter/gestures.dart';
@@ -127,12 +128,12 @@ class OTPInputWidgetState extends State<OTPInputWidget> {
           contentPadding:
               EdgeInsets.zero, // Adjust padding to center text if needed
           enabledBorder: OutlineInputBorder(
-            borderSide:
-                BorderSide(color: green1.withValues(alpha: .5), width: 1.2),
+            borderSide: BorderSide(
+                color: TelkomColors.primary.withValues(alpha: .5), width: 1.2),
             borderRadius: BorderRadius.circular(8),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: green1, width: 2.0),
+            borderSide: BorderSide(color: TelkomColors.primary, width: 2.0),
             borderRadius: BorderRadius.circular(8),
           ),
         ),
@@ -180,7 +181,7 @@ class OTPInputWidgetState extends State<OTPInputWidget> {
                     text: 'Kirim Ulang Kode',
                     style: semibold14.copyWith(
                       decoration: TextDecoration.underline,
-                      color: green1,
+                      color: TelkomColors.primary,
                     ),
                     recognizer: TapGestureRecognizer()
                       ..onTap = () {

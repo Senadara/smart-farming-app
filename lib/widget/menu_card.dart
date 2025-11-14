@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/theme.dart';
 
 class MenuCard extends StatefulWidget {
@@ -44,7 +45,7 @@ class _MenuCardState extends State<MenuCard> {
               children: [
                 CircleAvatar(
                   backgroundColor: widget.iconColor,
-                  child: Icon(widget.icon, color: Colors.white),
+                  child: Icon(widget.icon, color: TelkomColors.background),
                 ),
                 const SizedBox(height: 12),
                 Text(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:dotted_border/dotted_border.dart';
 import 'package:smart_farming_app/widget/image_builder.dart';
@@ -89,7 +90,7 @@ class _ListItemSelectableState extends State<ListItemSelectable> {
                 Text(
                   key: const Key('batch_mode_instruction'),
                   "Tekan dan tahan untuk mengaktifkan mode pelaporan batch.",
-                  style: medium12.copyWith(color: green1),
+                  style: medium12.copyWith(color: TelkomColors.primary),
                 ),
                 if (isBatchMode)
                   Row(
@@ -113,8 +114,8 @@ class _ListItemSelectableState extends State<ListItemSelectable> {
                               });
                               _notifySelectionChanged();
                             },
-                            activeColor: green1,
-                            side: BorderSide(color: green1),
+                            activeColor: TelkomColors.primary,
+                            side: BorderSide(color: TelkomColors.primary),
                             materialTapTargetSize:
                                 MaterialTapTargetSize.shrinkWrap,
                             visualDensity: VisualDensity.compact,
@@ -220,8 +221,8 @@ class _ListItemSelectableState extends State<ListItemSelectable> {
                   'checkbox_${item['name'] ?? item['id'] ?? widget.items.indexOf(item)}'),
               value: selectedIndexes.contains(widget.items.indexOf(item)),
               onChanged: (_) => _handleTap(widget.items.indexOf(item)),
-              activeColor: green1,
-              side: BorderSide(color: green1),
+              activeColor: TelkomColors.primary,
+              side: BorderSide(color: TelkomColors.primary),
             ),
         ],
       ),

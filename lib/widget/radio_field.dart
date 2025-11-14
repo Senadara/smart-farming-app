@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/theme.dart';
 
 class RadioField extends StatelessWidget {
@@ -34,7 +35,7 @@ class RadioField extends StatelessWidget {
                     onChanged: (value) {
                       if (value != null) onChanged(value);
                     },
-                    activeColor: green1),
+                    activeColor: TelkomColors.primary),
                 Text(
                   option,
                   style: medium14.copyWith(color: dark1),

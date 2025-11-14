@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:intl/intl.dart';
-import 'package:smart_farming_app/theme.dart';
 
 class WeeklyCalendar extends StatelessWidget {
   WeeklyCalendar({super.key});
@@ -29,7 +29,7 @@ class WeeklyCalendar extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: List.generate(7, (index) {
+          children: List.generate(7, (index) {
             DateTime date = weekDates[index];
             bool isToday = date.day == now.day &&
                 date.month == now.month &&
@@ -43,17 +43,20 @@ class WeeklyCalendar extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: isToday
                       ? BoxDecoration(
-                          borderRadius: BorderRadius.circular(8), color: green1)
+                          borderRadius: BorderRadius.circular(8),
+                          color: TelkomColors.primary)
                       : BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
-                          border: Border.all(color: Colors.grey.shade400),
+                          border: Border.all(color: TelkomColors.border),
                         ),
                   child: Column(
                     children: [
                       Text(
                         daysOfWeek[index],
                         style: TextStyle(
-                          color: isToday ? Colors.white : Colors.black,
+                          color: isToday
+                              ? TelkomColors.background
+                              : TelkomColors.textPrimary,
                           fontWeight: FontWeight.bold,
                         ),
                       ),
@@ -61,7 +64,9 @@ class WeeklyCalendar extends StatelessWidget {
                       Text(
                         DateFormat('dd').format(date),
                         style: TextStyle(
-                          color: isToday ? Colors.white : Colors.black,
+                          color: isToday
+                              ? TelkomColors.background
+                              : TelkomColors.textPrimary,
                           fontWeight:
                               isToday ? FontWeight.bold : FontWeight.normal,
                         ),

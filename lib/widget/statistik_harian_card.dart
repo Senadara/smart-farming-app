@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/theme.dart';
 
 class StatistikHarianCard extends StatelessWidget {
@@ -27,7 +28,7 @@ class StatistikHarianCard extends StatelessWidget {
         padding: const EdgeInsets.all(16.0),
         child: Text(
           'Error statistik: $errorMessage',
-          style: const TextStyle(color: Colors.red),
+          style: const TextStyle(color: TelkomColors.primary),
         ),
       );
     }
@@ -57,9 +58,9 @@ class StatistikHarianCard extends StatelessWidget {
       child: Container(
         margin: const EdgeInsets.symmetric(vertical: 4),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: TelkomColors.background,
           borderRadius: BorderRadius.circular(15),
-          border: Border.all(color: const Color(0xFFE8E8E8)),
+          border: Border.all(color: TelkomColors.border),
         ),
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -94,10 +95,10 @@ class StatistikHarianCard extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   Text('Perlu Perhatian:',
-                      style: medium14.copyWith(color: Colors.orange)),
+                      style: medium14.copyWith(color: TelkomColors.secondary)),
                   Text(
                       '$perluPerhatian (${persentasePerluPerhatian.toStringAsFixed(1)}%)',
-                      style: bold14.copyWith(color: Colors.orange)),
+                      style: bold14.copyWith(color: TelkomColors.secondary)),
                 ],
               ),
               const SizedBox(height: 8.0),

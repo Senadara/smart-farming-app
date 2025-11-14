@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_farming_app/screen/inventaris/add_inventaris_screen.dart';
 import 'package:smart_farming_app/screen/kategory_inv/add_kategori_inv_screen.dart';
@@ -63,7 +64,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: TelkomColors.background,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: AppBar(
@@ -107,7 +108,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                             color: dark1,
                           )),
                       const SizedBox(height: 10),
-                      const Divider(height: 1, color: Color(0xFFE8E8E8)),
+                      const Divider(height: 1, color: TelkomColors.border),
                       ListTile(
                         key: const Key('tambah_pemakaian_inventaris'),
                         leading: Image.asset(
@@ -121,7 +122,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           context.push('/tambah-pemakaian-inventaris');
                         },
                       ),
-                      const Divider(height: 1, color: Color(0xFFE8E8E8)),
+                      const Divider(height: 1, color: TelkomColors.border),
                       ListTile(
                         key: const Key('tambah_inventaris'),
                         leading: Image.asset(
@@ -141,7 +142,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
                           );
                         },
                       ),
-                      const Divider(height: 1, color: Color(0xFFE8E8E8)),
+                      const Divider(height: 1, color: TelkomColors.border),
                       ListTile(
                         key: const Key('tambah_kategori_inventaris'),
                         leading: Image.asset(
@@ -167,11 +168,12 @@ class _InventoryScreenState extends State<InventoryScreen> {
               },
             );
           },
-          backgroundColor: green1,
+          backgroundColor: TelkomColors.primary,
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(100),
           ),
-          child: const Icon(Icons.add, size: 30, color: Colors.white),
+          child:
+              const Icon(Icons.add, size: 30, color: TelkomColors.background),
         ),
       ),
       body: _isLoading
@@ -182,7 +184,7 @@ class _InventoryScreenState extends State<InventoryScreen> {
               child: RefreshIndicator(
                 key: _refreshIndicatorKey,
                 onRefresh: () => _fetchInventarisData(isRefresh: true),
-                color: green1,
+                color: TelkomColors.primary,
                 backgroundColor: white,
                 child: SingleChildScrollView(
                   physics: const AlwaysScrollableScrollPhysics(),
@@ -254,8 +256,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                               MenuItem(
                                 title: 'Kategori Inventaris',
                                 icon: 'set/category.png',
-                                backgroundColor: Colors.orange,
-                                iconColor: Colors.white,
+                                backgroundColor: TelkomColors.secondary,
+                                iconColor: TelkomColors.background,
                                 onTap: () => context
                                     .push('/kategori-inventaris')
                                     .then((_) {
@@ -265,8 +267,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                               MenuItem(
                                 title: 'Manajemen Inventaris',
                                 icon: 'set/box-filled.png',
-                                backgroundColor: Colors.brown,
-                                iconColor: Colors.white,
+                                backgroundColor: TelkomColors.secondary,
+                                iconColor: TelkomColors.background,
                                 onTap: () =>
                                     context.push('/inventaris').then((_) {
                                   _fetchInventarisData(isRefresh: true);
@@ -275,8 +277,8 @@ class _InventoryScreenState extends State<InventoryScreen> {
                               MenuItem(
                                 title: 'Riwayat Pemakaian',
                                 icon: 'set/history.png',
-                                backgroundColor: Colors.blue,
-                                iconColor: Colors.white,
+                                backgroundColor: TelkomColors.secondary,
+                                iconColor: TelkomColors.background,
                                 onTap: () => context
                                     .push('/riwayat-pemakaian-inventaris')
                                     .then((_) {

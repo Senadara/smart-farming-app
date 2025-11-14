@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/theme.dart';
 
 class SectionItem extends StatelessWidget {
@@ -22,7 +23,7 @@ class SectionItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      leading: Icon(icon, color: iconColor ?? green1),
+      leading: Icon(icon, color: iconColor ?? TelkomColors.primary),
       title: Text(
         title,
         style: semibold16.copyWith(color: titleColor ?? dark1),
@@ -31,10 +32,11 @@ class SectionItem extends StatelessWidget {
           ? Container(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
               decoration: BoxDecoration(
-                color: Colors.green,
+                color: TelkomColors.success,
                 borderRadius: BorderRadius.circular(12),
               ),
-              child: Text(tag!, style: medium14.copyWith(color: Colors.white)),
+              child: Text(tag!,
+                  style: medium14.copyWith(color: TelkomColors.background)),
             )
           : null,
       onTap: onTap,

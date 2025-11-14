@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/theme.dart';
 
 class InputFieldWidget extends StatelessWidget {
@@ -61,7 +62,7 @@ class InputFieldWidget extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
             filled: true,
-            fillColor: Colors.grey[100],
+            fillColor: TelkomColors.card,
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             prefixIcon: prefixIcon,

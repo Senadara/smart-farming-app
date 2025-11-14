@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/theme.dart';
 
 class DropdownFieldWidget extends StatelessWidget {
@@ -43,8 +44,8 @@ class DropdownFieldWidget extends StatelessWidget {
             ),
             filled: true,
             fillColor: isEdit
-                ? Colors.grey[300]
-                : Colors.grey[100], // Change color if disabled
+                ? TelkomColors.card
+                : TelkomColors.card, // Change color if disabled
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           ),

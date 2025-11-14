@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/theme.dart';
 
 class Tabs extends StatefulWidget {
@@ -41,19 +42,19 @@ class _TabsState extends State<Tabs> {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         margin: const EdgeInsets.symmetric(horizontal: 8),
         decoration: BoxDecoration(
-          color: isActive ? green1 : white,
+          color: isActive ? TelkomColors.primary : white,
           borderRadius: BorderRadius.circular(100),
           border: isActive
               ? null
               : Border.all(
-                  color: green1,
+                  color: TelkomColors.primary,
                   width: 1.5,
                 ),
         ),
         child: Text(
           title,
           style: semibold14.copyWith(
-            color: isActive ? white : green1,
+            color: isActive ? white : TelkomColors.primary,
           ),
         ),
       ),

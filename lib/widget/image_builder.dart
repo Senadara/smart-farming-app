@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:http/http.dart' as http;
 
@@ -39,7 +40,7 @@ class ImageBuilder extends StatelessWidget {
         }
 
         if (snapshot.hasError || snapshot.data == 'unknown') {
-          return const Icon(Icons.broken_image, color: Colors.red);
+          return const Icon(Icons.broken_image, color: TelkomColors.primary);
         }
 
         final contentType = snapshot.data!;
@@ -52,7 +53,7 @@ class ImageBuilder extends StatelessWidget {
             ),
             errorBuilder: (context, error, stackTrace) => const Icon(
               Icons.broken_image,
-              color: Colors.red,
+              color: TelkomColors.primary,
             ),
             height: height,
             width: width,
@@ -69,7 +70,7 @@ class ImageBuilder extends StatelessWidget {
             },
             errorBuilder: (context, error, stackTrace) => const Icon(
               Icons.broken_image,
-              color: Colors.red,
+              color: TelkomColors.primary,
             ),
             height: height,
             width: width,

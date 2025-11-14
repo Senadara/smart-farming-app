@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 
 enum DropdownType { input, filter }
 
@@ -25,12 +26,14 @@ class CustomDropdown<T> extends StatelessWidget {
     final isFilter = type == DropdownType.filter;
 
     return Container(
-      padding: isFilter ? const EdgeInsets.symmetric(horizontal: 12, vertical: 4) : null,
+      padding: isFilter
+          ? const EdgeInsets.symmetric(horizontal: 12, vertical: 4)
+          : null,
       decoration: BoxDecoration(
-        color: isFilter ? Colors.grey[200] : null,
+        color: isFilter ? TelkomColors.card : null,
         border: isFilter
-            ? Border.all(color: Colors.grey)
-            : Border.all(color: Colors.grey.shade400),
+            ? Border.all(color: TelkomColors.border)
+            : Border.all(color: TelkomColors.border),
         borderRadius: BorderRadius.circular(8),
       ),
       child: DropdownButtonHideUnderline(

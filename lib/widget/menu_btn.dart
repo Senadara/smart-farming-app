@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_farming_app/theme.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:popover/popover.dart';
 import 'package:dotted_border/dotted_border.dart';
 
@@ -75,13 +76,14 @@ class _MenuButtonState extends State<MenuButton> {
                   child: Transform.translate(
                     offset: const Offset(0, -4),
                     child: Icon(Icons.info_outline,
-                        color: widget.iconColor, size: 16),
+                        color: TelkomColors.primary, size: 16),
                   ),
                 ),
               ],
             ),
           ),
-          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.black),
+          Icon(Icons.arrow_forward_ios,
+              size: 16, color: TelkomColors.textPrimary),
         ],
       ),
     );

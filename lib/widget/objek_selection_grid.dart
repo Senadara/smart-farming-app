@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smart_farming_app/theme.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 
 class ObjekSelectionGrid extends StatelessWidget {
   final List<Map<String, dynamic>> objektList;
@@ -92,7 +93,7 @@ class ObjekSelectionGrid extends StatelessWidget {
                     selectedObjekIds.length == objektList.length
                         ? 'Batal Pilih Semua'
                         : 'Pilih Semua',
-                    style: medium12.copyWith(color: green1),
+                    style: medium12.copyWith(color: TelkomColors.primary),
                   ),
                 ),
             ],
@@ -108,18 +109,20 @@ class ObjekSelectionGrid extends StatelessWidget {
               duration: const Duration(milliseconds: 300),
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: green1.withValues(alpha: 0.1),
+                color: TelkomColors.primary.withValues(alpha: 0.1),
                 borderRadius: BorderRadius.circular(8),
-                border: Border.all(color: green1.withValues(alpha: 0.3)),
+                border: Border.all(
+                    color: TelkomColors.primary.withValues(alpha: 0.3)),
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline, color: green1, size: 20),
+                  Icon(Icons.info_outline,
+                      color: TelkomColors.primary, size: 20),
                   const SizedBox(width: 8),
                   Expanded(
                     child: Text(
                       '${selectedObjekIds.length} objek dipilih untuk dipanen',
-                      style: medium12.copyWith(color: green1),
+                      style: medium12.copyWith(color: TelkomColors.primary),
                     ),
                   ),
                 ],
@@ -146,16 +149,19 @@ class ObjekSelectionGrid extends StatelessWidget {
                 child: AnimatedContainer(
                   duration: const Duration(milliseconds: 200),
                   decoration: BoxDecoration(
-                    color: isSelected ? green1.withValues(alpha: 0.1) : white,
+                    color: isSelected
+                        ? TelkomColors.primary.withValues(alpha: 0.1)
+                        : white,
                     border: Border.all(
-                      color: isSelected ? green1 : dark3,
+                      color: isSelected ? TelkomColors.primary : dark3,
                       width: isSelected ? 2 : 1,
                     ),
                     borderRadius: BorderRadius.circular(12),
                     boxShadow: isSelected
                         ? [
                             BoxShadow(
-                              color: green1.withValues(alpha: 0.2),
+                              color:
+                                  TelkomColors.primary.withValues(alpha: 0.2),
                               blurRadius: 8,
                               offset: const Offset(0, 2),
                             )
@@ -172,7 +178,7 @@ class ObjekSelectionGrid extends StatelessWidget {
                           isSelected
                               ? Icons.check_circle
                               : Icons.circle_outlined,
-                          color: isSelected ? green1 : dark3,
+                          color: isSelected ? TelkomColors.primary : dark3,
                           size: 22,
                           key: ValueKey(isSelected),
                         ),
@@ -184,7 +190,7 @@ class ObjekSelectionGrid extends StatelessWidget {
                               objek['name']?.toString() ??
                               'Objek ${index + 1}',
                           style: regular10.copyWith(
-                            color: isSelected ? green1 : dark1,
+                            color: isSelected ? TelkomColors.primary : dark1,
                             fontSize: 10,
                           ),
                           textAlign: TextAlign.center,

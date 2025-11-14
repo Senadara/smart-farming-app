@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/image_builder.dart';
@@ -56,7 +57,7 @@ class NewestReports extends StatelessWidget {
           Container(
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(15),
-              border: Border.all(color: const Color(0xFFE8E8E8)),
+              border: Border.all(color: TelkomColors.border),
             ),
             child: Column(
               children: List.generate(reports.length, (index) {
@@ -293,7 +294,7 @@ class NewestReports extends StatelessWidget {
                       ),
                     ),
                     if (index != reports.length - 1)
-                      const Divider(height: 1, color: Color(0xFFE8E8E8)),
+                      const Divider(height: 1, color: TelkomColors.border),
                   ],
                 );
               }),

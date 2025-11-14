@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/screen/bantuan_screen.dart';
 import 'package:smart_farming_app/screen/komoditas/detail_komoditas_screen.dart';
 import 'package:smart_farming_app/screen/login/reset_password_screen.dart';
@@ -775,6 +776,8 @@ class MyApp extends StatelessWidget {
       child: MaterialApp.router(
         title: 'Smart Farming App',
         debugShowCheckedModeBanner: false,
+        theme: TelkomTheme.themeData,
+        darkTheme: TelkomTheme.darkTheme,
         routerConfig: _router,
       ),
     );

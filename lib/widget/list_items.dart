@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/image_builder.dart';
 
@@ -42,7 +43,7 @@ class ListItem extends StatelessWidget {
                       onTap: onViewAll,
                       child: Text(
                         "Lihat semua",
-                        style: regular14.copyWith(color: green1),
+                        style: regular14.copyWith(color: TelkomColors.primary),
                       ),
                     ),
                 ],
@@ -70,9 +71,9 @@ class ListItem extends StatelessWidget {
                     margin: const EdgeInsets.symmetric(vertical: 4),
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
-                      color: Colors.white,
+                      color: TelkomColors.background,
                       borderRadius: BorderRadius.circular(15),
-                      border: Border.all(color: const Color(0xFFE8E8E8)),
+                      border: Border.all(color: TelkomColors.border),
                     ),
                     child: type == "basic"
                         ? _buildBasicItem(item)
@@ -117,14 +118,15 @@ class ListItem extends StatelessWidget {
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
                     color: item['isActive'] == false
-                        ? red.withValues(alpha: 0.2)
-                        : green2.withValues(alpha: 0.1),
+                        ? TelkomColors.primary.withValues(alpha: 0.1)
+                        : TelkomColors.primary.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(100),
                   ),
                   child: item['category'] != null
                       ? Text(
                           item['category'] ?? 'Unknown',
-                          style: regular12.copyWith(color: green2),
+                          style:
+                              regular12.copyWith(color: TelkomColors.primary),
                         )
                       : item['isActive'] != null
                           ? Text(
@@ -132,7 +134,9 @@ class ListItem extends StatelessWidget {
                                   ? 'Aktif'
                                   : 'Tidak Aktif',
                               style: regular12.copyWith(
-                                color: item['isActive'] == true ? green2 : red,
+                                color: item['isActive'] == true
+                                    ? TelkomColors.primary
+                                    : TelkomColors.primary,
                               ),
                             )
                           : const SizedBox(),
@@ -180,7 +184,7 @@ class ListItem extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                 decoration: BoxDecoration(
-                  color: green2.withValues(alpha: 0.1),
+                  color: TelkomColors.primary.withValues(alpha: 0.1),
                   borderRadius: BorderRadius.circular(100),
                 ),
                 child: Text(
