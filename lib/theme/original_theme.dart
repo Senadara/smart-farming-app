@@ -65,15 +65,15 @@ class OriginalTheme {
         fillColor: OriginalColors.dark4,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: OriginalColors.grey),
+          borderSide: const BorderSide(color: OriginalColors.grey),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: OriginalColors.grey),
+          borderSide: const BorderSide(color: OriginalColors.grey),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(8),
-          borderSide: BorderSide(color: OriginalColors.green2),
+          borderSide: const BorderSide(color: OriginalColors.green2),
         ),
       ),
       floatingActionButtonTheme: FloatingActionButtonThemeData(
@@ -81,7 +81,7 @@ class OriginalTheme {
         foregroundColor: Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
       ),
-      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+      bottomNavigationBarTheme: const BottomNavigationBarThemeData(
         selectedItemColor: OriginalColors.green2,
         unselectedItemColor: OriginalColors.dark3,
         backgroundColor: Colors.white,

@@ -2,5 +2,6 @@
     "java.compile.nullAnalysis.mode": "automatic",
     "cSpell.words": [
         "allprojects"
-    ]
+    ],
+    "java.configuration.updateBuildConfiguration": "interactive"
 }

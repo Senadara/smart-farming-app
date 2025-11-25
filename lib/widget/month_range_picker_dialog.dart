@@ -77,7 +77,7 @@ class _MonthRangePickerDialogState extends State<MonthRangePickerDialog> {
                 Expanded(
                   child: DropdownButtonFormField<int>(
                     decoration: const InputDecoration(labelText: 'Bulan'),
-                    value: _startMonth,
+                    initialValue: _startMonth,
                     items: _months
                         .map((month) => DropdownMenuItem(
                               value: month['value'] as int,
@@ -93,7 +93,7 @@ class _MonthRangePickerDialogState extends State<MonthRangePickerDialog> {
                 Expanded(
                   child: DropdownButtonFormField<int>(
                     decoration: const InputDecoration(labelText: 'Tahun'),
-                    value: _startYear,
+                    initialValue: _startYear,
                     items: _years
                         .map((year) => DropdownMenuItem(
                               value: year,
@@ -114,7 +114,7 @@ class _MonthRangePickerDialogState extends State<MonthRangePickerDialog> {
                 Expanded(
                   child: DropdownButtonFormField<int>(
                     decoration: const InputDecoration(labelText: 'Bulan'),
-                    value: _endMonth,
+                    initialValue: _endMonth,
                     items: _months
                         .map((month) => DropdownMenuItem(
                               value: month['value'] as int,
@@ -130,7 +130,7 @@ class _MonthRangePickerDialogState extends State<MonthRangePickerDialog> {
                 Expanded(
                   child: DropdownButtonFormField<int>(
                     decoration: const InputDecoration(labelText: 'Tahun'),
-                    value: _endYear,
+                    initialValue: _endYear,
                     items: _years
                         .map((year) => DropdownMenuItem(
                               value: year,

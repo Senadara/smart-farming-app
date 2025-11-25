@@ -36,7 +36,7 @@ class DropdownFieldWidget extends StatelessWidget {
         Text(label, style: semibold14.copyWith(color: dark1)),
         const SizedBox(height: 8),
         DropdownButtonFormField<String>(
-          value: valueToUse,
+          initialValue: valueToUse,
           decoration: InputDecoration(
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),

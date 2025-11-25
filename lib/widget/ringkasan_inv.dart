@@ -180,7 +180,7 @@ class _RingkasanInvState extends State<RingkasanInv> {
                       borderRadius: BorderRadius.circular(8),
                     ),
                     child: Text(
-                      '$dateStr',
+                      dateStr,
                       style: regular12.copyWith(color: green1),
                     ),
                   ),
