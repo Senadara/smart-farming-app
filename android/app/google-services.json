@@ -7,6 +7,44 @@
   "client": [
     {
       "client_info": {
+        "mobilesdk_app_id": "1:15806207070:android:1e6d9cb1b54a07178950cf",
+        "android_client_info": {
+          "package_name": "app.tus.smart_farming_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgyn7fy5R-flroGtPU2-mHR6gEuiMGUxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:15806207070:android:0d76922695a396f78950cf",
+        "android_client_info": {
+          "package_name": "com.example.rfc_apps"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgyn7fy5R-flroGtPU2-mHR6gEuiMGUxQ"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
         "mobilesdk_app_id": "1:15806207070:android:c20294c413fd95498950cf",
         "android_client_info": {
           "package_name": "com.example.smart_farming_app"
