@@ -8,6 +8,7 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
 import 'package:smart_farming_app/screen/control_panel/dashboard_cp_perkebunan.dart';
 import 'package:smart_farming_app/screen/control_panel/dashboard_cp_peternakan.dart';
+import 'package:smart_farming_app/screen/control_panel/detail_cp_perkemunan/detail_cp_sawi.dart';
 import 'package:smart_farming_app/screen/control_panel/detail_cp_peternakan/detail_cp_ayam.dart';
 import 'package:smart_farming_app/screen/control_panel/detail_cp_peternakan/detail_cp_lele.dart';
 import 'package:smart_farming_app/theme/telkom_theme.dart';
@@ -776,6 +777,15 @@ final _router = GoRouter(
     GoRoute(
       path: '/dashboard-cp-perkebunan',
           builder: (context, state) => const DashboardCpPerkebunan(),
+    ),
+    GoRoute(
+      path: '/detail-cp-sawi/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'];
+        return DetailCpSawi(
+          idKolam: id,
+        );
+      },
     ),
     GoRoute(
       path: '/dashboard-cp-peternakan',

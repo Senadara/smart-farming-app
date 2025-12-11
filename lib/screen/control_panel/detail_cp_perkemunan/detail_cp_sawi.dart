@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_farming_app/service/dashboard_service.dart';
 import 'package:smart_farming_app/service/hama_service.dart';
+import 'package:smart_farming_app/widget/card_device_iot.dart';
 import 'package:smart_farming_app/widget/dashboard_grid.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/widget/tabs.dart';
@@ -12,14 +13,16 @@ import 'package:go_router/go_router.dart';
 import 'package:smart_farming_app/widget/list_items.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
 
-class DashboardCpPerkebunan extends StatefulWidget {
-  const DashboardCpPerkebunan({super.key});
+class DetailCpSawi extends StatefulWidget {
+  final String? idKolam;
+
+  const DetailCpSawi({super.key, this.idKolam});
 
   @override
-  State<DashboardCpPerkebunan> createState() => _DashboardCpPerkebunanState();
+  State<DetailCpSawi> createState() => _DetailCpSawiState();
 }
 
-class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
+class _DetailCpSawiState extends State<DetailCpSawi> {
   final DashboardService _dashboardService = DashboardService();
   final HamaService _hamaService = HamaService();
 
@@ -57,7 +60,7 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
       setState(() {
         _perkebunanData = results[0];
         // _peternakanData = results[1];
-        // _laporanHamaList = results[2]['data'] ?? [];
+        _laporanHamaList = results[2]['data'] ?? [];
       });
     } catch (e) {
       if (!mounted) return;
@@ -77,9 +80,8 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
 // INI HARUS DISESUAIKAN DENGAN BANYAK JENIS HEWAN YANG ADA
   int _selectedTabIndex = 0;
   final List<String> tabList = [
-    'Sawi',
-    'Melon',
-    'Anggur',
+    'Lele',
+    'Ayam',
   ];
   final PageController _pageController = PageController();
 
@@ -123,7 +125,7 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
     }
 
     //================================
-    //===   CARD INDIKATOR SAWI    ===
+    //===   CARD INDIKATOR LELE    ===
     //================================
     return RefreshIndicator(
       key: _refreshIndicatorPerkebunanKey,
@@ -136,108 +138,103 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
         children: [
           if (_perkebunanData != null) ...[
             DashboardGrid(
-              title: 'Statistik Rata-rata Kebun Hari Ini',
+              title: 'Statistik Rata-rata Kolam Hari Ini',
               items: [
                 DashboardItem(
-                  title: 'Tanaman Sakit',
+                  title: 'Jumlah Populasi',
                   value: _perkebunanData?['jumlahSakit'].toString() ?? '-',
                   icon: 'other',
                   bgColor: red2,
                   iconColor: red,
                 ),
                 DashboardItem(
-                  title: 'Suhu (°C)',
+                  title: 'Suhu Air (°C)',
                   value: _perkebunanData?['suhu'].toString() ?? '-',
                   icon: 'other',
                   bgColor: yellow1,
                   iconColor: yellow,
                 ),
                 DashboardItem(
-                  title: 'Jenis Tanaman',
+                  title: 'PH Air',
                   value: _perkebunanData?['jenisTanaman'].toString() ?? '-',
                   icon: 'other',
                   bgColor: blue3,
                   iconColor: blue1,
                 ),
                 DashboardItem(
-                  title: 'Tanaman Mati',
+                  title: 'DO Air (mg/L)',
                   value: _perkebunanData?['jumlahKematian'].toString() ?? '-',
                   icon: 'other',
                   bgColor: red2,
                   iconColor: red,
                 ),
                 DashboardItem(
-                  title: 'Jumlah Panen',
+                  title: 'Kekeruhan Air (NTU)',
                   value: _perkebunanData?['jumlahPanen'].toString() ?? '-',
                   icon: 'other',
                   bgColor: yellow1,
                   iconColor: yellow,
                 ),
                 DashboardItem(
-                  title: 'Jumlah Tanaman',
+                  title: 'Tinggi Air (cm)',
                   value: _perkebunanData?['jumlahTanaman'].toString() ?? '-',
                   icon: 'other',
                   bgColor: green4,
                   iconColor: green2,
                 ),
               ],
-              crossAxisCount: 2,
-              valueFontSize: 60,
-              // titleFontSize: 13.5,
-              // paddingSize: 10,
-              // iconsWidth: 36,
+              crossAxisCount: 3,
+              valueFontSize: 32,
+              titleFontSize: 13.5,
+              paddingSize: 10,
+              iconsWidth: 36,
             ),
             const SizedBox(height: 12),
-
-            // ListItem(
-            //   title: 'Control Panel Per Jenis Tanaman',
-            //   items: const[
-            //     {
-            //       'id': 'sawi',
-            //       'name': 'Sawi',
-            //       'icon': 'assets/icons/vegetables/sawi.png',
-            //     },
-            //     {
-            //       'id': 'melon',
-            //       'name': 'Melon',
-            //       'icon': 'assets/icons/vegetables/melon.png',
-            //     },
-            //     {
-            //       'id': 'anggur',
-            //       'name': 'Anggur',
-            //       'icon': 'assets/icons/vegetables/anggur.png',
-            //     },
-            //   ],
-            //   type: 'basic',
-
-            //   // Tap sawi
-            //   onItemTap: (context, item) {
-            //     final id = item['0'] ?? '';
-            //     context.push('/detail-cp-sawi/$id').then((_) {
-            //       _fetchData(isRefresh: true);
-            //     });
-            //   },
-            // ),
-
-            ListItem(
-              title: 'Control Panel Per Jenis Tanaman',
-              items: (_perkebunanData?['daftarTanaman'] as List<dynamic>? ?? [])
-                  .map((tanaman) => {
-                        'id': tanaman['id'],
-                        'name': tanaman['nama'],
-                        'isActive': tanaman['status'],
-                        'icon': tanaman['gambar'],
-                      })
-                  .toList(),
-              type: 'basic',
-              onItemTap: (context, item) {
-                final id = item['id'] ?? '';
-                context.push('/detail-cp-kolam/$id').then((_) {
-                  _fetchData(isRefresh: true);
-                });
-              },
+            Column(
+              children: [
+                CardDeviceIot(
+                  title: "Pemberian Pakan",
+                  status: "Mati",
+                  schedule: "07:00 | 15:00",
+                  isActive: false,
+                  assetIcon: 'assets/icons/set/wateringCan-filled.png',
+                  onTapPower: () {},
+                ),
+                CardDeviceIot(
+                  title: "Aerator",
+                  status: "Hidup",
+                  isActive: true,
+                  assetIcon: 'assets/icons/set/wateringCan-filled.png',
+                  onTapPower: () {},
+                ),
+              ],
             ),
+            // Column(
+            //   children:
+            //       (_perkebunanData?['daftarPerangkat'] as List<dynamic>? ?? [])
+            //           .map((device) {
+            //     final title = device['nama'] ?? '-';
+            //     final status =
+            //         (device['status'] ?? '').toString().toLowerCase();
+            //     final isActive = status == "hidup";
+            //     final schedule = device['jadwal'];
+            //     final icon = device['gambar'] ??
+            //         'assets/icons/set/wateringCan-filled.png';
 
+            //     return CardDeviceIot(
+            //       title: title,
+            //       status: isActive ? "Hidup" : "Mati",
+            //       schedule: schedule, // null? otomatis tidak ditampilkan
+            //       isActive: isActive,
+            //       assetIcon: icon,
+            //       onTapPower: () {
+            //         final id = device['id'];
+            //         print("Toggle perangkat ID: $id");
+            //         // panggil API toggle di sini
+            //       },
+            //     );
+            //   }).toList(),
+            // )
             const SizedBox(height: 24),
           ] else if (!_isLoading) ...[
             Center(
@@ -247,115 +244,6 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const Text("Gagal memuat data perkebunan."),
-                    const SizedBox(height: 10),
-                    ElevatedButton(
-                      onPressed: () => _fetchData(isRefresh: true),
-                      child: const Text("Coba Lagi"),
-                    )
-                  ],
-                ),
-              ),
-            )
-          ]
-        ],
-      ),
-    );
-  }
-
-  Widget _buildPeternakanContent() {
-    if (!_isLoading && _peternakanData == null) {
-      return Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const Text("Gagal memuat data perkebunan."),
-            const SizedBox(height: 10),
-            ElevatedButton(
-              onPressed: () => _fetchData(isRefresh: true),
-              child: const Text("Coba Lagi"),
-            )
-          ],
-        ),
-      );
-    }
-
-    //================================
-    //===   CARD INDIKATOR AYAM    ===
-    //================================
-    return RefreshIndicator(
-      key: _refreshIndicatorPeternakanKey,
-      onRefresh: () => _fetchData(isRefresh: true),
-      color: green1,
-      backgroundColor: white,
-      child: ListView(
-        physics: const AlwaysScrollableScrollPhysics(),
-        padding: EdgeInsets.zero,
-        children: [
-          if (_peternakanData != null) ...[
-            DashboardGrid(
-              title: 'Statistik Rata-rata Kandang Hari Ini',
-              type: DashboardGridType.none,
-              items: [
-                DashboardItem(
-                  title: 'Suhu (°C)',
-                  value: _peternakanData?['suhu'].toString() ?? '-',
-                  icon: 'other',
-                  bgColor: green3,
-                  iconColor: yellow,
-                ),
-                DashboardItem(
-                  title: 'Kelembaban (%)',
-                  value: _peternakanData?['jenisTernak'].toString() ?? '-',
-                  icon: 'other',
-                  bgColor: green4,
-                  iconColor: green2,
-                ),
-                DashboardItem(
-                  title: 'Intensitas Cahaya (lux)',
-                  value: _peternakanData?['jumlahKematian'].toString() ?? '-',
-                  icon: 'other',
-                  bgColor: red2,
-                  iconColor: red,
-                ),
-                DashboardItem(
-                  title: 'Konsumsi Air (L)',
-                  value: _peternakanData?['jumlahPanen'].toString() ?? '-',
-                  icon: 'other',
-                  bgColor: blue3,
-                  iconColor: blue1,
-                ),
-              ],
-              crossAxisCount: 2,
-              valueFontSize: 60,
-            ),
-            const SizedBox(height: 12),
-            ListItem(
-              title: 'Hasil Laporan Per Jenis Ternak',
-              items: (_peternakanData?['daftarTernak'] as List<dynamic>? ?? [])
-                  .map((ternak) => {
-                        'id': ternak['id'],
-                        'name': ternak['nama'],
-                        'isActive': ternak['status'],
-                        'icon': ternak['gambar'],
-                      })
-                  .toList(),
-              type: 'basic',
-              onItemTap: (context, item) {
-                final id = item['id'] ?? '';
-                context.push('/detail-cp-kandang/$id').then((_) {
-                  _fetchData(isRefresh: true);
-                });
-              },
-            ),
-            const SizedBox(height: 12),
-          ] else if (!_isLoading) ...[
-            Center(
-              child: Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text("Gagal memuat data peternakan."),
                     const SizedBox(height: 10),
                     ElevatedButton(
                       onPressed: () => _fetchData(isRefresh: true),
@@ -386,7 +274,7 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
           title: const Header(
               headerType: HeaderType.menu,
               title: 'Menu Aplikasi',
-              greeting: 'Panel Kontrol Perkebunan'),
+              greeting: 'Panel Kontrol Peternakan'),
         ),
       ),
       body: _isLoading
@@ -430,7 +318,6 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
                               },
                               children: [
                                 _buildPerkebunanContent(),
-                                _buildPeternakanContent(),
                               ],
                             ),
                           ),
