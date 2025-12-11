@@ -221,7 +221,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   iconColor: Colors.white,
                   onTap: () => context.push('/laporan-hama'),
                 ),
-                MenuItem( // eca tag
+                MenuItem(
+                  // eca tag
                   title: 'Panel Kontrol',
                   icon: 'set/control-panel.png',
                   backgroundColor: blue1,
