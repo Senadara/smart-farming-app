@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:smart_farming_app/screen/control_panel/dashboard_cp_perkebunan.dart';
 import 'package:smart_farming_app/screen/control_panel/dashboard_cp_peternakan.dart';
 import 'package:smart_farming_app/screen/control_panel/detail_cp_peternakan/detail_cp_ayam.dart';
 import 'package:smart_farming_app/screen/control_panel/detail_cp_peternakan/detail_cp_lele.dart';
@@ -771,6 +772,10 @@ final _router = GoRouter(
         final komoditasId = state.pathParameters['komoditasId']!;
         return GradeSummaryScreen(komoditasId: komoditasId);
       },
+    ),
+    GoRoute(
+      path: '/dashboard-cp-perkebunan',
+          builder: (context, state) => const DashboardCpPerkebunan(),
     ),
     GoRoute(
       path: '/dashboard-cp-peternakan',

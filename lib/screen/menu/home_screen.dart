@@ -184,7 +184,7 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
             const SizedBox(height: 12),
             MenuGrid(
-              title: 'Menu Aplikasi Perkebunan',
+              title: 'Menu Aplikasi Perkebunann',
               menuItems: [
                 MenuItem(
                   title: 'Manajamen Kebun',
@@ -220,6 +220,16 @@ class _HomeScreenState extends State<HomeScreen> {
                   backgroundColor: yellow,
                   iconColor: Colors.white,
                   onTap: () => context.push('/laporan-hama'),
+                ),
+                MenuItem( // eca tag
+                  title: 'Panel Kontrol',
+                  icon: 'set/control-panel.png',
+                  backgroundColor: blue1,
+                  iconColor: Colors.white,
+                  onTap: () =>
+                      context.push('/dashboard-cp-perkebunan').then((_) {
+                    _fetchData(isRefresh: true);
+                  }),
                 ),
               ],
             ),
