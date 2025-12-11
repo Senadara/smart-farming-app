@@ -200,7 +200,7 @@ class _DetailLaporanPanenTernakScreenState
                                     return infoItem(
                                         '${grade['Grade']['nama'] ?? '-'}',
                                         '${grade['jumlah'] ?? '-'} ${_laporanPanenTernak?['Panen']['komoditas']['Satuan']['lambang'] ?? ''}');
-                                  }).toList(),
+                                  }),
                                 ] else ...[
                                   // Show message when no grade data available
                                   Container(

@@ -106,8 +106,8 @@ class TelkomTheme {
         contentTextStyle: TextStyle(color: Colors.white),
       ),
       checkboxTheme: CheckboxThemeData(
-        fillColor: MaterialStateProperty.resolveWith((states) {
-          if (states.contains(MaterialState.selected)) {
+        fillColor: WidgetStateProperty.resolveWith((states) {
+          if (states.contains(WidgetState.selected)) {
             return TelkomColors.primary;
           }
           return TelkomColors.inactive;

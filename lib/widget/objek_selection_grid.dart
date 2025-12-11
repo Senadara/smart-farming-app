@@ -116,7 +116,7 @@ class ObjekSelectionGrid extends StatelessWidget {
               ),
               child: Row(
                 children: [
-                  Icon(Icons.info_outline,
+                  const Icon(Icons.info_outline,
                       color: TelkomColors.primary, size: 20),
                   const SizedBox(width: 8),
                   Expanded(

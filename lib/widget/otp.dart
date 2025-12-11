@@ -133,7 +133,7 @@ class OTPInputWidgetState extends State<OTPInputWidget> {
             borderRadius: BorderRadius.circular(8),
           ),
           focusedBorder: OutlineInputBorder(
-            borderSide: BorderSide(color: TelkomColors.primary, width: 2.0),
+            borderSide: const BorderSide(color: TelkomColors.primary, width: 2.0),
             borderRadius: BorderRadius.circular(8),
           ),
         ),

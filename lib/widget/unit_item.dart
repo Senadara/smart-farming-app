@@ -67,7 +67,7 @@ class UnitItem extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 4),
-          Divider(
+          const Divider(
             color: TelkomColors.primary,
             thickness: 0.5,
             height: 0,

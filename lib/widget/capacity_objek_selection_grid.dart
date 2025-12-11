@@ -217,7 +217,7 @@ class CapacityObjekSelectionGrid extends StatelessWidget {
                                   ? green1
                                   : dark3,
                           size: 22,
-                          key: ValueKey('${isSelected}_${isDisabled}'),
+                          key: ValueKey('${isSelected}_$isDisabled'),
                         ),
                       ),
                       const SizedBox(height: 4),

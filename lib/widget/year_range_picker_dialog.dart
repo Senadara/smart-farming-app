@@ -58,7 +58,7 @@ class _YearRangePickerDialogState extends State<YearRangePickerDialog> {
         children: <Widget>[
           Text('Dari Tahun:', style: semibold14.copyWith(color: dark2)),
           DropdownButtonFormField<int>(
-            value: _startYear,
+            initialValue: _startYear,
             items: _years
                 .map((year) => DropdownMenuItem(
                       value: year,
@@ -72,7 +72,7 @@ class _YearRangePickerDialogState extends State<YearRangePickerDialog> {
           const SizedBox(height: 20),
           Text('Sampai Tahun:', style: semibold14.copyWith(color: dark2)),
           DropdownButtonFormField<int>(
-            value: _endYear,
+            initialValue: _endYear,
             items: _years
                 .map((year) => DropdownMenuItem(
                       value: year,

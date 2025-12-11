@@ -30,6 +30,7 @@ import 'package:smart_farming_app/screen/notifications/notification_management_s
 import 'package:smart_farming_app/screen/pelaporan/tanaman/pilih_komoditas_tanaman_screen.dart';
 import 'package:smart_farming_app/screen/laporan/statistik_tanaman_report.dart';
 import 'package:smart_farming_app/screen/introduction.dart';
+import 'package:smart_farming_app/screen/iot/iot_screen.dart';
 import 'package:smart_farming_app/screen/inventaris/add_inventaris_screen.dart';
 import 'package:smart_farming_app/screen/inventaris/add_pemakaian_inventaris_screen.dart';
 import 'package:smart_farming_app/screen/inventaris/detail_inventaris_screen.dart';
@@ -630,6 +631,10 @@ final _router = GoRouter(
           idTanaman: id,
         );
       },
+    ),
+    GoRoute(
+      path: '/manajemen-iot',
+      builder: (context, state) => const IotScreen(),
     ),
     GoRoute(
       path: '/manajemen-jenis-tanaman',
