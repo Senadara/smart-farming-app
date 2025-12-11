@@ -485,6 +485,16 @@ class _HomeScreenPetugasState extends State<HomeScreenPetugas> {
                     _fetchData(isRefresh: true);
                   }),
                 ),
+                MenuItem(
+                  title: 'Panel Kontrol',
+                  icon: 'set/control-panel.png',
+                  backgroundColor: green1,
+                  iconColor: Colors.white,
+                  onTap: () =>
+                      context.push('/dashboard-cp-peternakan').then((_) {
+                    _fetchData(isRefresh: true);
+                  }),
+                ),
               ],
             ),
             const SizedBox(height: 12),
