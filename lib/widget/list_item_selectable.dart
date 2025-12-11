@@ -115,7 +115,7 @@ class _ListItemSelectableState extends State<ListItemSelectable> {
                               _notifySelectionChanged();
                             },
                             activeColor: TelkomColors.primary,
-                            side: BorderSide(color: TelkomColors.primary),
+                            side: const BorderSide(color: TelkomColors.primary),
                             materialTapTargetSize:
                                 MaterialTapTargetSize.shrinkWrap,
                             visualDensity: VisualDensity.compact,
@@ -222,7 +222,7 @@ class _ListItemSelectableState extends State<ListItemSelectable> {
               value: selectedIndexes.contains(widget.items.indexOf(item)),
               onChanged: (_) => _handleTap(widget.items.indexOf(item)),
               activeColor: TelkomColors.primary,
-              side: BorderSide(color: TelkomColors.primary),
+              side: const BorderSide(color: TelkomColors.primary),
             ),
         ],
       ),

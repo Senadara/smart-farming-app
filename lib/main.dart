@@ -6,6 +6,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/date_symbol_data_local.dart';
+import 'package:smart_farming_app/screen/control_panel/dashboard_cp_peternakan.dart';
+import 'package:smart_farming_app/screen/control_panel/detail_cp_peternakan/detail_cp_ayam.dart';
+import 'package:smart_farming_app/screen/control_panel/detail_cp_peternakan/detail_cp_lele.dart';
 import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/screen/bantuan_screen.dart';
 import 'package:smart_farming_app/screen/komoditas/detail_komoditas_screen.dart';
@@ -767,6 +770,28 @@ final _router = GoRouter(
       builder: (context, state) {
         final komoditasId = state.pathParameters['komoditasId']!;
         return GradeSummaryScreen(komoditasId: komoditasId);
+      },
+    ),
+    GoRoute(
+      path: '/dashboard-cp-peternakan',
+          builder: (context, state) => const DashboardCpPeternakan(),
+    ),
+    GoRoute(
+      path: '/detail-cp-kolam/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'];
+        return DetailCpLele(
+          idKolam: id,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/detail-cp-kandang/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'];
+        return DetailCpAyam(
+          idKandang: id,
+        );
       },
     ),
   ],
