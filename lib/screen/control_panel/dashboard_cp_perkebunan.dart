@@ -11,6 +11,7 @@ import 'package:smart_farming_app/theme.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_farming_app/widget/list_items.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
+import 'package:smart_farming_app/service/sensor_cp.dart';
 
 class DashboardCpPerkebunan extends StatefulWidget {
   const DashboardCpPerkebunan({super.key});
@@ -39,6 +40,41 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
     _fetchData(isRefresh: false);
   }
 
+  // Future<void> _fetchData({isRefresh = false}) async {
+  //   if (!isRefresh && !_isLoading) {
+  //     setState(() {
+  //       _isLoading = true;
+  //     });
+  //   }
+
+  //   try {
+  //     final results = await Future.wait([
+  //       _dashboardService.getDashboardPerkebunan(),
+  //       _dashboardService.getDashboardPeternakan(),
+  //       _hamaService.getLaporanHama(),
+  //     ]);
+
+  //     if (!mounted) return;
+  //     setState(() {
+  //       _perkebunanData = results[0];
+  //       _peternakanData = results[1];
+  //       _laporanHamaList = results[2]['data'] ?? [];
+  //     });
+  //   } catch (e) {
+  //     if (!mounted) return;
+  //     showAppToast(context, 'Terjadi kesalahan: $e. Silakan coba lagi',
+  //         title: 'Error Tidak Terduga 😢');
+  //   } finally {
+  //     // ignore: control_flow_in_finally
+  //     if (!mounted) return;
+  //     if (_isLoading) {
+  //       setState(() {
+  //         _isLoading = false;
+  //       });
+  //     }
+  //   }
+  // }
+
   Future<void> _fetchData({isRefresh = false}) async {
     if (!isRefresh && !_isLoading) {
       setState(() {
@@ -47,24 +83,44 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
     }
 
     try {
+      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlODRmY2M4LWI1YzItNGM2MC05NGVmLWJiOWI3YWY2MDA1YyIsIm5hbWUiOiJwZXR1Z2FzIiwiZW1haWwiOiJwZXR1Z2FzQGVtYWlsLmNvbSIsInBob25lIjoiMDgxMjM0NTY3ODkiLCJyb2xlIjoicGV0dWdhcyIsImF2YXRhciI6Imh0dHBzOi8vYXBpLmRpY2ViZWFyLmNvbS85LngvdGh1bWJzL3N2Zz9leWVzPXZhcmlhbnQ2VzEyJm1vdXRoPXZhcmlhbnQyJmJhY2tncm91bmRDb2xvcj01ZmQxNWUiLCJpZEFzbGkiOm51bGwsImlhdCI6MTc2NTQ0MTg0MiwiZXhwIjoxNzY1NTI4MjQyfQ.RfY3864PWzVcedw2thOeSDvPfMyFlDBstQpPgICJKJA"; // ambil dari login/session
+
       final results = await Future.wait([
         _dashboardService.getDashboardPerkebunan(),
         _dashboardService.getDashboardPeternakan(),
         _hamaService.getLaporanHama(),
+        SensorService.getLatestSensor(token), // <-- ambil data sensor
       ]);
 
       if (!mounted) return;
+
+      final perkebunan = results[0] as Map<String, dynamic>;
+      final sensorData = results[3] as Map<String, dynamic>;
+
+      // Merge data sensor ke perkebunanData
       setState(() {
-        _perkebunanData = results[0];
+        _perkebunanData = {
+          ...perkebunan,
+          'suhu': sensorData['temperature'],
+          'humidity': sensorData['humidity'],
+          'nitrogen': sensorData['nitrogen'],
+          'phosphor': sensorData['phosphor'],
+          'potassium': sensorData['potassium'],
+          'ec': sensorData['ec'],
+          'ph': sensorData['ph'],
+          'createdAt': sensorData['createdAt'],
+        };
         // _peternakanData = results[1];
         // _laporanHamaList = results[2]['data'] ?? [];
       });
     } catch (e) {
       if (!mounted) return;
-      showAppToast(context, 'Terjadi kesalahan: $e. Silakan coba lagi',
-          title: 'Error Tidak Terduga 😢');
+      showAppToast(
+        context,
+        'Terjadi kesalahan: $e. Silakan coba lagi',
+        title: 'Error Tidak Terduga 😢',
+      );
     } finally {
-      // ignore: control_flow_in_finally
       if (!mounted) return;
       if (_isLoading) {
         setState(() {
@@ -139,8 +195,8 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
               title: 'Statistik Rata-rata Kebun Hari Ini',
               items: [
                 DashboardItem(
-                  title: 'Tanaman Sakit',
-                  value: _perkebunanData?['jumlahSakit'].toString() ?? '-',
+                  title: 'humidity (%)',
+                  value: _perkebunanData?['humidity'].toString() ?? '-',
                   icon: 'other',
                   bgColor: red2,
                   iconColor: red,
@@ -153,22 +209,22 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
                   iconColor: yellow,
                 ),
                 DashboardItem(
-                  title: 'Jenis Tanaman',
-                  value: _perkebunanData?['jenisTanaman'].toString() ?? '-',
+                  title: 'Nitrogen (mg/kg)',
+                  value: _perkebunanData?['nitrogen'].toString() ?? '-',
                   icon: 'other',
                   bgColor: blue3,
                   iconColor: blue1,
                 ),
                 DashboardItem(
-                  title: 'Tanaman Mati',
-                  value: _perkebunanData?['jumlahKematian'].toString() ?? '-',
+                  title: 'Phosphor (mg/kg)',
+                  value: _perkebunanData?['phosphor'].toString() ?? '-',
                   icon: 'other',
                   bgColor: red2,
                   iconColor: red,
                 ),
                 DashboardItem(
-                  title: 'Jumlah Panen',
-                  value: _perkebunanData?['jumlahPanen'].toString() ?? '-',
+                  title: 'Potasium (mg/kg)',
+                  value: _perkebunanData?['potassium'].toString() ?? '-',
                   icon: 'other',
                   bgColor: yellow1,
                   iconColor: yellow,
@@ -188,37 +244,6 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
               // iconsWidth: 36,
             ),
             const SizedBox(height: 12),
-
-            // ListItem(
-            //   title: 'Control Panel Per Jenis Tanaman',
-            //   items: const[
-            //     {
-            //       'id': 'sawi',
-            //       'name': 'Sawi',
-            //       'icon': 'assets/icons/vegetables/sawi.png',
-            //     },
-            //     {
-            //       'id': 'melon',
-            //       'name': 'Melon',
-            //       'icon': 'assets/icons/vegetables/melon.png',
-            //     },
-            //     {
-            //       'id': 'anggur',
-            //       'name': 'Anggur',
-            //       'icon': 'assets/icons/vegetables/anggur.png',
-            //     },
-            //   ],
-            //   type: 'basic',
-
-            //   // Tap sawi
-            //   onItemTap: (context, item) {
-            //     final id = item['0'] ?? '';
-            //     context.push('/detail-cp-sawi/$id').then((_) {
-            //       _fetchData(isRefresh: true);
-            //     });
-            //   },
-            // ),
-
             ListItem(
               title: 'Control Panel Per Jenis Tanaman',
               items: (_perkebunanData?['daftarKebun'] as List<dynamic>? ?? [])
@@ -237,7 +262,6 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
                 });
               },
             ),
-
             const SizedBox(height: 24),
           ] else if (!_isLoading) ...[
             Center(
