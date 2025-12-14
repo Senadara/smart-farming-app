@@ -146,12 +146,45 @@ class _SplashScreenState extends State<SplashScreen>
               },
             ),
           ),
+          // Supported by section dengan 3 logo di bagian bawah
+          Positioned(
+            bottom: 40,
+            left: 0,
+            right: 0,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  'Supported by',
+                  style: bold16.copyWith(color: Colors.grey[600]),
+                  textAlign: TextAlign.center,
+                ),
+                const SizedBox(height: 16),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      'assets/images/t4g_logo.png',
+                      width: 60,
+                      height: 60,
+                    ),
+                    const SizedBox(width: 24),
+                    Image.asset(
+                      'assets/images/f4o_logo.png',
+                      width: 60,
+                      height: 60,
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          ),
           // Pesan error di bawah logo, tetap di tengah layar
           if (_noInternet)
             Align(
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: const EdgeInsets.only(bottom: 64),
+                padding: const EdgeInsets.only(bottom: 180),
                 child: Text(
                   'Ups! Tidak ada koneksi internet.\nSilakan periksa jaringan Anda dan coba lagi.',
                   key: const Key('no_internet_message'),
