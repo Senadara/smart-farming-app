@@ -21,75 +21,55 @@ class DashboardCpPerkebunan extends StatefulWidget {
 }
 
 class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
+  // ===============================
+  // 📦 SERVICES
+  // ===============================
   final DashboardService _dashboardService = DashboardService();
   final HamaService _hamaService = HamaService();
+  final SensorService _sensorService = SensorService();
 
+  // ===============================
+  // 📊 STATE DATA
+  // ===============================
   Map<String, dynamic>? _perkebunanData;
   Map<String, dynamic>? _peternakanData;
-  List<dynamic> _laporanHamaList = [];
+  // List<dynamic> _laporanHamaList;
+
   bool _isLoading = true;
 
+  // ===============================
+  // 🔄 REFRESH INDICATORS
+  // ===============================
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorPerkebunanKey =
       GlobalKey<RefreshIndicatorState>();
+
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorPeternakanKey =
       GlobalKey<RefreshIndicatorState>();
 
+  // ===============================
+  // 🚀 INIT
+  // ===============================
   @override
   void initState() {
     super.initState();
     _fetchData(isRefresh: false);
   }
 
-  // Future<void> _fetchData({isRefresh = false}) async {
-  //   if (!isRefresh && !_isLoading) {
-  //     setState(() {
-  //       _isLoading = true;
-  //     });
-  //   }
-
-  //   try {
-  //     final results = await Future.wait([
-  //       _dashboardService.getDashboardPerkebunan(),
-  //       _dashboardService.getDashboardPeternakan(),
-  //       _hamaService.getLaporanHama(),
-  //     ]);
-
-  //     if (!mounted) return;
-  //     setState(() {
-  //       _perkebunanData = results[0];
-  //       _peternakanData = results[1];
-  //       _laporanHamaList = results[2]['data'] ?? [];
-  //     });
-  //   } catch (e) {
-  //     if (!mounted) return;
-  //     showAppToast(context, 'Terjadi kesalahan: $e. Silakan coba lagi',
-  //         title: 'Error Tidak Terduga 😢');
-  //   } finally {
-  //     // ignore: control_flow_in_finally
-  //     if (!mounted) return;
-  //     if (_isLoading) {
-  //       setState(() {
-  //         _isLoading = false;
-  //       });
-  //     }
-  //   }
-  // }
-
-  Future<void> _fetchData({isRefresh = false}) async {
+  // ===============================
+  // 📡 FETCH DATA
+  // ===============================
+  Future<void> _fetchData({bool isRefresh = false}) async {
     if (!isRefresh && !_isLoading) {
-      setState(() {
-        _isLoading = true;
-      });
+      setState(() => _isLoading = true);
     }
 
     try {
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZlODRmY2M4LWI1YzItNGM2MC05NGVmLWJiOWI3YWY2MDA1YyIsIm5hbWUiOiJwZXR1Z2FzIiwiZW1haWwiOiJwZXR1Z2FzQGVtYWlsLmNvbSIsInBob25lIjoiMDgxMjM0NTY3ODkiLCJyb2xlIjoicGV0dWdhcyIsImF2YXRhciI6Imh0dHBzOi8vYXBpLmRpY2ViZWFyLmNvbS85LngvdGh1bWJzL3N2Zz9leWVzPXZhcmlhbnQ2VzEyJm1vdXRoPXZhcmlhbnQyJmJhY2tncm91bmRDb2xvcj01ZmQxNWUiLCJpZEFzbGkiOm51bGwsImlhdCI6MTc2NTY5MjUzMywiZXhwIjoxNzY1Nzc4OTMzfQ.jH0MGqFlBeH2U6FDfT78lqdONXp2ZwhUQnxKcuYvOFI"; // ambil dari login/session
-
       final results = await Future.wait([
         _dashboardService.getDashboardPerkebunan(),
         _dashboardService.getDashboardPeternakan(),
         _hamaService.getLaporanHama(),
-        SensorService.getLatestSensor(token), // <-- ambil data sensor
+        // 📡 SENSOR (AUTO TOKEN)
+        _sensorService.getLatestSensor(),
       ]);
 
       if (!mounted) return;
@@ -97,7 +77,9 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
       final perkebunan = results[0] as Map<String, dynamic>;
       final sensorData = results[3] as Map<String, dynamic>;
 
-      // Merge data sensor ke perkebunanData
+      // ===============================
+      // 🔗 MERGE SENSOR → PERKEBUNAN
+      // ===============================
       setState(() {
         _perkebunanData = {
           ...perkebunan,
@@ -110,8 +92,6 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
           'ph': sensorData['ph'],
           'createdAt': sensorData['createdAt'],
         };
-        // _peternakanData = results[1];
-        // _laporanHamaList = results[2]['data'] ?? [];
       });
     } catch (e) {
       if (!mounted) return;
@@ -123,9 +103,7 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
     } finally {
       if (!mounted) return;
       if (_isLoading) {
-        setState(() {
-          _isLoading = false;
-        });
+        setState(() => _isLoading = false);
       }
     }
   }
