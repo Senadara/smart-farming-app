@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_farming_app/service/dashboard_service.dart';
 import 'package:smart_farming_app/service/hama_service.dart';
+import 'package:smart_farming_app/service/sensor_cp.dart';
 import 'package:smart_farming_app/widget/dashboard_grid.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/widget/tabs.dart';
@@ -22,9 +23,11 @@ class DashboardCpPeternakan extends StatefulWidget {
 class _DashboardCpPeternakanState extends State<DashboardCpPeternakan> {
   final DashboardService _dashboardService = DashboardService();
   final HamaService _hamaService = HamaService();
+  final SensorService _sensorService = SensorService();
 
   Map<String, dynamic>? _perkebunanData;
   Map<String, dynamic>? _peternakanData;
+  Map<String, dynamic>? _sensorData;
   List<dynamic> _laporanHamaList = [];
   bool _isLoading = true;
 
@@ -51,6 +54,7 @@ class _DashboardCpPeternakanState extends State<DashboardCpPeternakan> {
         _dashboardService.getDashboardPerkebunan(),
         _dashboardService.getDashboardPeternakan(),
         _hamaService.getLaporanHama(),
+        _sensorService.getLatestSensor(SensorType.ayam),
       ]);
 
       if (!mounted) return;
@@ -58,6 +62,7 @@ class _DashboardCpPeternakanState extends State<DashboardCpPeternakan> {
         _perkebunanData = results[0];
         _peternakanData = results[1];
         _laporanHamaList = results[2]['data'] ?? [];
+        _sensorData = results[3] as Map<String, dynamic>;
       });
     } catch (e) {
       if (!mounted) return;
@@ -138,8 +143,8 @@ class _DashboardCpPeternakanState extends State<DashboardCpPeternakan> {
               title: 'Statistik Rata-rata Kolam Hari Ini',
               items: [
                 DashboardItem(
-                  title: 'Jumlah Populasi',
-                  value: _perkebunanData?['jumlahSakit'].toString() ?? '-',
+                  title: 'new temperature',
+                  value: _sensorData?['temperature'].toString() ?? '-',
                   icon: 'other',
                   bgColor: red2,
                   iconColor: red,

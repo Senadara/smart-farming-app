@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_farming_app/service/dashboard_service.dart';
 import 'package:smart_farming_app/service/hama_service.dart';
+import 'package:smart_farming_app/service/sensor_cp.dart';
 import 'package:smart_farming_app/widget/dashboard_grid.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/theme.dart';
@@ -18,16 +19,10 @@ class DashboardCpPerkebunan extends StatefulWidget {
 }
 
 class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
-  // ===============================
-  // 📦 SERVICES
-  // ===============================
   final DashboardService _dashboardService = DashboardService();
   final HamaService _hamaService = HamaService();
   final SensorService _sensorService = SensorService();
 
-  // ===============================
-  // 📊 STATE DATA
-  // ===============================
   Map<String, dynamic>? _perkebunanData;
   List<SensorHistoryData> _sensorHistory = [];
   SensorChartType _selectedChartType = SensorChartType.npk;
@@ -40,29 +35,26 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorKey =
       GlobalKey<RefreshIndicatorState>();
 
-  // ===============================
-  // 🚀 INIT
-  // ===============================
   @override
   void initState() {
     super.initState();
     _fetchData(isRefresh: false);
   }
 
-  // ===============================
-  // 📡 FETCH DATA
-  // ===============================
   Future<void> _fetchData({bool isRefresh = false}) async {
     if (!isRefresh && !_isLoading) {
-      setState(() => _isLoading = true);
+      setState(() {
+        _isLoading = true;
+      });
     }
 
     try {
       final results = await Future.wait([
         _dashboardService.getDashboardPerkebunan(),
         _hamaService.getLaporanHama(),
+        // ===============================
         // 📡 SENSOR (AUTO TOKEN)
-        _sensorService.getLatestSensor(),
+        _sensorService.getLatestSensor(SensorType.melon),
         // 📈 SENSOR HISTORY
         _sensorService.getSensorHistory(),
       ]);
