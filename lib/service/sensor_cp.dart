@@ -53,7 +53,7 @@ class SensorService {
     if (url == null || url.isEmpty) {
       throw Exception("BASE_URL is not set in .env");
     }
-    return '$url/sensors/latest';
+    return '$url/melon/latest';
   }
 
   // ===============================
@@ -92,6 +92,49 @@ class SensorService {
       );
     } catch (e) {
       throw Exception("SensorService Error: $e");
+    }
+  }
+
+  // ===============================
+  // 📈 GET SENSOR HISTORY (AUTO TOKEN)
+  // ===============================
+  String get _historyUrl {
+    final url = dotenv.env['BASE_URL'];
+    if (url == null || url.isEmpty) {
+      throw Exception("BASE_URL is not set in .env");
+    }
+    return '$url/melon/history';
+  }
+
+  Future<List<Map<String, dynamic>>> getSensorHistory() async {
+    final resolvedToken = await _authService.getToken();
+    final uri = Uri.parse(_historyUrl);
+
+    try {
+      final response = await http.get(
+        uri,
+        headers: {
+          "Authorization": "Bearer $resolvedToken",
+          "Accept": "application/json",
+        },
+      );
+
+      if (response.statusCode == 200) {
+        final body = jsonDecode(response.body) as Map<String, dynamic>;
+        final data = body["data"] as List<dynamic>;
+        return data.map((e) => e as Map<String, dynamic>).toList();
+      }
+
+      if (response.statusCode == 401) {
+        await _authService.refreshToken();
+        return await getSensorHistory();
+      }
+
+      throw Exception(
+        "Failed to fetch sensor history: ${response.statusCode} - ${response.body}",
+      );
+    } catch (e) {
+      throw Exception("SensorService History Error: $e");
     }
   }
 }

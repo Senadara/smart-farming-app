@@ -62,7 +62,8 @@ class InputFieldWidget extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
             filled: true,
-            fillColor: TelkomColors.card,
+            // fillColor: TelkomColors.card,
+            fillColor: Colors.white,
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
             prefixIcon: prefixIcon,
