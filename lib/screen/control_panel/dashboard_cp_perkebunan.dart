@@ -7,7 +7,6 @@ import 'package:smart_farming_app/widget/dashboard_grid.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
-import 'package:smart_farming_app/service/sensor_cp.dart';
 import 'package:smart_farming_app/widget/sensor_line_chart.dart';
 import 'package:smart_farming_app/theme/telkom_theme.dart';
 
@@ -56,7 +55,7 @@ class _DashboardCpPerkebunanState extends State<DashboardCpPerkebunan> {
         // 📡 SENSOR (AUTO TOKEN)
         _sensorService.getLatestSensor(SensorType.melon),
         // 📈 SENSOR HISTORY
-        _sensorService.getSensorHistory(),
+        _sensorService.getSensorHistory(SensorType.melon),
       ]);
 
       if (!mounted) return;

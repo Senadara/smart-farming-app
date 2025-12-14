@@ -58,25 +58,31 @@ class SensorService {
   }
 
   // ===============================
-  // 📈 GET SENSOR HISTORY (AUTO TOKEN)
+  // 📈 GET SENSOR HISTORY (DINAMIS)
   // ===============================
-  String get _historyUrl {
+  String _resolveHistoryUrl(SensorType type) {
     final url = dotenv.env['BASE_URL'];
     if (url == null || url.isEmpty) {
       throw Exception("BASE_URL is not set in .env");
     }
-    return '$url/melon/history';
+
+    switch (type) {
+      case SensorType.melon:
+        return '$url/melon/history';
+      case SensorType.ayam:
+        return '$url/ayam/history';
+    }
   }
 
-  Future<List<Map<String, dynamic>>> getSensorHistory() async {
-    final resolvedToken = await _authService.getToken();
-    final uri = Uri.parse(_historyUrl);
+  Future<List<Map<String, dynamic>>> getSensorHistory(SensorType type) async {
+    final token = await _authService.getToken();
+    final uri = Uri.parse(_resolveHistoryUrl(type));
 
     try {
       final response = await http.get(
         uri,
         headers: {
-          "Authorization": "Bearer $resolvedToken",
+          "Authorization": "Bearer $token",
           "Accept": "application/json",
         },
       );
@@ -89,14 +95,14 @@ class SensorService {
 
       if (response.statusCode == 401) {
         await _authService.refreshToken();
-        return await getSensorHistory();
+        return await getSensorHistory(type);
       }
 
       throw Exception(
-        "Failed to fetch sensor history: ${response.statusCode} - ${response.body}",
+        'Failed to fetch ${type.name} history: ${response.statusCode} - ${response.body}',
       );
     } catch (e) {
-      throw Exception("SensorService History Error: $e");
+      throw Exception('SensorService (${type.name}) History Error: $e');
     }
   }
 }
