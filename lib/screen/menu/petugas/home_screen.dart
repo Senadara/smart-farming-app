@@ -3,6 +3,7 @@ import 'package:go_router/go_router.dart';
 import 'package:smart_farming_app/screen/pelaporan/tanaman/pilih_kebun_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_kandang_screen.dart';
 import 'package:smart_farming_app/service/dashboard_service.dart';
+import 'package:smart_farming_app/service/sensor_cp.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
 import 'package:smart_farming_app/utils/detail_laporan_redirect.dart';
@@ -13,6 +14,7 @@ import 'package:smart_farming_app/widget/newest.dart';
 import 'package:smart_farming_app/widget/tabs.dart';
 import 'package:smart_farming_app/widget/banner.dart';
 import 'package:smart_farming_app/widget/menu_card.dart';
+import 'package:smart_farming_app/widget/dashboard_grid.dart';
 
 class HomeScreenPetugas extends StatefulWidget {
   const HomeScreenPetugas({super.key});
@@ -23,8 +25,10 @@ class HomeScreenPetugas extends StatefulWidget {
 
 class _HomeScreenPetugasState extends State<HomeScreenPetugas> {
   final DashboardService _dashboardService = DashboardService();
+  final SensorService _sensorService = SensorService();
   Map<String, dynamic>? _perkebunanData;
   Map<String, dynamic>? _peternakanData;
+  Map<String, dynamic>? _sensorMelonData;
   bool _isLoading = true;
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorPerkebunanKey =
@@ -52,10 +56,19 @@ class _HomeScreenPetugasState extends State<HomeScreenPetugas> {
         _dashboardService.getDashboardPeternakan(),
       ]);
 
+      // Fetch sensor data separately (may fail independently)
+      Map<String, dynamic>? sensorData;
+      try {
+        sensorData = await _sensorService.getLatestSensor(SensorType.melon);
+      } catch (_) {
+        // Sensor data fetch failed, continue with null
+      }
+
       if (!mounted) return;
       setState(() {
         _perkebunanData = results[0];
         _peternakanData = results[1];
+        _sensorMelonData = sensorData;
         _isLoading = false;
       });
 
@@ -132,6 +145,29 @@ class _HomeScreenPetugasState extends State<HomeScreenPetugas> {
         padding: EdgeInsets.zero,
         children: [
           if (_perkebunanData != null) ...[
+            const SizedBox(height: 12),
+            DashboardGrid(
+              title: 'Kondisi Kebun Saat Ini',
+              type: DashboardGridType.basic,
+              items: [
+                DashboardItem(
+                  title: 'Suhu (°C)',
+                  value: _sensorMelonData?['temperature']?.toString() ?? '-',
+                  icon: 'other',
+                  bgColor: yellow1,
+                  iconColor: yellow,
+                ),
+                DashboardItem(
+                  title: 'Kelembapan (%)',
+                  value: _sensorMelonData?['humidity']?.toString() ?? '-',
+                  icon: 'other',
+                  bgColor: blue3,
+                  iconColor: blue1,
+                ),
+              ],
+              crossAxisCount: 2,
+              valueFontSize: 50,
+            ),
             const SizedBox(height: 12),
             LayoutBuilder(
               builder: (context, constraints) {

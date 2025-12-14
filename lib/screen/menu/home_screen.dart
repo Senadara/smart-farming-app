@@ -8,6 +8,7 @@ import 'package:smart_farming_app/screen/tanaman/add_tanaman_screen.dart';
 import 'package:smart_farming_app/screen/ternak/add_ternak_screen.dart';
 import 'package:smart_farming_app/service/auth_service.dart';
 import 'package:smart_farming_app/service/dashboard_service.dart';
+import 'package:smart_farming_app/service/sensor_cp.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
 import 'package:smart_farming_app/utils/detail_laporan_redirect.dart';
@@ -29,8 +30,10 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final DashboardService _dashboardService = DashboardService();
   final AuthService _authService = AuthService();
+  final SensorService _sensorService = SensorService();
   Map<String, dynamic>? _perkebunanData;
   Map<String, dynamic>? _peternakanData;
+  Map<String, dynamic>? _sensorMelonData;
   bool _isLoading = true;
   String? _userRole;
 
@@ -60,11 +63,20 @@ class _HomeScreenState extends State<HomeScreen> {
         _dashboardService.getDashboardPeternakan(),
       ]);
 
+      // Fetch sensor data separately (may fail independently)
+      Map<String, dynamic>? sensorData;
+      try {
+        sensorData = await _sensorService.getLatestSensor(SensorType.melon);
+      } catch (_) {
+        // Sensor data fetch failed, continue with null
+      }
+
       if (!mounted) return;
       setState(() {
         _userRole = role;
         _perkebunanData = results[0];
         _peternakanData = results[1];
+        _sensorMelonData = sensorData;
         _isLoading = false;
       });
 
@@ -150,9 +162,9 @@ class _HomeScreenState extends State<HomeScreen> {
                 });
               },
               items: [
-                DashboardItem(
+              DashboardItem(
                   title: 'Suhu (°C)',
-                  value: _perkebunanData?['suhu'].toString() ?? '-',
+                  value: _sensorMelonData?['temperature']?.toString() ?? '-',
                   icon: 'other',
                   bgColor: yellow1,
                   iconColor: yellow,
