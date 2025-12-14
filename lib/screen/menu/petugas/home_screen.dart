@@ -201,18 +201,6 @@ class _HomeScreenPetugasState extends State<HomeScreenPetugas> {
                     _fetchData(isRefresh: true);
                   }),
                 ),
-
-                // iot eca
-                MenuItem(
-                  title: 'Manajamen IOT',
-                  icon: 'set/dataCenter.png',
-                  backgroundColor: green1,
-                  iconColor: Colors.white,
-                  onTap: () => context.push('/manajemen-iot').then((_) {
-                    _fetchData(isRefresh: true);
-                  }),
-                ),
-
                 MenuItem(
                   title: 'Manajamen Jenis Tanaman',
                   icon: 'set/appleSeed-filled.png',
@@ -238,6 +226,16 @@ class _HomeScreenPetugasState extends State<HomeScreenPetugas> {
                   backgroundColor: green1,
                   iconColor: Colors.white,
                   onTap: () => context.push('/laporan-hama'),
+                ),
+                MenuItem(
+                  title: 'Panel Kontrol',
+                  icon: 'set/control-panel.png',
+                  backgroundColor: green1,
+                  iconColor: Colors.white,
+                  onTap: () =>
+                      context.push('/dashboard-cp-perkebunan').then((_) {
+                    _fetchData(isRefresh: true);
+                  }),
                 ),
               ],
             ),

@@ -204,12 +204,12 @@ class _ListItemSelectableState extends State<ListItemSelectable> {
                   padding:
                       const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
                   decoration: BoxDecoration(
-                    color: Colors.green.shade50,
+                    color: red2,
                     borderRadius: BorderRadius.circular(100),
                   ),
                   child: Text(
                     item['category'] ?? '',
-                    style: regular12.copyWith(color: green2),
+                    style: regular12.copyWith(color: red),
                   ),
                 ),
               ],

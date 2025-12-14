@@ -43,9 +43,8 @@ class DropdownFieldWidget extends StatelessWidget {
               borderSide: BorderSide.none,
             ),
             filled: true,
-            fillColor: isEdit
-                ? TelkomColors.card
-                : TelkomColors.card, // Change color if disabled
+            fillColor:
+                isEdit ? red2 : Colors.white, // Change color if disabled
             contentPadding:
                 const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
           ),
