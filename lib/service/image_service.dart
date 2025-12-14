@@ -8,12 +8,13 @@ class ImageService {
   final String baseUrl = dotenv.env['CLOUDINARY_URL'] ?? '-';
   final String apiKey = dotenv.env['CLOUDINARY_KEY'] ?? '-';
   final String apiSecret = dotenv.env['CLOUDINARY_SECRET'] ?? '-';
+  final String uploadPreset = dotenv.env['CLOUDINARY_UPLOAD_PRESET'] ?? 'default';
 
   Future<Map<String, dynamic>> uploadImage(File image) async {
     final url = Uri.parse(baseUrl);
     final request = http.MultipartRequest('POST', url)
       ..fields['api_key'] = apiKey
-      ..fields['upload_preset'] = 'default'
+      ..fields['upload_preset'] = uploadPreset
       ..files.add(await http.MultipartFile.fromPath('file', image.path));
 
     try {

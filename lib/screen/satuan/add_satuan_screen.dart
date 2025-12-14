@@ -87,11 +87,7 @@ class AddSatuanScreenState extends State<AddSatuanScreen> {
           isLoading = false;
         });
 
-        // Tampilkan pesan error yang lebih spesifik
-        String errorMessage =
-            response['message'] ?? 'Terjadi kesalahan tidak diketahui';
-
-        showAppToast(context, errorMessage, isError: true);
+        showAppToast(context, response['message'] ?? 'Terjadi kesalahan tidak diketahui', isError: true);
       }
     } catch (e) {
       setState(() {

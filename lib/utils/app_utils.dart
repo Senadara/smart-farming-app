@@ -6,7 +6,7 @@ enum ChartFilterType { weekly, monthly, yearly, custom }
 
 void showAppToast(
   BuildContext context,
-  String message, {
+  dynamic message, {
   String? title,
   bool isError = true,
   ToastificationType? type,
@@ -15,11 +15,26 @@ void showAppToast(
   ToastificationStyle style = ToastificationStyle.fillColored,
   bool showProgressBar = false,
 }) {
+  // Safely convert message to String
+  String displayMessage;
+  if (message is String) {
+    displayMessage = message;
+  } else if (message is Map) {
+    // Handle case where backend returns Map instead of String
+    displayMessage = message['message']?.toString() ?? 
+                     message['error']?.toString() ?? 
+                     message.toString();
+  } else if (message != null) {
+    displayMessage = message.toString();
+  } else {
+    displayMessage = 'Terjadi kesalahan tidak diketahui';
+  }
+  
   toastification.show(
     context: context,
     title: Text(
         title ?? (isError ? 'Oops, Ada yang Salah! 👎' : 'Hore! Sukses! 👍')),
-    description: Text(message),
+    description: Text(displayMessage),
     type: type ??
         (isError ? ToastificationType.error : ToastificationType.success),
     style: style,
@@ -28,6 +43,7 @@ void showAppToast(
     showProgressBar: showProgressBar,
   );
 }
+
 
 String formatTime(dynamic time) {
   if (time == null) return 'Tidak diketahui';
