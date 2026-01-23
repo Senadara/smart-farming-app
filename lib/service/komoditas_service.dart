@@ -274,13 +274,14 @@ class KomoditasService {
     }
   }
 
-  Future<Map<String, dynamic>> deleteKomoditas(String id) async {
+  Future<Map<String, dynamic>> deleteKomoditas(String id, {int retryCount = 0}) async {
     final resolvedToken = await _authService.getToken();
     final headers = {'Authorization': 'Bearer $resolvedToken'};
     final url = Uri.parse('$baseUrl/$id');
 
     try {
-      final response = await http.delete(url, headers: headers);
+      final response = await http.delete(url, headers: headers)
+          .timeout(const Duration(seconds: 30));
 
       Map<String, dynamic>? body;
       if (response.body.isNotEmpty) {
@@ -294,21 +295,45 @@ class KomoditasService {
           'data': body?['data'],
         };
       } else if (response.statusCode == 401) {
-        await _authService.refreshToken();
-        return await deleteKomoditas(id);
+        final refreshed = await _authService.refreshToken();
+        if (refreshed) {
+          return await deleteKomoditas(id);
+        } else {
+          return {
+            'status': false,
+            'message': 'Sesi telah berakhir. Silakan login kembali.',
+          };
+        }
       } else {
         return {
           'status': false,
           'message': body?['message'] ??
               (response.body.isNotEmpty
                   ? response.body
-                  : 'Failed to delete data'),
+                  : 'Gagal menghapus data'),
         };
       }
     } catch (e) {
+      // Retry on connection errors (max 2 retries)
+      if (retryCount < 2 && e.toString().contains('Connection closed')) {
+        await Future.delayed(const Duration(seconds: 1));
+        return await deleteKomoditas(id, retryCount: retryCount + 1);
+      }
+      
+      // User-friendly error messages
+      String errorMessage;
+      if (e.toString().contains('Connection closed') || 
+          e.toString().contains('connection abort')) {
+        errorMessage = 'Koneksi terputus. Server mungkin sedang sibuk, coba lagi nanti.';
+      } else if (e.toString().contains('TimeoutException')) {
+        errorMessage = 'Waktu permintaan habis. Silakan coba lagi.';
+      } else {
+        errorMessage = 'Terjadi kesalahan: ${e.toString()}';
+      }
+      
       return {
         'status': false,
-        'message': 'An error occurred: ${e.toString()}',
+        'message': errorMessage,
       };
     }
   }

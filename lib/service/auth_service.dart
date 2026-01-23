@@ -73,13 +73,19 @@ class AuthService {
     final refreshToken = await _secureStorage.read(key: 'refreshToken');
     final url = Uri.parse('$baseUrl/auth/refresh');
 
+    print('[DEBUG] refreshToken: Starting...');
+    print('[DEBUG] refreshToken: Token exists: ${refreshToken != null}');
+
     if (refreshToken == null) {
+      print('[DEBUG] refreshToken: No refresh token found, returning false');
       return false;
     }
 
     try {
       final response = await http
-          .get(url, headers: {'Authorization': 'bearer $refreshToken'});
+          .get(url, headers: {'Authorization': 'Bearer $refreshToken'});
+
+      print('[DEBUG] refreshToken: Response status: ${response.statusCode}');
 
       if (response.statusCode == 200) {
         final body = json.decode(response.body);
@@ -89,9 +95,15 @@ class AuthService {
             key: 'refreshToken', value: body['refreshToken']);
         await _secureStorage.write(
             key: 'user', value: json.encode(body['data']));
+        print('[DEBUG] refreshToken: Token refreshed successfully!');
+        return true;
+      } else {
+        // Refresh failed - return false to stop retry loop
+        print('[DEBUG] refreshToken: Refresh failed with status ${response.statusCode}');
+        return false;
       }
-      return true;
     } catch (e) {
+      print('[DEBUG] refreshToken: Exception: $e');
       return false;
     }
   }

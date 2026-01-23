@@ -185,17 +185,26 @@ class _PelaporanHarianTernakScreenState
           final today = DateTime.now();
           listPakan = List<Map<String, dynamic>>.from(
             (response['data'] as List).where((item) {
-              // Filter for active inventory items
+              // Filter for active inventory items (not expired)
+              // Include items without expiration date or with valid future dates
               final tanggalKadaluarsa = item['tanggalKadaluarsa'];
-              if (tanggalKadaluarsa == null) return true;
+              
+              // Include if no expiration date (null, empty, or "null" string)
+              if (tanggalKadaluarsa == null || 
+                  tanggalKadaluarsa.toString().trim().isEmpty ||
+                  tanggalKadaluarsa.toString().toLowerCase() == 'null') {
+                return true;
+              }
 
               try {
-                final kadaluarsaDate = DateTime.parse(tanggalKadaluarsa);
-                return kadaluarsaDate.isAfter(today);
+                final kadaluarsaDate = DateTime.parse(tanggalKadaluarsa.toString());
+                // Include if expiration date is today or in the future
+                return !kadaluarsaDate.isBefore(DateTime(today.year, today.month, today.day));
               } catch (e) {
-                return true; // Include if date parsing fails
+                // Include if date parsing fails (invalid format)
+                return true;
               }
-            }).map((item) => {
+            }).map<Map<String, dynamic>>((item) => {
                   'id': item['id'],
                   'name': item['nama'],
                   'stok': item['jumlah'],

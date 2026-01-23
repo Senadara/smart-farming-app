@@ -92,7 +92,22 @@ class _PelaporanNutrisiKebunScreenState
       if (mounted) {
         if (responseVitamin['status']) {
           setState(() {
-            listBahanVitamin = responseVitamin['data']
+            final today = DateTime.now();
+            listBahanVitamin = (responseVitamin['data'] as List)
+                .where((item) {
+                  final tanggalKadaluarsa = item['tanggalKadaluarsa'];
+                  if (tanggalKadaluarsa == null ||
+                      tanggalKadaluarsa.toString().trim().isEmpty ||
+                      tanggalKadaluarsa.toString().toLowerCase() == 'null') {
+                    return true;
+                  }
+                  try {
+                    final kadaluarsaDate = DateTime.parse(tanggalKadaluarsa.toString());
+                    return !kadaluarsaDate.isBefore(DateTime(today.year, today.month, today.day));
+                  } catch (e) {
+                    return true;
+                  }
+                })
                 .map<Map<String, dynamic>>((item) => {
                       'name': item['nama'],
                       'id': item['id'],
@@ -109,7 +124,22 @@ class _PelaporanNutrisiKebunScreenState
 
         if (responsePupuk['status']) {
           setState(() {
-            listBahanPupuk = responsePupuk['data']
+            final today = DateTime.now();
+            listBahanPupuk = (responsePupuk['data'] as List)
+                .where((item) {
+                  final tanggalKadaluarsa = item['tanggalKadaluarsa'];
+                  if (tanggalKadaluarsa == null ||
+                      tanggalKadaluarsa.toString().trim().isEmpty ||
+                      tanggalKadaluarsa.toString().toLowerCase() == 'null') {
+                    return true;
+                  }
+                  try {
+                    final kadaluarsaDate = DateTime.parse(tanggalKadaluarsa.toString());
+                    return !kadaluarsaDate.isBefore(DateTime(today.year, today.month, today.day));
+                  } catch (e) {
+                    return true;
+                  }
+                })
                 .map<Map<String, dynamic>>((item) => {
                       'name': item['nama'],
                       'id': item['id'],
@@ -126,7 +156,22 @@ class _PelaporanNutrisiKebunScreenState
 
         if (responseDisinfektan['status']) {
           setState(() {
-            listBahanDisinfektan = responseDisinfektan['data']
+            final today = DateTime.now();
+            listBahanDisinfektan = (responseDisinfektan['data'] as List)
+                .where((item) {
+                  final tanggalKadaluarsa = item['tanggalKadaluarsa'];
+                  if (tanggalKadaluarsa == null ||
+                      tanggalKadaluarsa.toString().trim().isEmpty ||
+                      tanggalKadaluarsa.toString().toLowerCase() == 'null') {
+                    return true;
+                  }
+                  try {
+                    final kadaluarsaDate = DateTime.parse(tanggalKadaluarsa.toString());
+                    return !kadaluarsaDate.isBefore(DateTime(today.year, today.month, today.day));
+                  } catch (e) {
+                    return true;
+                  }
+                })
                 .map<Map<String, dynamic>>((item) => {
                       'name': item['nama'],
                       'id': item['id'],
