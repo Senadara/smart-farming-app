@@ -77,6 +77,7 @@ import 'package:smart_farming_app/screen/pelaporan/tanaman/pelaporan_tanaman_sak
 import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_ternak_panen_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_ternak_sakit_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_kandang_screen.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_layout_ternak.dart';
 import 'package:smart_farming_app/screen/pelaporan/tanaman/pilih_kebun_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/tanaman/pelaporan_khusus_tanaman_screen.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
@@ -776,7 +777,7 @@ final _router = GoRouter(
     ),
     GoRoute(
       path: '/dashboard-cp-perkebunan',
-          builder: (context, state) => const DashboardCpPerkebunan(),
+      builder: (context, state) => const DashboardCpPerkebunan(),
     ),
     GoRoute(
       path: '/detail-cp-sawi/:id',
@@ -789,7 +790,7 @@ final _router = GoRouter(
     ),
     GoRoute(
       path: '/dashboard-cp-peternakan',
-          builder: (context, state) => const DashboardCpPeternakan(),
+      builder: (context, state) => const DashboardCpPeternakan(),
     ),
     GoRoute(
       path: '/detail-cp-kolam/:id',
@@ -807,6 +808,13 @@ final _router = GoRouter(
         return DetailCpAyam(
           idKandang: id,
         );
+      },
+    ),
+    GoRoute(
+      path: '/pilih-layout-ternak',
+      builder: (context, state) {
+        final extra = state.extra as PilihLayoutTernakScreen;
+        return extra;
       },
     ),
   ],

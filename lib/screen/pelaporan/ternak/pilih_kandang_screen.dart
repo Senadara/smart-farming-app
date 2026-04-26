@@ -5,6 +5,7 @@ import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_kematian_ter
 import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_nutrisi_ternak_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_ternak_panen_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_ternak_sakit_screen.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_layout_ternak.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_ternak_screen.dart';
 import 'package:smart_farming_app/service/unit_budidaya_service.dart';
 import 'package:smart_farming_app/theme.dart';
@@ -94,16 +95,16 @@ class _PilihKandangScreenState extends State<PilihKandangScreen> {
                   tipe: widget.tipe,
                   step: widget.step + 1));
         }
-      } else if (_selectedUnitBudidaya!['tipe'] == "individu") {
-        context.push('/pilih-ternak',
-            extra: PilihTernakScreen(
+      } else if (widget.tipe == "sakit") {
+        context.push('/pilih-layout-ternak',
+            extra: PilihLayoutTernakScreen(
                 greeting: widget.greeting,
                 data: updatedData,
                 tipe: widget.tipe,
                 step: widget.step + 1));
-      } else if (widget.tipe == "sakit") {
-        context.push('/pelaporan-ternak-sakit',
-            extra: PelaporanTernakSakitScreen(
+      } else if (_selectedUnitBudidaya!['tipe'] == "individu") {
+        context.push('/pilih-ternak',
+            extra: PilihTernakScreen(
                 greeting: widget.greeting,
                 data: updatedData,
                 tipe: widget.tipe,

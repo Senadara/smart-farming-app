@@ -78,6 +78,8 @@ flutter:
     - assets/images/
     - assets/icons/
     - assets/icons/set/
+    - assets/images/Skeleton frame grid kandang.png
+    - assets/images/Skeleton frame list kandang.png
     - .env
   # To add assets to your application, add an assets section, like this:
   # assets:
