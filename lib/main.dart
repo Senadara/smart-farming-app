@@ -11,6 +11,10 @@ import 'package:smart_farming_app/screen/control_panel/dashboard_cp_peternakan.d
 import 'package:smart_farming_app/screen/control_panel/detail_cp_perkemunan/detail_cp_sawi.dart';
 import 'package:smart_farming_app/screen/control_panel/detail_cp_peternakan/detail_cp_ayam.dart';
 import 'package:smart_farming_app/screen/control_panel/detail_cp_peternakan/detail_cp_lele.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/form_laporan_ternak.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/hasil_diagnosa_penyakit.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_ayam_screem.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_gejala_screen.dart';
 import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/screen/bantuan_screen.dart';
 import 'package:smart_farming_app/screen/komoditas/detail_komoditas_screen.dart';
@@ -817,6 +821,35 @@ final _router = GoRouter(
         return extra;
       },
     ),
+    GoRoute(
+      path: '/pilih-ayam',
+      builder: (context, state) {
+        final extra = state.extra as PilihAyamScreen;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/pilih-gejala',
+      builder: (context, state) {
+        final extra = state.extra as PilihGejalaScreen;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/hasil-diagnosis',
+      builder: (context, state) {
+        final extra = state.extra as HasilDiagnosisPenyakitScreen;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/form-laporan-ternak',
+      builder: (context, state) {
+        final extra = state.extra as FormLaporanTernak;
+        return extra;
+      },
+    ),
+
   ],
 );
 

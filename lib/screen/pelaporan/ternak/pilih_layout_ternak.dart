@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_ayam_screem.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_ternak_screen.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/banner.dart';
@@ -47,6 +48,13 @@ class _PilihLayoutTernakScreenState extends State<PilihLayoutTernakScreen> {
     if (_selectedLayout == 'list') {
       context.push('/pilih-ternak',
         extra: PilihTernakScreen(
+            greeting: widget.greeting,
+            data: widget.data,
+            tipe: widget.tipe,
+            step: widget.step + 1));
+    } else if (_selectedLayout == 'grid') {
+      context.push('/pilih-ayam',
+        extra: PilihAyamScreen(
             greeting: widget.greeting,
             data: widget.data,
             tipe: widget.tipe,

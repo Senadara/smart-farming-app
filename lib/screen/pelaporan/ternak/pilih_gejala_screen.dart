@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_farming_app/model/gejala_model.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/hasil_diagnosa_penyakit.dart';
+import 'package:smart_farming_app/service/gejala_penyakit_ayam.dart';
 import 'package:smart_farming_app/theme.dart';
+import 'package:smart_farming_app/utils/certainty_factor.dart';
 import 'package:smart_farming_app/widget/banner.dart';
 import 'package:smart_farming_app/widget/button.dart';
+import 'package:smart_farming_app/widget/gejala_item_card.dart';
 import 'package:smart_farming_app/widget/header.dart';
 
 class PilihGejalaScreen extends StatefulWidget {
@@ -24,62 +29,40 @@ class PilihGejalaScreen extends StatefulWidget {
 }
 
 class _PilihGejalaScreenState extends State<PilihGejalaScreen> {
-  // Daftar gejala yang tersedia
-  final List<Map<String, String>> _daftarGejala = [
-    {
-      'label': 'Nafsu makan menurun',
-      'image':
-          'assets/images/ilustrasiGejala/Ilustrasi_Nafsu_makan_menurun-removebg-preview.png',
-    },
-    {
-      'label': 'Ngorok',
-      'image':
-          'assets/images/ilustrasiGejala/Ilustrasi_Ngorok-removebg-preview.png',
-    },
-    {
-      'label': 'Produksi telur menurun',
-      'image':
-          'assets/images/ilustrasiGejala/Ilustrasi_Produksi_telur_menurun-removebg-preview.png',
-    },
-    {
-      'label': 'Jengger membiru',
-      'image':
-          'assets/images/ilustrasiGejala/Ilustrasi_Jengger_membiru-removebg-preview.png',
-    },
-    {
-      'label': 'Batuk',
-      'image':
-          'assets/images/ilustrasiGejala/Ilustrasi_Batuk-removebg-preview.png',
-    },
-    {
-      'label': 'Leleran hidung',
-      'image':
-          'assets/images/ilustrasiGejala/Ilustrasi_Leleran_hidung-removebg-preview.png',
-    },
-    {
-      'label': 'Depresi',
-      'image':
-          'assets/images/ilustrasiGejala/Ilustrasi_Depresi-removebg-preview.png',
-    },
-    {
-      'label': 'Tampak sayu',
-      'image':
-          'assets/images/ilustrasiGejala/Ilustrasi_Tampak_sayu-removebg-preview.png',
-    },
-    {
-      'label': 'Tremor',
-      'image':
-          'assets/images/ilustrasiGejala/Ilustrasi_Tremor-removebg-preview.png',
-    },
-    {
-      'label': 'Jengger pucat',
-      'image':
-          'assets/images/ilustrasiGejala/Ilustrasi_Jengger_pucat-removebg-preview.png',
-    },
-  ];
+  final GejalaPenyakitAyam _gejalaService = GejalaPenyakitAyam();
+  List<GejalaModel> _daftarGejala = [];
+  bool _isLoading = true;
+  String? _errorMessage;
 
   // Set index gejala yang dipilih
   final Set<int> _selectedGejala = {};
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchGejala();
+  }
+
+  Future<void> _fetchGejala() async {
+    debugPrint("[PilihGejalaScreen] Triggering _fetchGejala...");
+    setState(() {
+      _isLoading = true;
+      _errorMessage = null;
+    });
+
+    try {
+      final gejalaList = await _gejalaService.getGejala();
+      setState(() {
+        _daftarGejala = gejalaList;
+        _isLoading = false;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Gagal memuat gejala: $e';
+        _isLoading = false;
+      });
+    }
+  }
 
   void _toggleGejala(int index) {
     setState(() {
@@ -103,7 +86,7 @@ class _PilihGejalaScreenState extends State<PilihGejalaScreen> {
     }
 
     final selectedLabels =
-        _selectedGejala.map((i) => _daftarGejala[i]['label']!).toSet();
+        _selectedGejala.map((i) => _daftarGejala[i].namaGejala).toSet();
 
     // Hitung Certainty Factor untuk setiap penyakit
     final hasilCF = hitungCF(selectedLabels);
@@ -159,7 +142,6 @@ class _PilihGejalaScreenState extends State<PilihGejalaScreen> {
           ),
         ),
       ),
-
       body: SafeArea(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
@@ -171,25 +153,7 @@ class _PilihGejalaScreenState extends State<PilihGejalaScreen> {
               showDate: true,
             ),
             Expanded(
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: GridView.builder(
-                  gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
-                    crossAxisSpacing: 10,
-                    mainAxisSpacing: 10,
-                    childAspectRatio: 0.9,
-                  ),
-                  itemCount: _daftarGejala.length,
-                  itemBuilder: (context, index) {
-                    return GejalaItemCard(
-                      gejala: _daftarGejala[index],
-                      isSelected: _selectedGejala.contains(index),
-                      onTap: () => _toggleGejala(index),
-                    );
-                  },
-                ),
-              ),
+              child: _buildBody(),
             ),
           ],
         ),
@@ -203,15 +167,73 @@ class _PilihGejalaScreenState extends State<PilihGejalaScreen> {
             Padding(
               padding: const EdgeInsets.all(16),
               child: CustomButton(
-                onPressed: _submitForm,
+                onPressed:
+                    _isLoading || _errorMessage != null || _daftarGejala.isEmpty
+                        ? null
+                        : _submitForm,
                 buttonText: 'Selanjutnya',
-                backgroundColor: green1,
+                backgroundColor:
+                    _isLoading || _errorMessage != null || _daftarGejala.isEmpty
+                        ? Colors.grey
+                        : green1,
                 textStyle: semibold16.copyWith(color: white),
                 key: const Key('next_button_pilih_gejala'),
               ),
             ),
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildBody() {
+    if (_isLoading) {
+      return Center(
+        child: CircularProgressIndicator(color: green1),
+      );
+    }
+
+    if (_errorMessage != null) {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(_errorMessage!, style: regular14.copyWith(color: Colors.red)),
+            const SizedBox(height: 16),
+            ElevatedButton(
+              onPressed: _fetchGejala,
+              style: ElevatedButton.styleFrom(backgroundColor: green1),
+              child:
+                  Text('Coba Lagi', style: semibold14.copyWith(color: white)),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (_daftarGejala.isEmpty) {
+      return const Center(
+        child: Text('Tidak ada data gejala tersedia.'),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(16),
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 3,
+          crossAxisSpacing: 10,
+          mainAxisSpacing: 10,
+          childAspectRatio: 0.9,
+        ),
+        itemCount: _daftarGejala.length,
+        itemBuilder: (context, index) {
+          return GejalaItemCard(
+            gejala: _daftarGejala[index],
+            isSelected: _selectedGejala.contains(index),
+            onTap: () => _toggleGejala(index),
+          );
+        },
       ),
     );
   }
