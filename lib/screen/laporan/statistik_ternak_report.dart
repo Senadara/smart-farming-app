@@ -488,8 +488,9 @@ class _StatistikTernakReportState extends State<StatistikTernakReport> {
             riwayatKey: 'sakit',
             defaultErrorMessage: 'Gagal memuat riwayat pelaporan sakit',
             fetchFunction: () =>
-                _reportService.getRiwayatLaporanSakitJenisBudidaya(
-                    jenisBudidayaId: widget.idTernak!, limit: 5, page: 1)),
+                // _reportService.getRiwayatLaporanSakitJenisBudidaya(
+                //     jenisBudidayaId: widget.idTernak!, limit: 5, page: 1)),
+                _reportService.getRiwayatAyamSakit()),
         _fetchAndProcessRiwayatData(
             riwayatKey: 'panen',
             defaultErrorMessage: 'Gagal memuat riwayat pelaporan panen',

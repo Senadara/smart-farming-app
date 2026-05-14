@@ -1,11 +1,19 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_farming_app/service/auth_service.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/button.dart';
 
 class LaporanBerhasilScreen extends StatefulWidget {
-  const LaporanBerhasilScreen({super.key});
+  final String? title;
+  final String? message;
+
+  const LaporanBerhasilScreen({
+    super.key,
+    this.title,
+    this.message
+  });
 
   @override
   State<LaporanBerhasilScreen> createState() => _LaporanBerhasilScreenState();
@@ -55,9 +63,16 @@ class _LaporanBerhasilScreenState extends State<LaporanBerhasilScreen>
     });
   }
 
-  void _redirectToDashboard() {
+  Future<void> _redirectToDashboard() async {
     if (mounted) {
-      context.go('/home');
+      final role = await AuthService().getUserRole();
+      if (mounted) {
+        if (role == 'petugas') {
+          context.go('/home-petugas');
+        } else {
+          context.go('/home');
+        }
+      }
     }
   }
 
@@ -123,13 +138,13 @@ class _LaporanBerhasilScreenState extends State<LaporanBerhasilScreen>
                 child: Column(
                   children: [
                     Text(
-                      'Laporan Berhasil!',
+                      widget.title ?? 'Laporan Berhasil!',
                       style: bold20.copyWith(color: dark1, fontSize: 24),
                       textAlign: TextAlign.center,
                     ),
                     const SizedBox(height: 12),
                     Text(
-                      'Laporan ternak sakit telah berhasil disimpan ke sistem.',
+                      widget.message ?? 'Laporan ternak sakit telah berhasil disimpan ke sistem.',
                       style: regular16.copyWith(color: Colors.grey.shade600),
                       textAlign: TextAlign.center,
                     ),

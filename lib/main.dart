@@ -11,10 +11,15 @@ import 'package:smart_farming_app/screen/control_panel/dashboard_cp_peternakan.d
 import 'package:smart_farming_app/screen/control_panel/detail_cp_perkemunan/detail_cp_sawi.dart';
 import 'package:smart_farming_app/screen/control_panel/detail_cp_peternakan/detail_cp_ayam.dart';
 import 'package:smart_farming_app/screen/control_panel/detail_cp_peternakan/detail_cp_lele.dart';
+import 'package:smart_farming_app/screen/pelaporan/detail/detail_laporan_ayam_sakit.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/form_laporan_ternak.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/hasil_diagnosa_penyakit.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/laporan_berhasil_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_ayam_screem.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_gejala_screen.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/tambah_gejala_screen.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penanganan_penyakit_ayam.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penyakit_ayam_screen.dart';
 import 'package:smart_farming_app/theme/telkom_theme.dart';
 import 'package:smart_farming_app/screen/bantuan_screen.dart';
 import 'package:smart_farming_app/screen/komoditas/detail_komoditas_screen.dart';
@@ -459,8 +464,11 @@ final _router = GoRouter(
       path: '/detail-laporan-sakit-tanaman/:id',
       builder: (context, state) {
         final id = state.pathParameters['id'];
-        return DetailLaporanSakitScreen(
-          idLaporanSakit: id,
+        // return DetailLaporanSakitScreen(
+        //   idLaporanSakit: id,
+        // );
+        return DetailLaporanAyamSakit(
+          idLaporanAyamSakit: id,
         );
       },
     ),
@@ -849,7 +857,50 @@ final _router = GoRouter(
         return extra;
       },
     ),
+    GoRoute(
+      path: '/hasil-diagnosis-penyakit',
+      builder: (context, state) {
+        final extra = state.extra as HasilDiagnosisPenyakitScreen;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/tambah-gejala-ayam',
+      builder: (context, state) {
+        final extra = state.extra as TambahGejalaScreen;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/tambah-penyakit-ayam',
+      builder: (context, state) {
+        final extra = state.extra as TambahPenyakitAyamScreen;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/tambah-penanganan-penyakit-ayam',
+      builder: (context, state) {
+        final extra = state.extra as TambahPenangananPenyakitAyamScreen;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/laporan-berhasil',
+      builder: (context, state) {
+        if (state.extra is LaporanBerhasilScreen) {
+          return state.extra as LaporanBerhasilScreen;
+        }
 
+        final Map<String, dynamic>? extra = state.extra as Map<String, dynamic>?;
+        return LaporanBerhasilScreen(
+          title: extra?['title'],
+          message: extra?['message'],
+        );
+      },
+    ),
+
+    
   ],
 );
 

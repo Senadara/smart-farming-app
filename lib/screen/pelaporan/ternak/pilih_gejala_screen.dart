@@ -4,7 +4,7 @@ import 'package:smart_farming_app/model/gejala_model.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/hasil_diagnosa_penyakit.dart';
 import 'package:smart_farming_app/service/gejala_penyakit_ayam.dart';
 import 'package:smart_farming_app/theme.dart';
-import 'package:smart_farming_app/utils/certainty_factor.dart';
+
 import 'package:smart_farming_app/widget/banner.dart';
 import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/gejala_item_card.dart';
@@ -74,7 +74,7 @@ class _PilihGejalaScreenState extends State<PilihGejalaScreen> {
     });
   }
 
-  void _submitForm() {
+  void _submitForm() async {
     if (_selectedGejala.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -85,42 +85,70 @@ class _PilihGejalaScreenState extends State<PilihGejalaScreen> {
       return;
     }
 
-    final selectedLabels =
-        _selectedGejala.map((i) => _daftarGejala[i].namaGejala).toSet();
+    setState(() {
+      _isLoading = true;
+    });
 
-    // Hitung Certainty Factor untuk setiap penyakit
-    final hasilCF = hitungCF(selectedLabels);
+    try {
+      final List<String> selectedIds =
+          _selectedGejala.map((i) => _daftarGejala[i].id).toList();
 
-    if (hasilCF.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content:
-              Text('Tidak ada penyakit yang cocok dengan gejala yang dipilih.'),
-          backgroundColor: Colors.orange,
-        ),
-      );
-      return;
+      debugPrint('[CF] Mengirim ID Gejala: $selectedIds');
+
+      final response = await _gejalaService.diagnoseAyam(selectedIds);
+      debugPrint('[CF] Response diagnosa: $response');
+
+      if (response['status']) {
+        final result = response['data'];
+        final updatedData = Map<String, dynamic>.from(widget.data);
+
+        updatedData['namaPenyakit'] = result['penyakit'];
+        updatedData['penyakitId'] =
+            result['id']; // Assuming 'id' is the disease ID
+        updatedData['cfScore'] = (result['cf_score'] as num).toDouble();
+        final rawPenanganan = result['penanganan'] as List<dynamic>? ?? [];
+        updatedData['penanganan'] = rawPenanganan.map((p) => {
+          'nama': p['nama'] ?? 'Penanganan',
+          'deskripsi': p['penanganan'] ?? p['deskripsi'] ?? '',
+        }).toList();
+
+        updatedData['gejala'] = result['gejala_terdeteksi'] ??
+            _selectedGejala
+                .map((i) => _daftarGejala[i].namaGejala)
+                .toList();
+        updatedData['selectedGejalaIds'] = selectedIds;
+
+        debugPrint('[CF] Hasil diagnosis dari API: $result');
+
+        if (mounted) {
+          context.push('/hasil-diagnosis-penyakit',
+              extra: HasilDiagnosisPenyakitScreen(
+                greeting: widget.greeting,
+                data: updatedData,
+                tipe: widget.tipe,
+                step: widget.step + 1,
+              ));
+        }
+      } else {
+        throw Exception(response['message'] ?? 'Gagal melakukan diagnosa');
+      }
+    } catch (e) {
+      debugPrint('[CF] Error diagnosa: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Gagal melakukan diagnosa: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _isLoading = false;
+        });
+      }
     }
-
-    final diagnosisTeratas = hasilCF.first;
-
-    final updatedData = Map<String, dynamic>.from(widget.data);
-    updatedData['gejala'] = selectedLabels.toList();
-    updatedData['namaPenyakit'] = diagnosisTeratas.namaPenyakit;
-    updatedData['cfScore'] = diagnosisTeratas.cfScore;
-    updatedData['hasilCF'] = hasilCF
-        .map((h) => {'namaPenyakit': h.namaPenyakit, 'cfScore': h.cfScore})
-        .toList();
-
-    debugPrint('[CF] Hasil diagnosis: $hasilCF');
-
-    context.push('/hasil-diagnosis-penyakit',
-        extra: HasilDiagnosisPenyakitScreen(
-          greeting: widget.greeting,
-          data: updatedData,
-          tipe: widget.tipe,
-          step: widget.step + 1,
-        ));
   }
 
   @override

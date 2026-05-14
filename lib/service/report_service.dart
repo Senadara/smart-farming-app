@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_farming_app/service/auth_service.dart';
@@ -1342,6 +1343,45 @@ class ReportService {
         await _authService.refreshToken();
         return await getObjekBudidayaBelumPanen(
             jenisBudidayaId: jenisBudidayaId);
+      } else {
+        return {
+          'status': false,
+          'message': body['message'] ?? 'Failed to load data',
+          'data': [],
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'Error: ${e.toString()}',
+        'data': [],
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getRiwayatAyamSakit() async {
+
+    final String baseUrl = '${dotenv.env['BASE_URL'] ?? ''}';
+    final resolvedToken = await _authService.getToken();
+    final headers = {'Authorization': 'Bearer $resolvedToken'};
+    final url = Uri.parse('$baseUrl/laporan/riwayat-penyakit-ayam');
+
+    try {
+
+      final response = await http.get(url, headers: headers);
+      final body = json.decode(response.body);
+      debugPrint('[ReportService] Response: $body');
+
+      if (response.statusCode == 200) {
+        debugPrint('[ReportService] Data: ${body['data']}');
+        return {
+          'status': true,
+          'message': body['message'] ?? 'Success',
+          'data': body['data'] ?? [],
+        };
+      } else if (response.statusCode == 401) {
+        await _authService.refreshToken();
+        return await getRiwayatAyamSakit();
       } else {
         return {
           'status': false,

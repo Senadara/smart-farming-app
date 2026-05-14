@@ -228,6 +228,45 @@ class LaporanService {
     }
   }
 
+  Future<Map<String, dynamic>> createLaporanAyamSakit(
+    Map<String, dynamic> data)async {
+    final String baseUrl = '${dotenv.env['BASE_URL'] ?? ''}';
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json'
+    };
+    final url = Uri.parse('$baseUrl/penyakit-ayam/laporan');
+
+    try {
+      final response =
+          await http.post(url, headers: headers, body: json.encode(data));
+      final body = json.decode(response.body);
+
+      if (response.statusCode == 201) {
+        return {
+          'status': true,
+          'message': 'success',
+          'data': body['data'],
+        };
+      } else if (response.statusCode == 401) {
+        await _authService.refreshToken();
+        return await createLaporanSakit(data);
+      } else {
+        return {
+          'status': false,
+          'message': body,
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'An error occurred: ${e.toString()}',
+      };
+    }
+    
+  }
+
   Future<Map<String, dynamic>> createLaporanKematian(
       Map<String, dynamic> data) async {
     final resolvedToken = await _authService.getToken();
@@ -915,6 +954,36 @@ class LaporanService {
         'status': false,
         'message': 'An error occurred: ${e.toString()}',
       };
+    }
+  }
+
+  Future<Map<String, dynamic>> getLaporanAyamSakitById(
+      String idLaporanAyamSakit) async {
+    final String baseUrl = '${dotenv.env['BASE_URL'] ?? ''}';
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json'
+    };
+
+    final url = Uri.parse(
+      '$baseUrl/laporan/riwayat-penyakit-ayam/$idLaporanAyamSakit',
+    );
+
+    try {
+      final response = await http.get(url, headers: headers);
+      final body = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        return {'status': true, 'message': 'success', 'data': body['data']};
+      } else if (response.statusCode == 401) {
+        await _authService.refreshToken();
+        return await getLaporanAyamSakitById(idLaporanAyamSakit);
+      } else {
+        return {'status': false, 'message': body['message']};
+      }
+    } catch (e) {
+      return {'status': false, 'message': 'An error occurred: ${e.toString()}'};
     }
   }
 }

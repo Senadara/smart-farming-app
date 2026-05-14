@@ -49,7 +49,6 @@ class _FormLaporanTernakState extends State<FormLaporanTernak> {
   }
 
   Future<void> _onPickImage(BuildContext context) async {
-    // Tampilkan pilihan sumber gambar
     final source = await showModalBottomSheet<ImageSource>(
       context: context,
       shape: const RoundedRectangleBorder(
@@ -132,25 +131,29 @@ class _FormLaporanTernakState extends State<FormLaporanTernak> {
         'judul': widget.data['judul'] ?? 'Laporan Sakit',
         'gambar': imageUrl['data'],
         'catatan': _catatanController.text.trim(),
+        'status': _statusPenanganan == StatusPenanganan.sudahDitangani ? '1' : '0',
         'sakit': {
-          'diagnosisPenyakit': widget.data['namaPenyakit'] ?? '',
-          'status':
-              _statusPenanganan == StatusPenanganan.sudahDitangani ? 1 : 0,
-          'gejala1': gejalaList.isNotEmpty ? gejalaList[0] : '',
-          'gejala2': gejalaList.length > 1 ? gejalaList[1] : '',
-          'gejala3': gejalaList.length > 2 ? gejalaList[2] : '',
-          'gejala4': gejalaList.length > 3 ? gejalaList[3] : '',
-          'catatan': _catatanController.text.trim(),
+          'penyakitAyamId': widget.data['penyakitId'] ?? widget.data['id'] ?? '',
+          'gejala': (widget.data['selectedGejalaIds'] as List<String>?)
+                  ?.map((id) => {'id': id})
+                  .toList() ??
+              [],
         },
       };
 
-      final response = await _laporanService.createLaporanSakit(formData);
+      debugPrint('Form Data: $formData');
+
+      final response = await _laporanService.createLaporanAyamSakit(formData);
 
       debugPrint('Form submitted: $response');
 
       if (response['status']) {
         if (mounted) {
-          context.pushReplacement('/laporan-berhasil');
+          context.pushReplacement('/laporan-berhasil',
+            extra: {
+              'title': 'Laporan Berhasil',
+              'message': 'Laporan penyakit ayam berhasil dikirim',
+            });
         }
       }
     } catch (e) {

@@ -3,9 +3,9 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/model/chart_data_state.dart';
-import 'package:smart_farming_app/utils/detail_laporan_redirect.dart';
 import 'package:smart_farming_app/widget/chart_section.dart';
 import 'package:smart_farming_app/widget/newest.dart';
+import 'package:smart_farming_app/utils/detail_laporan_redirect.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
 
 class SakitTab extends StatelessWidget {
@@ -201,6 +201,13 @@ class SakitTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('SakitTab Data Check:');
+    debugPrint(
+        '- laporanSakitState dataPoints: ${laporanSakitState.dataPoints}');
+    debugPrint(
+        '-statistikPenyakitState rawData: ${statistikPenyakitState.rawData}');
+    debugPrint('- riwayatSakitState items: ${riwayatSakitState.items}');
+
     return SingleChildScrollView(
       physics: const BouncingScrollPhysics(),
       padding: const EdgeInsets.symmetric(vertical: 12),
@@ -282,16 +289,17 @@ class SakitTab extends StatelessWidget {
               key: const Key('riwayat_pelaporan_sakit'),
               title: 'Riwayat Pelaporan Ternak Sakit',
               reports: riwayatSakitState.items.map((item) {
+                debugPrint('Riwayat Sakit State: ${item}');
                 return {
-                  'id': item['laporanId'] as String? ??
+                  'id': item['id'] as String? ??
                       item['id'] as String? ??
                       '',
                   'text':
-                      item['text'] as String? ?? 'Laporan Sakit Tidak Bernama',
-                  'subtext': 'Oleh: ${item['person'] as String? ?? 'N/A'}',
+                      item['diagnosisPenyakit'] as String? ?? 'Laporan Sakit Tidak Bernama',
+                  'subtext': 'Catatan: ${item['catatan'] as String? ?? 'N/A'}',
                   'icon':
                       item['gambar'] as String? ?? 'assets/images/appIcon.png',
-                  'time': item['time'],
+                  'time': item['tanggal'],
                 };
               }).toList(),
               onItemTap: (itemContext, tappedItem) {
@@ -312,13 +320,36 @@ class SakitTab extends StatelessWidget {
               timeTextStyle: regular12.copyWith(color: dark2),
             )
           else
-            Padding(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-              child: Text(
-                  key: const Key('no_riwayat_sakit'),
-                  style: regular12.copyWith(color: dark2),
-                  'Tidak ada riwayat pelaporan ternak sakit untuk ditampilkan saat ini.'),
+            // Dummy data di render ketika riwayat kosong untuk preview UI
+            NewestReports(
+              key: const Key('riwayat_pelaporan_sakit_dummy'),
+              title: 'Riwayat Pelaporan Ternak Sakit',
+              reports: const [
+                {
+                  'id': 'dummy_1',
+                  'text':
+                      'Ayam terindikasi Flu Burung (Ngorok, Nafsu makan turun)',
+                  'subtext': 'Oleh: Budi Santoso',
+                  'icon': 'assets/images/appIcon.png',
+                  'time': '2026-04-10T08:00:00.000Z',
+                }
+              ],
+              onItemTap: (itemContext, tappedItem) {
+                final idLaporan = tappedItem['id'] as String?;
+                if (idLaporan != null) {
+                  navigateToDetailLaporan(itemContext,
+                      idLaporan: idLaporan,
+                      jenisLaporan: 'sakit',
+                      jenisBudidaya: 'hewan');
+                } else {
+                  showAppToast(context,
+                      'Laporan tidak valid. Silakan coba lagi atau hubungi dukungan.');
+                }
+              },
+              mode: NewestReportsMode.full,
+              titleTextStyle: bold18.copyWith(color: dark1),
+              reportTextStyle: medium12.copyWith(color: dark1),
+              timeTextStyle: regular12.copyWith(color: dark2),
             ),
           const SizedBox(height: 80),
         ],
