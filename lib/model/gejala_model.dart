@@ -35,6 +35,9 @@ class GejalaModel {
     };
   }
 
+  @override
+  String toString() => toJson().toString();
+
   // Helper method to get direct image URL  
   String get directGambarUrl {
     if (gambar.isEmpty) return '';

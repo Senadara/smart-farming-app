@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/menu_pelaporan_sakit_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_kandang_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_komoditas_screen.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/list_laporan_ayam_sakit.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/banner.dart';
 import 'package:smart_farming_app/widget/button.dart';
@@ -32,8 +34,8 @@ class _PelaporanKhususTernakScreenState
             ));
         break;
       case 'Pelaporan Ternak Sakit':
-        context.push('/pilih-kandang',
-            extra: PilihKandangScreen(
+        context.push('/menu-pelaporan-sakit',
+            extra: MenuPelaporanSakitScreen(
               step: _step + 1,
               tipe: 'sakit',
               greeting: 'Pelaporan Ternak Sakit',
@@ -110,7 +112,7 @@ class _PelaporanKhususTernakScreenState
           child: Padding(
             padding: const EdgeInsets.only(bottom: 100),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
+                
               children: [
                 BannerWidget(
                   title: 'Step $_step - Apa yang ingin kamu laporkan?',

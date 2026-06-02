@@ -4,6 +4,7 @@ import 'package:smart_farming_app/screen/kandang/add_kandang_screen.dart';
 import 'package:smart_farming_app/screen/kebun/add_kebun_screen.dart';
 import 'package:smart_farming_app/screen/komoditas/add_komoditas_tanaman_screen.dart';
 import 'package:smart_farming_app/screen/komoditas/add_komoditas_ternak_screen.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_penyakit_ayam.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_gejala_screen.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penanganan_penyakit_ayam.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penyakit_ayam_screen.dart';
@@ -831,54 +832,17 @@ class _HomeScreenState extends State<HomeScreen> {
                               const Divider(
                                   height: 1, color: Color(0xFFE8E8E8)),
                               ListTile(
-                                key: const Key('tambahPeyakitAyam'),
+                                key: const Key('manajemenPenyakitAyam'),
                                 leading: Image.asset(
-                                  'assets/icons/set/control-panel.png',
+                                  'assets/icons/set/iconManajemenPenyakitAyam.png',
                                   width: 30,
                                   color: green1,
                                 ),
-                                title: const Text("Tambah Penyakit Ayam"),
+                                title: const Text("Manajemen Penyakit Ayam"),
                                 onTap: () {
                                   Navigator.pop(context);
-                                  context.push('/tambah-penyakit-ayam',
-                                      extra: TambahPenyakitAyamScreen(
-                                      ));
-                                },
-                              ),
-                              const Divider(
-                                  height: 1, color: Color(0xFFE8E8E8)),
-                              ListTile(
-                                key: const Key('tambahGejalaAyam'),
-                                leading: Image.asset(
-                                  'assets/icons/set/control-panel.png',
-                                  width: 30,
-                                  color: green1,
-                                ),
-                                title: const Text("Tambah Gejala Ayam"),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  context.push('/tambah-gejala-ayam',
-                                      extra: TambahGejalaScreen(
-                                        
-                                      ));
-                                },
-                              ),
-
-                              const Divider(
-                                  height: 1, color: Color(0xFFE8E8E8)),
-                              ListTile(
-                                key: const Key('tambahPenangananPenyakitAyam'),
-                                leading: Image.asset(
-                                  'assets/icons/set/control-panel.png',
-                                  width: 30,
-                                  color: green1,
-                                ),
-                                title: const Text("Tambah Penanganan Penyakit Ayam"),
-                                onTap: () {
-                                  Navigator.pop(context);
-                                  context.push('/tambah-penanganan-penyakit-ayam',
-                                      extra: TambahPenangananPenyakitAyamScreen(
-                                        
+                                  context.push('/manajemen-penyakit-ayam',
+                                      extra: ManajemenPenyakitAyam(
                                       ));
                                 },
                               ),

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/rendering.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:smart_farming_app/service/auth_service.dart';
 import 'package:http/http.dart' as http;
@@ -237,6 +238,7 @@ class LaporanService {
       'Content-Type': 'application/json'
     };
     final url = Uri.parse('$baseUrl/penyakit-ayam/laporan');
+    debugPrint("Body Laporan Ayam Sakit: $data");
 
     try {
       final response =
@@ -265,6 +267,80 @@ class LaporanService {
       };
     }
     
+  }
+
+  Future<Map<String, dynamic>> getRiwayatLaporanAyamSakit() async {
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json'
+    };
+    final url = Uri.parse('$baseUrl/riwayat-penyakit-ayam');
+    try {
+      final response = await http.get(url, headers: headers);
+      final body = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        return {
+          'status': true,
+          'message': 'success',
+          'data': body['data'],
+        };
+      } else if (response.statusCode == 401) {
+        await _authService.refreshToken();
+        return await getRiwayatLaporanAyamSakit();
+      } else {
+        return {
+          'status': false,
+          'message': body,
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'An error occurred: ${e.toString()}',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> updateLaporanSakit(
+      String idLaporanSakit, Map<String, dynamic> data) async {
+    
+    final String baseUrl = '${dotenv.env['BASE_URL'] ?? ''}';
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json'
+    };
+    final url = Uri.parse('$baseUrl/penyakit-ayam/laporan/$idLaporanSakit/status');
+    debugPrint("Body Update Laporan Ayam Sakit: $data $idLaporanSakit");
+
+    try {
+      final response =
+          await http.put(url, headers: headers, body: json.encode(data));
+      final body = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        return {
+          'status': true,
+          'message': 'success',
+          'data': body['data'],
+        };
+      } else if (response.statusCode == 401) {
+        await _authService.refreshToken();
+        return await updateLaporanSakit(idLaporanSakit, data);
+      } else {
+        return {
+          'status': false,
+          'message': body,
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'An error occurred: ${e.toString()}',
+      };
+    }
   }
 
   Future<Map<String, dynamic>> createLaporanKematian(

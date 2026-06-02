@@ -56,10 +56,14 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<void> _navigateToNextScreen() async {
-    final connectivityResult = await Connectivity().checkConnectivity();
+    // final connectivityResult = await Connectivity().checkConnectivity();
 
     // Cek status jaringan dulu
     await Future.delayed(const Duration(seconds: 2));
+    
+    // Bypass no internet checks for local/offline testing
+    
+    final connectivityResult = await Connectivity().checkConnectivity();
     if (connectivityResult
         .every((result) => result == ConnectivityResult.none)) {
       setState(() {
@@ -76,6 +80,7 @@ class _SplashScreenState extends State<SplashScreen>
       });
       return;
     }
+    
 
     final prefs = await SharedPreferences.getInstance();
     final isFirstLaunch = prefs.getBool('isFirstLaunch') ?? true;

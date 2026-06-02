@@ -28,6 +28,7 @@ class GejalaPenyakitAyam {
       if (response.statusCode == 200) {
         final Map<String, dynamic> decodedData = jsonDecode(response.body);
         final List<dynamic> data = decodedData['data'];
+        debugPrint('Data: $data');
         return data.map((json) => GejalaModel.fromJson(json)).toList();
       } else {
         throw Exception('Failed to load gejala: ${response.statusCode}');
@@ -162,6 +163,7 @@ class GejalaPenyakitAyam {
       'nama_gejala': namaGejala,
       'gambar': imageUrl,
     };
+    debugPrint('payload create gejala: $payload');
 
     try {
       final response = await http.post(url, headers: headers, body: json.encode(payload));
@@ -238,8 +240,6 @@ class GejalaPenyakitAyam {
         'message': 'An error occurred: ${e.toString()}',
       };
     }
-
-
   }
 }
 
