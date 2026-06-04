@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:smart_farming_app/model/Penyakit_Ayam.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/laporan_berhasil_screen.dart';
 import 'package:smart_farming_app/model/gejala_model.dart';
 import 'package:smart_farming_app/service/gejala_penyakit_ayam.dart';
@@ -11,7 +12,9 @@ import 'package:smart_farming_app/widget/tag_input_field.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_gejala_screen.dart';
 
 class TambahPenyakitAyamScreen extends StatefulWidget {
-  const TambahPenyakitAyamScreen({super.key});
+  final PenyakitAyam? penyakit; // null => mode Tambah, ada => mode Edit
+
+  const TambahPenyakitAyamScreen({super.key, this.penyakit});
 
   @override
   State<TambahPenyakitAyamScreen> createState() =>
@@ -29,9 +32,15 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
   bool _isLoading    = true;
   bool _isSubmitting = false;
 
+  bool get _isEditMode => widget.penyakit != null;
+
   @override
   void initState() {
     super.initState();
+    if (_isEditMode) {
+      _nameController.text = widget.penyakit!.namaPenyakit;
+      _selectedGejalaNames = List<String>.from(widget.penyakit!.namaGejalaList);
+    }
     _fetchGejala();
   }
 
@@ -116,22 +125,34 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
 
     setState(() => _isSubmitting = true);
     try {
-      final response = await _gejalaService.createPenyakitAyam(
-          _nameController.text.trim(), idGejala);
+      final Map<String, dynamic> response;
+
+      if (_isEditMode) {
+        response = await _gejalaService.updatePenyakitAyam(
+            widget.penyakit!.id, _nameController.text.trim(), idGejala);
+      } else {
+        response = await _gejalaService.createPenyakitAyam(
+            _nameController.text.trim(), idGejala);
+      }
+
       if (response['status']) {
         if (mounted) {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (_) => const LaporanBerhasilScreen(
-                title: 'Penyakit Ayam Berhasil Ditambahkan',
-                message:
-                    'Data penyakit ayam baru telah berhasil disimpan ke sistem.',
+              builder: (_) => LaporanBerhasilScreen(
+                title: _isEditMode
+                    ? 'Penyakit Ayam Berhasil Diperbarui'
+                    : 'Penyakit Ayam Berhasil Ditambahkan',
+                message: _isEditMode
+                    ? 'Data penyakit ayam telah berhasil diperbarui.'
+                    : 'Data penyakit ayam baru telah berhasil disimpan ke sistem.',
               ),
             ),
           );
         }
       } else {
-        throw Exception(response['message'] ?? 'Gagal menambahkan penyakit');
+        throw Exception(response['message'] ??
+            (_isEditMode ? 'Gagal memperbarui penyakit' : 'Gagal menambahkan penyakit'));
       }
     } catch (e) {
       if (mounted) {
@@ -139,7 +160,10 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
           ..clearSnackBars()
           ..showSnackBar(
             SnackBar(
-              content: Text('Gagal menambahkan penyakit: $e',
+              content: Text(
+                  _isEditMode
+                      ? 'Gagal memperbarui penyakit: $e'
+                      : 'Gagal menambahkan penyakit: $e',
                   style: regular14.copyWith(color: Colors.white)),
               backgroundColor: Colors.red.shade700,
               behavior: SnackBarBehavior.floating,
@@ -172,10 +196,10 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
           titleSpacing: 0,
           elevation: 0,
           toolbarHeight: 80,
-          title: const Header(
+          title: Header(
             headerType: HeaderType.back,
             title: 'Manajemen Penyakit Ayam',
-            greeting: 'Tambah Penyakit Ayam',
+            greeting: _isEditMode ? 'Edit Penyakit Ayam' : 'Tambah Penyakit Ayam',
           ),
         ),
       ),
@@ -277,7 +301,7 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
           child: CustomButton(
             key: const Key('submitKomoditasButton'),
             onPressed: _isSubmitting ? null : _submitForm,
-            buttonText: 'Tambah Penyakit',
+            buttonText: _isEditMode ? 'Simpan Perubahan' : 'Tambah Penyakit',
             backgroundColor: green1,
             textStyle: semibold16.copyWith(color: white),
             isLoading: _isSubmitting,

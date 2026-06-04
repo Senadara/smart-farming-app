@@ -27,6 +27,7 @@ class _DetailLaporanAyamSakitState extends State<DetailLaporanAyamSakit> {
       final response =
           await _laporanService.getLaporanAyamSakitById(widget.idLaporanAyamSakit!);
 
+      debugPrint('[Detail Ayam Sakit] $response');
       if (response['status']) {
         setState(() {
           laporanSakit = response['data'];
@@ -126,7 +127,9 @@ class _DetailLaporanAyamSakitState extends State<DetailLaporanAyamSakit> {
 
                           const SizedBox(height: 4),
 
-                          const TreatmentRecommendations(),
+                          TreatmentRecommendations(
+                            customPenanganan: laporanSakit?['penanganan'] as List<dynamic>?,
+                          ),
 
                           const SizedBox(height: 24), 
                         ],

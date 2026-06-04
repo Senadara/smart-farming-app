@@ -7,7 +7,8 @@ import 'package:intl/intl.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/update_status_screen.dart';
 
 class ListLaporanAyamSakitScreen extends StatefulWidget {
-  const ListLaporanAyamSakitScreen({super.key});
+  final String unitId;
+  const ListLaporanAyamSakitScreen({super.key, required this.unitId});
 
   @override
   State<ListLaporanAyamSakitScreen> createState() =>
@@ -37,7 +38,7 @@ class _ListLaporanAyamSakitScreenState
       _errorMessage = null;
     });
 
-    final result = await _laporanService.getRiwayatLaporanAyamSakit();
+    final result = await _laporanService.getRiwayatLaporanAyamSakit(widget.unitId);
 
     if (!mounted) return;
 

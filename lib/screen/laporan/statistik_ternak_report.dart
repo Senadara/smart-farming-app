@@ -10,6 +10,7 @@ import 'package:smart_farming_app/screen/laporan/tab_ternak/sakit.dart';
 import 'package:smart_farming_app/screen/laporan/tab_ternak/vitamin.dart';
 import 'package:smart_farming_app/service/jenis_budidaya_service.dart';
 import 'package:smart_farming_app/service/report_service.dart';
+import 'package:smart_farming_app/service/laporan_service.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
 import 'package:smart_farming_app/utils/custom_picker_utils.dart';
@@ -28,6 +29,7 @@ class StatistikTernakReport extends StatefulWidget {
 class _StatistikTernakReportState extends State<StatistikTernakReport> {
   final JenisBudidayaService _jenisBudidayaService = JenisBudidayaService();
   final ReportService _reportService = ReportService();
+  final LaporanService _laporanService = LaporanService();
 
   Map<String, dynamic>? _ternakReport;
   List<dynamic> _kandangList = [];
@@ -487,10 +489,8 @@ class _StatistikTernakReportState extends State<StatistikTernakReport> {
         _fetchAndProcessRiwayatData(
             riwayatKey: 'sakit',
             defaultErrorMessage: 'Gagal memuat riwayat pelaporan sakit',
-            fetchFunction: () =>
-                // _reportService.getRiwayatLaporanSakitJenisBudidaya(
-                //     jenisBudidayaId: widget.idTernak!, limit: 5, page: 1)),
-                _reportService.getRiwayatAyamSakit()),
+            fetchFunction: () => _laporanService.getRiwayatLaporanAyamSakit(
+                _kandangList.isNotEmpty ? _kandangList.first['id'] : '')),
         _fetchAndProcessRiwayatData(
             riwayatKey: 'panen',
             defaultErrorMessage: 'Gagal memuat riwayat pelaporan panen',

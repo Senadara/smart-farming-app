@@ -1,69 +1,64 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_kandang_screen.dart';
-import 'package:smart_farming_app/screen/penyakit_ayam/list_laporan_ayam_sakit.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_gejala.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_penanganan.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_penyakit_ayam.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/tambah_gejala_screen.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penanganan_penyakit_ayam.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penyakit_ayam_screen.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/banner.dart';
 import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/widget/menu_btn.dart';
 
-class MenuPelaporanSakitScreen extends StatefulWidget {
-  final String greeting;
-  final String tipe;
-  final int step;
-
-  const MenuPelaporanSakitScreen({
-    super.key,
-    required this.greeting,
-    required this.tipe,
-    required this.step,
-  });
+class MenuManajemenPenyakitAyam extends StatefulWidget {
+  const MenuManajemenPenyakitAyam({super.key});
 
   @override
-  State<MenuPelaporanSakitScreen> createState() => _MenuPelaporanSakitScreenState();
+  State<MenuManajemenPenyakitAyam> createState() => _MenuManajemenPenyakitAyamState();
 }
 
-class _MenuPelaporanSakitScreenState extends State<MenuPelaporanSakitScreen> {
+class _MenuManajemenPenyakitAyamState extends State<MenuManajemenPenyakitAyam> {
   String? selectedReport;
-  final _step = 1;
 
   void navigateBasedOnSelection() {
     switch (selectedReport){
-      case 'Buat Laporan Ayam Sakit':
-        context.push('/pilih-kandang',
-            extra: PilihKandangScreen(
-              step: _step,
-              tipe: 'sakit',
-              greeting: 'Pelaporan Ternak Sakit',
-            ));
+      case 'Manajemen Gejala':
+        context.push('/manajemen-gejala',
+            extra: const ManajemenGejala());
         break;
-      case 'Lihat Laporan Ayam Sakit':
-        context.push('/pilih-kandang',
-            extra: PilihKandangScreen(
-              step: _step,
-              tipe: 'lihat-sakit',
-              greeting: 'Riwayat Laporan Ayam Sakit',
-            ));
+      case 'Manajemen Penyakit':
+        context.push('/manajemen-penyakit-ayam',
+            extra: const ManajemenPenyakitAyam());
+        break;
+      case 'Manajemen Penanganan':
+        context.push('/manajemen-penanganan-ayam',
+            extra: const ManajemenPenanganan());
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
     List<Map<String, dynamic>> reports = [
       {
-        'title': 'Buat Laporan Ayam Sakit',
-        'icon': 'assets/icons/set/sick-chicken-filled.png',
+        'title': 'Manajemen Gejala',
+        'icon': 'assets/icons/set/panen-filled.png',
         'description':
-            'Diagnosa dan buat laporan penyakit ayam hasil konsultasi dengan pakar',
+            'Catat hasil panen ternak untuk evaluasi dan perencanaan produksi yang lebih baik.',
       },
       {
-        'title': 'Lihat Laporan Ayam Sakit',
+        'title': 'Manajemen Penyakit',
         'icon': 'assets/icons/set/sick-chicken-filled.png',
         'description':
-            'Liat laporan penyakit ayam',
+            'Catat gejala dan kondisi ternak yang mengalami gangguan kesehatan.',
+      },
+      {
+        'title': 'Manajemen Penanganan',
+        'icon': 'assets/icons/set/dead-chicken-filled.png',
+        'description':
+            'Dokumentasikan ternak yang tidak bertahan sebagai bagian dari evaluasi perawatan.',
       },
     ];
 
@@ -79,7 +74,7 @@ class _MenuPelaporanSakitScreenState extends State<MenuPelaporanSakitScreen> {
           toolbarHeight: 80,
           title: const Header(
               headerType: HeaderType.back,
-              title: 'Pelaporan Ternak Sakit',
+              title: 'Manajemen Penyakit Ayam',
               greeting: 'Menu Utama'),
         ),
       ),
@@ -92,8 +87,8 @@ class _MenuPelaporanSakitScreenState extends State<MenuPelaporanSakitScreen> {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BannerWidget(
-                  title: 'Pelaporan Ternak Sakit',
-                  subtitle: 'Pilih menu di bawah untuk membuat laporan penyakit ayam',
+                  title: 'Manajemen Penyakit Ayam',
+                  subtitle: 'Pilih menu di bawah untuk mengelola penyakit ayam',
                 ),
                 const SizedBox(height: 12),
                 for(var report in reports)

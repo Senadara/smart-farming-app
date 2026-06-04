@@ -21,7 +21,12 @@ import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_gejala_screen.da
 import 'package:smart_farming_app/screen/penyakit_ayam/delete_gejala_screen.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/list_laporan_ayam_sakit.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_gejala.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_penanganan.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_penyakit_ayam.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/menu_manajemen_penyakit_ayam.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/pilih_gejala_edit_screen.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/pilih_penanganan.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/pilih_penyakit_ayam.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_gejala_screen.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penanganan_penyakit_ayam.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penyakit_ayam_screen.dart';
@@ -898,8 +903,8 @@ final _router = GoRouter(
       },
     ),
     GoRoute(
-      path: '/manajemen-penyakit-ayam',
-      builder: (context, state) => const ManajemenPenyakitAyam(),
+      path: '/menu-manajemen-penyakit-ayam',
+      builder: (context, state) => const MenuManajemenPenyakitAyam(),
     ),
     GoRoute(
       path: '/manajemen-gejala',
@@ -930,6 +935,76 @@ final _router = GoRouter(
       path: '/riwayat-laporan-ayam-sakit',
       builder: (context, state) {
         final extra = state.extra as ListLaporanAyamSakitScreen;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/pilih-gejala-edit',
+      builder: (context, state) {
+        final extra = state.extra as PilihGejalaEditScreen;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/pilih-penyakit-edit',
+      builder: (context, state) {
+        final extra = state.extra as PilihPenyakitAyam;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/pilih-penyakit-hapus',
+      builder: (context, state) {
+        final extra = state.extra as PilihPenyakitAyam;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/edit-gejala-ayam',
+      builder: (context, state) {
+        final extra = state.extra as TambahGejalaScreen;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/manajemen-penyakit-ayam',
+      builder: (context, state) {
+        final extra = state.extra as ManajemenPenyakitAyam;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/manajemen-penanganan-ayam',
+      builder: (context, state) {
+        final extra = state.extra as ManajemenPenanganan;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/edit-penyakit-ayam',
+      builder: (context, state) {
+        final extra = state.extra as TambahPenyakitAyamScreen;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/pilih-penanganan',
+      builder: (context, state) {
+        final extra = state.extra as PilihPenanganan;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/pilih-penanganan-hapus',
+      builder: (context, state) {
+        final extra = state.extra as PilihPenanganan;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/edit-penanganan',
+      builder: (context, state) {
+        final extra = state.extra as TambahPenangananPenyakitAyamScreen;
         return extra;
       },
     ),

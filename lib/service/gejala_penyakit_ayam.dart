@@ -62,6 +62,30 @@ class GejalaPenyakitAyam {
     }
   }
 
+  Future<List<PenyakitAyam>> getPenyakitWithGejala() async {
+
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json',
+    };
+    final url = Uri.parse('$baseUrl/penyakit-ayam/with-gejala');
+
+    try {
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        final List<dynamic> data = decodedData['data'];
+        return data.map((json) => PenyakitAyam.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load penyakit: ${response.statusCode}');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   Future diagnoseAyam(List<String> idGejala) async{
 
     final resolvedToken = await _authService.getToken();
@@ -132,6 +156,79 @@ class GejalaPenyakitAyam {
         return {
           'status': false,
           'message': decodedData['message'] ?? 'Failed to add penyakit: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'Error: ${e.toString()}',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> updatePenyakitAyam(
+      String id, String namaPenyakit, List<String> idGejala) async {
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json',
+    };
+    final url = Uri.parse('$baseUrl/penyakit-ayam/$id');
+
+    final payload = {
+      'nama_penyakit': namaPenyakit,
+      'gejala_ids': idGejala,
+    };
+    debugPrint('payload update penyakit: $payload');
+
+    try {
+      final response =
+          await http.put(url, headers: headers, body: json.encode(payload));
+      debugPrint('response body update penyakit: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        return {
+          'status': true,
+          'message': 'success',
+          'data': decodedData['data'],
+        };
+      } else {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        return {
+          'status': false,
+          'message': decodedData['message'] ??
+              'Gagal memperbarui penyakit: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'Error: ${e.toString()}',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> deletePenyakitAyam(String id) async {
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json',
+    };
+    final url = Uri.parse('$baseUrl/penyakit-ayam/$id');
+
+    try {
+      final response = await http.delete(url, headers: headers);
+      debugPrint('response body delete penyakit: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return {'status': true, 'message': 'Penyakit berhasil dihapus'};
+      } else {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        return {
+          'status': false,
+          'message': decodedData['message'] ??
+              'Gagal menghapus penyakit: ${response.statusCode}',
         };
       }
     } catch (e) {
@@ -232,6 +329,149 @@ class GejalaPenyakitAyam {
         return {
           'status': false,
           'message': decodedData['message'] ?? 'Gagal menambahkan penanganan: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'An error occurred: ${e.toString()}',
+      };
+    }
+  }
+  Future<List<PenyakitAyam>> getPenyakitWithPenanganan() async {
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json',
+    };
+    final url = Uri.parse('$baseUrl/penyakit-ayam/with-penanganan');
+
+    try {
+      final response = await http.get(url, headers: headers);
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        final List<dynamic> data = decodedData['data'];
+        return data.map((json) => PenyakitAyam.fromJson(json)).toList();
+      } else {
+        throw Exception('Failed to load penyakit with penanganan: ${response.statusCode}');
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Map<String, dynamic>> updatePenangananPenyakitAyam(
+      String id, String catatan, File? imageFile) async {
+    String? imageUrl;
+    if (imageFile != null) {
+      final ImageService imageService = ImageService();
+      final uploadResponse = await imageService.uploadImage(imageFile);
+      if (uploadResponse['status'] == false) {
+        throw Exception(uploadResponse['message']);
+      }
+      imageUrl = uploadResponse['data'];
+    }
+
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json',
+    };
+    final url = Uri.parse('$baseUrl/penyakit-ayam/penanganan/$id');
+
+    final payload = <String, dynamic>{'catatan': catatan};
+    if (imageUrl != null) payload['gambar'] = imageUrl;
+
+    try {
+      final response =
+          await http.put(url, headers: headers, body: json.encode(payload));
+      debugPrint('response update penanganan: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        return {'status': true, 'message': 'Penanganan berhasil diperbarui'};
+      } else {
+        final decoded = jsonDecode(response.body);
+        return {
+          'status': false,
+          'message': decoded['message'] ??
+              'Gagal memperbarui penanganan: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      return {'status': false, 'message': 'Error: ${e.toString()}'};
+    }
+  }
+
+  Future<Map<String, dynamic>> deletePenangananPenyakitAyam(String id) async {
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json',
+    };
+    final url = Uri.parse('$baseUrl/penyakit-ayam/penanganan/$id');
+
+    try {
+      final response = await http.delete(url, headers: headers);
+      debugPrint('response delete penanganan: ${response.body}');
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return {'status': true, 'message': 'Penanganan berhasil dihapus'};
+      } else {
+        final decoded = jsonDecode(response.body);
+        return {
+          'status': false,
+          'message': decoded['message'] ??
+              'Gagal menghapus penanganan: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      return {'status': false, 'message': 'Error: ${e.toString()}'};
+    }
+  }
+
+  Future<Map<String, dynamic>> updateGejalaAyam(
+      String id, String namaGejala, File? imageFile) async {
+    String? imageUrl;
+
+    if (imageFile != null) {
+      final ImageService imageService = ImageService();
+      final uploadResponse = await imageService.uploadImage(imageFile);
+      if (uploadResponse['status'] == false) {
+        throw Exception(uploadResponse['message']);
+      }
+      imageUrl = uploadResponse['data'];
+    }
+
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json',
+    };
+    final url = Uri.parse('$baseUrl/gejala/$id');
+
+    final payload = <String, dynamic>{
+      'nama_gejala': namaGejala,
+      if (imageUrl != null) 'gambar': imageUrl,
+    };
+    debugPrint('payload update gejala: $payload');
+
+    try {
+      final response =
+          await http.put(url, headers: headers, body: json.encode(payload));
+      debugPrint('response body update gejala: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        return {
+          'status': true,
+          'message': 'success',
+          'data': decodedData['data'],
+        };
+      } else {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        return {
+          'status': false,
+          'message': decodedData['message'] ??
+              'Gagal memperbarui gejala: ${response.statusCode}',
         };
       }
     } catch (e) {

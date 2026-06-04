@@ -269,13 +269,55 @@ class LaporanService {
     
   }
 
-  Future<Map<String, dynamic>> getRiwayatLaporanAyamSakit() async {
+  Future<Map<String, dynamic>> getStatistikPenyakitAyam({String? unitBudidayaId, int? year}) async {
     final resolvedToken = await _authService.getToken();
     final headers = {
       'Authorization': 'Bearer $resolvedToken',
       'Content-Type': 'application/json'
     };
-    final url = Uri.parse('$baseUrl/riwayat-penyakit-ayam');
+    
+    final queryParams = <String, String>{};
+    if (unitBudidayaId != null) queryParams['unitBudidayaId'] = unitBudidayaId;
+    if (year != null) queryParams['year'] = year.toString();
+
+    final url = Uri.parse('$baseUrl/statistik-penyakit-ayam').replace(queryParameters: queryParams);
+
+    try {
+      final response = await http.get(url, headers: headers);
+      final body = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        return {
+          'status': true,
+          'message': body['message'] ?? 'Success',
+          'year': body['year'],
+          'data': body['data'] ?? [],
+        };
+      } else if (response.statusCode == 401) {
+        await _authService.refreshToken();
+        return await getStatistikPenyakitAyam(unitBudidayaId: unitBudidayaId, year: year);
+      } else {
+        return {
+          'status': false,
+          'message': body['message'] ?? 'Failed to load statistics',
+          'data': [],
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'An error occurred: ${e.toString()}',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> getRiwayatLaporanAyamSakit(String unitId) async {
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json'
+    };
+    final url = Uri.parse('$baseUrl/riwayat-penyakit-ayam/unit/$unitId');
     try {
       final response = await http.get(url, headers: headers);
       final body = json.decode(response.body);
@@ -288,7 +330,7 @@ class LaporanService {
         };
       } else if (response.statusCode == 401) {
         await _authService.refreshToken();
-        return await getRiwayatLaporanAyamSakit();
+        return await getRiwayatLaporanAyamSakit(unitId);
       } else {
         return {
           'status': false,

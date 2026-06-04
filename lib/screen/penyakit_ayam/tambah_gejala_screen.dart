@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:smart_farming_app/model/gejala_model.dart';
 import 'package:smart_farming_app/service/gejala_penyakit_ayam.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/button.dart';
@@ -11,8 +12,9 @@ import 'package:smart_farming_app/widget/img_picker.dart';
 import 'package:smart_farming_app/widget/input_field.dart';
 
 class TambahGejalaScreen extends StatefulWidget {
+  final GejalaModel? gejala; // jika null => mode Tambah, jika ada => mode Edit
 
-  const TambahGejalaScreen({super.key});
+  const TambahGejalaScreen({super.key, this.gejala});
 
   @override
   State<TambahGejalaScreen> createState() => _TambahGejalaScreenState();
@@ -20,10 +22,20 @@ class TambahGejalaScreen extends StatefulWidget {
 
 class _TambahGejalaScreenState extends State<TambahGejalaScreen> {
 
-  final _formKey             = GlobalKey<FormState>();
-  final _nameController      = TextEditingController();
+  final _formKey = GlobalKey<FormState>();
+  final _nameController = TextEditingController();
   File? _image;
   bool _isSubmitting = false;
+
+  bool get _isEditMode => widget.gejala != null;
+
+  @override
+  void initState() {
+    super.initState();
+    if (_isEditMode) {
+      _nameController.text = widget.gejala!.namaGejala;
+    }
+  }
 
   Future<void> _onPickImage(BuildContext context) async {
     final source = await showModalBottomSheet<ImageSource>(
@@ -73,19 +85,42 @@ class _TambahGejalaScreenState extends State<TambahGejalaScreen> {
   Future<void> _submitForm() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
 
+    // Pada mode edit, gambar bersifat opsional (gunakan gambar lama jika tidak diganti)
+    if (!_isEditMode && _image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Pilih gambar gejala terlebih dahulu'),
+          backgroundColor: Colors.red,
+        ),
+      );
+      return;
+    }
+
     setState(() => _isSubmitting = true);
 
     try {
-      final response = await GejalaPenyakitAyam().createGejalaAyam(
-        _nameController.text.trim(),
-        _image!,
-      );
+      Map<String, dynamic> response;
+
+      if (_isEditMode) {
+        response = await GejalaPenyakitAyam().updateGejalaAyam(
+          widget.gejala!.id,
+          _nameController.text.trim(),
+          _image, // null berarti pakai gambar lama
+        );
+      } else {
+        response = await GejalaPenyakitAyam().createGejalaAyam(
+          _nameController.text.trim(),
+          _image!,
+        );
+      }
 
       if (response['status']) {
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Gejala berhasil ditambahkan'),
+            SnackBar(
+              content: Text(_isEditMode
+                  ? 'Gejala berhasil diperbarui'
+                  : 'Gejala berhasil ditambahkan'),
               backgroundColor: Colors.green,
             ),
           );
@@ -101,7 +136,11 @@ class _TambahGejalaScreenState extends State<TambahGejalaScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menambahkan gejala: $e')),
+          SnackBar(
+            content: Text(_isEditMode
+                ? 'Gagal memperbarui gejala: $e'
+                : 'Gagal menambahkan gejala: $e'),
+          ),
         );
       }
     } finally {
@@ -124,10 +163,10 @@ class _TambahGejalaScreenState extends State<TambahGejalaScreen> {
           titleSpacing: 0,
           elevation: 0,
           toolbarHeight: 80,
-          title: const Header(
+          title: Header(
             headerType: HeaderType.back,
             title: 'Manajemen Penyakit Ayam',
-            greeting: 'Tambah Gejala Penyakit Ayam',
+            greeting: _isEditMode ? 'Edit Gejala Penyakit Ayam' : 'Tambah Gejala Penyakit Ayam',
           ),
         ),
       ),
@@ -158,6 +197,7 @@ class _TambahGejalaScreenState extends State<TambahGejalaScreen> {
                 ImagePickerWidget(
                   label: 'Ilustrasi Gejala Penyakit Ayam',
                   image: _image,
+                  imageUrl: _isEditMode ? widget.gejala!.directGambarUrl : null,
                   onPickImage: _onPickImage,
                 ),
                 ],
@@ -178,7 +218,7 @@ class _TambahGejalaScreenState extends State<TambahGejalaScreen> {
           child: CustomButton(
             key: const Key('submitKomoditasButton'),
             onPressed: _isSubmitting ? null : _submitForm,
-            buttonText: 'Tambah Gejala',
+            buttonText: _isEditMode ? 'Simpan Perubahan' : 'Tambah Gejala',
             backgroundColor: green1,
             textStyle: semibold16.copyWith(color: white),
             isLoading: _isSubmitting,

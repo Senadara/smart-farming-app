@@ -4,11 +4,13 @@ import 'package:smart_farming_app/theme.dart';
 class PenangananPenyakit {
   final String namaPenanganan;
   final String deskripsiPenanganan;
+  final String? gambar;
   bool isExpanded;
 
   PenangananPenyakit({
     required this.namaPenanganan,
     required this.deskripsiPenanganan,
+    this.gambar,
     this.isExpanded = false,
   });
 }
@@ -30,14 +32,17 @@ class _TreatmentRecommendationsState extends State<TreatmentRecommendations> {
   void initState() {
     super.initState();
     final rawList = widget.customPenanganan ?? _dummyPenanganan();
-    _penangananList = rawList
-        .map((e) => PenangananPenyakit(
-              namaPenanganan: e['nama'] as String? ??
-                  (e['namaPenanganan'] as String? ?? ''),
-              deskripsiPenanganan: e['deskripsi'] as String? ??
-                  (e['deskripsiPenanganan'] as String? ?? ''),
-            ))
-        .toList();
+    _penangananList = rawList.asMap().entries.map((entry) {
+      final index = entry.key;
+      final e = entry.value;
+      return PenangananPenyakit(
+        namaPenanganan: e['nama'] as String? ??
+            (e['namaPenanganan'] as String? ?? 'Langkah Penanganan ${index + 1}'),
+        deskripsiPenanganan: e['deskripsi'] as String? ??
+            (e['deskripsiPenanganan'] as String? ?? (e['penanganan'] as String? ?? '')),
+        gambar: e['gambar'] as String?,
+      );
+    }).toList();
   }
 
   List<Map<String, String>> _dummyPenanganan() => [
@@ -286,6 +291,35 @@ class _PenangananTile extends StatelessWidget {
                             height: 1.6,
                           ),
                         ),
+                        if (item.gambar != null && item.gambar!.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: Image.network(
+                              item.gambar!,
+                              width: double.infinity,
+                              fit: BoxFit.fitWidth,
+                              loadingBuilder: (ctx, child, progress) {
+                                if (progress == null) return child;
+                                return const SizedBox(
+                                  height: 120,
+                                  child: Center(
+                                      child: CircularProgressIndicator(strokeWidth: 2)),
+                                );
+                              },
+                              errorBuilder: (ctx, err, st) => Container(
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  color: Colors.grey.shade100,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: const Center(
+                                    child: Icon(Icons.broken_image_outlined,
+                                        color: Colors.grey)),
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

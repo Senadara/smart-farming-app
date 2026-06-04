@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_gejala.dart';
-import 'package:smart_farming_app/screen/penyakit_ayam/tambah_gejala_screen.dart';
-import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penanganan_penyakit_ayam.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/pilih_penyakit_ayam.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penyakit_ayam_screen.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/banner.dart';
@@ -22,74 +20,75 @@ class _ManajemenPenyakitAyamState extends State<ManajemenPenyakitAyam> {
 
   void navigateBasedOnSelection() {
     switch (selectedReport){
-      case 'Manajemen Gejala':
-        context.push('/manajemen-gejala',
-            extra: const ManajemenGejala());
-        break;
-      case 'Manajemen Penyakit':
+      case 'Tambah Penyakit Ayam':
         context.push('/tambah-penyakit-ayam',
             extra: const TambahPenyakitAyamScreen());
         break;
-      case 'Manajemen Penanganan':
-        context.push('/tambah-penanganan-penyakit-ayam',
-            extra: const TambahPenangananPenyakitAyamScreen());
+      case 'Hapus Penyakit Ayam':
+        context.push('/pilih-penyakit-hapus',
+            extra: const PilihPenyakitAyam(mode: 'hapus'));
+        break;
+      case 'Edit Penyakit Ayam':
+        context.push('/pilih-penyakit-edit',
+            extra: const PilihPenyakitAyam());
         break;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    List<Map<String, dynamic>> reports = [
+    List<Map<String, dynamic>> menu = [
       {
-        'title': 'Manajemen Gejala',
-        'icon': 'assets/icons/set/panen-filled.png',
-        'description':
-            'Catat hasil panen ternak untuk evaluasi dan perencanaan produksi yang lebih baik.',
-      },
-      {
-        'title': 'Manajemen Penyakit',
+        'title': 'Tambah Penyakit Ayam',
         'icon': 'assets/icons/set/sick-chicken-filled.png',
         'description':
-            'Catat gejala dan kondisi ternak yang mengalami gangguan kesehatan.',
+            'Tambah penyakit ayam sesuai arahan pakar',
       },
       {
-        'title': 'Manajemen Penanganan',
-        'icon': 'assets/icons/set/dead-chicken-filled.png',
+        'title': 'Hapus Penyakit Ayam',
+        'icon': 'assets/icons/set/sick-chicken-filled.png',
         'description':
-            'Dokumentasikan ternak yang tidak bertahan sebagai bagian dari evaluasi perawatan.',
+            'Hapus penyakit ayam sesuai arahan pakar',
+      },
+      {
+        'title': 'Edit Penyakit Ayam',
+        'icon': 'assets/icons/set/sick-chicken-filled.png',
+        'description':
+            'Edit penyakit ayam sesuai arahan pakar',
       },
     ];
-
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(80),
+        preferredSize: const Size.fromHeight(100),
         child: AppBar(
-          backgroundColor: white,
+          backgroundColor: Colors.white,
           leadingWidth: 0,
           titleSpacing: 0,
           elevation: 0,
-          toolbarHeight: 80,
-          title: const Header(
+          toolbarHeight: 100,
+          title: const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+            child: Header(
               headerType: HeaderType.back,
               title: 'Manajemen Penyakit Ayam',
-              greeting: 'Menu Utama'),
+              greeting: 'Menu Utama',
+            ),
+          ),
         ),
       ),
 
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 100),
+            padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 BannerWidget(
                   title: 'Manajemen Penyakit Ayam',
                   subtitle: 'Pilih menu di bawah untuk mengelola penyakit ayam',
                 ),
                 const SizedBox(height: 12),
-                for(var report in reports)
+                for(var report in menu)
                 MenuButton(
                     key: Key(report['title']),
                     title: report['title'],

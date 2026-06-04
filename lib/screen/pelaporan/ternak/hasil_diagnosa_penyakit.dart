@@ -47,20 +47,19 @@ class _HasilDiagnosisPenyakitScreenState
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('[Hasil Diagnosa Penyakit] ${widget.data}');
     final cfScore = widget.data['cfScore'] as double?;
     final namaPenyakit =
         widget.data['namaPenyakit'] as String? ?? 'Tidak diketahui';
     final gejala = widget.data['gejala'] as List<dynamic>? ?? [];
 
-    final rawPenanganan =
-        widget.data['penanganan'] as List<dynamic>? ?? [];
+    final rawPenanganan = widget.data['penanganan'] as List<dynamic>? ?? [];
     final penangananList = rawPenanganan.map((p) {
       // Mendukung dua format: raw API (key 'penanganan') atau format yang sudah dipetakan (key 'deskripsi')
       return {
         'nama': p['nama'] as String? ?? 'Penanganan',
-        'deskripsi': p['deskripsi'] as String? ??
-            p['penanganan'] as String? ??
-            '',
+        'deskripsi':
+            p['deskripsi'] as String? ?? p['penanganan'] as String? ?? '',
       };
     }).toList();
 

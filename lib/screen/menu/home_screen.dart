@@ -4,7 +4,7 @@ import 'package:smart_farming_app/screen/kandang/add_kandang_screen.dart';
 import 'package:smart_farming_app/screen/kebun/add_kebun_screen.dart';
 import 'package:smart_farming_app/screen/komoditas/add_komoditas_tanaman_screen.dart';
 import 'package:smart_farming_app/screen/komoditas/add_komoditas_ternak_screen.dart';
-import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_penyakit_ayam.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/menu_manajemen_penyakit_ayam.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_gejala_screen.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penanganan_penyakit_ayam.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penyakit_ayam_screen.dart';
@@ -841,8 +841,8 @@ class _HomeScreenState extends State<HomeScreen> {
                                 title: const Text("Manajemen Penyakit Ayam"),
                                 onTap: () {
                                   Navigator.pop(context);
-                                  context.push('/manajemen-penyakit-ayam',
-                                      extra: ManajemenPenyakitAyam(
+                                  context.push('/menu-manajemen-penyakit-ayam',
+                                      extra: MenuManajemenPenyakitAyam(
                                       ));
                                 },
                               ),

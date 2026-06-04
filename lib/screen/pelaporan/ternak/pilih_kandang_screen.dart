@@ -7,6 +7,7 @@ import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_ternak_panen
 import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_ternak_sakit_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_layout_ternak.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_ternak_screen.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/list_laporan_ayam_sakit.dart';
 import 'package:smart_farming_app/service/unit_budidaya_service.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
@@ -102,6 +103,11 @@ class _PilihKandangScreenState extends State<PilihKandangScreen> {
                 data: updatedData,
                 tipe: widget.tipe,
                 step: widget.step + 1));
+      } else if (widget.tipe == "lihat-sakit") {
+        context.push('/riwayat-laporan-ayam-sakit',
+            extra: ListLaporanAyamSakitScreen(
+                unitId: _selectedUnitBudidaya!['id'],
+            ));
       } else if (_selectedUnitBudidaya!['tipe'] == "individu") {
         context.push('/pilih-ternak',
             extra: PilihTernakScreen(

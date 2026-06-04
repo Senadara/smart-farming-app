@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/delete_gejala_screen.dart';
+import 'package:smart_farming_app/screen/penyakit_ayam/pilih_gejala_edit_screen.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_gejala_screen.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/banner.dart';
@@ -28,10 +29,10 @@ class _ManajemenGejalaState extends State<ManajemenGejala> {
         context.push('/delete-gejala-ayam',
             extra: const DeleteGejalaScreen());
         break;
-      // case 'Manajemen Penanganan':
-      //   context.push('/tambah-penanganan-penyakit-ayam',
-      //       extra: const TambahPenangananPenyakitAyamScreen());
-      //   break;
+      case 'Edit Gejala':
+        context.push('/pilih-gejala-edit',
+            extra: const PilihGejalaEditScreen());
+        break;
     }
   }
   

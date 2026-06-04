@@ -12,7 +12,9 @@ import 'package:smart_farming_app/widget/img_picker.dart';
 import 'package:smart_farming_app/widget/input_field.dart';
 
 class TambahPenangananPenyakitAyamScreen extends StatefulWidget {
-  const TambahPenangananPenyakitAyamScreen({super.key});
+  final Map<String, dynamic>? penanganan; // null => Tambah, ada => Edit
+
+  const TambahPenangananPenyakitAyamScreen({super.key, this.penanganan});
 
   @override
   State<TambahPenangananPenyakitAyamScreen> createState() => _TambahPenangananPenyakitAyamState();
@@ -28,6 +30,8 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
   File? _image;
   bool _isSubmitting = false;
   final _formKey             = GlobalKey<FormState>();
+
+  bool get _isEditMode => widget.penanganan != null;
 
   Future<void> _onPickImage(BuildContext context) async {
     final source = await showModalBottomSheet<ImageSource>(
@@ -76,20 +80,32 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
 
   Future<void> _submitForm() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-    
-    setState(() => _isSubmitting = true);
 
+    setState(() => _isSubmitting = true);
     try {
-      debugPrint(_selectedPenyakit);
-      debugPrint(_catatanController.text);
-      debugPrint(_image?.path);
-      final response = await _gejalaService.createPenangananPenyakitAyam(_selectedPenyakit!, _catatanController.text, _image);
-      debugPrint("Sudah terkirim");
-      
+      final Map<String, dynamic> response;
+
+      if (_isEditMode) {
+        response = await _gejalaService.updatePenangananPenyakitAyam(
+          widget.penanganan!['id'],
+          _catatanController.text,
+          _image,
+        );
+      } else {
+        debugPrint(_selectedPenyakit);
+        debugPrint(_catatanController.text);
+        debugPrint(_image?.path);
+        response = await _gejalaService.createPenangananPenyakitAyam(
+            _selectedPenyakit!, _catatanController.text, _image);
+        debugPrint("Sudah terkirim");
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Penanganan penyakit berhasil ditambahkan'),
+            content: Text(_isEditMode
+                ? 'Penanganan berhasil diperbarui'
+                : 'Penanganan penyakit berhasil ditambahkan'),
             backgroundColor: green1,
           ),
         );
@@ -99,7 +115,9 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: const Text('Gagal menambahkan penanganan penyakit'),
+            content: Text(_isEditMode
+                ? 'Gagal memperbarui penanganan'
+                : 'Gagal menambahkan penanganan penyakit'),
             backgroundColor: Colors.red,
           ),
         );
@@ -118,7 +136,12 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
   @override
   void initState() {
     super.initState();
-    _fetchPenyakit();
+    if (_isEditMode) {
+      _catatanController.text = widget.penanganan!['penanganan'] ?? '';
+      _isLoading = false;
+    } else {
+      _fetchPenyakit();
+    }
   }
 
   Future<void> _fetchPenyakit() async {
@@ -154,10 +177,10 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
           titleSpacing: 0,
           elevation: 0,
           toolbarHeight: 80,
-          title: const Header(
+          title: Header(
             headerType: HeaderType.back,
             title: 'Manajemen Penyakit Ayam',
-            greeting: 'Tambah Penanganan Penyakit',
+            greeting: _isEditMode ? 'Edit Penanganan Penyakit' : 'Tambah Penanganan Penyakit',
           ),
         ),
       ),
@@ -169,34 +192,34 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
             padding: const EdgeInsets.all(16),
             child: Column(
               children: [
-                Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text('Pilih Penyakit',
-                        style: semibold14.copyWith(color: dark1)),
-                    const Spacer(),
-                  ],
-                ),
-
-                DropdownFieldWidget(
-                  key: const Key('pilihPenyakit'),
-                  hint: 'Pilih penyakit ayam...',
-                  label: '',
-                  items: _penyakitList
-                      .map((item) => item.namaPenyakit)
-                      .toList(),
-                  selectedValue: _selectedPenyakit != null
-                      ? _penyakitList
-                          .firstWhere((p) => p.id == _selectedPenyakit)
-                          .namaPenyakit
-                      : null,
-                  onChanged: _onDropdownChanged,
-                  validator: (_) => _selectedPenyakit == null
-                      ? 'Harap pilih penyakit'
-                      : null,
-                ),
-
-                SizedBox(height: 16,),
+                if (!_isEditMode) ...[  
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('Pilih Penyakit',
+                          style: semibold14.copyWith(color: dark1)),
+                      const Spacer(),
+                    ],
+                  ),
+                  DropdownFieldWidget(
+                    key: const Key('pilihPenyakit'),
+                    hint: 'Pilih penyakit ayam...',
+                    label: '',
+                    items: _penyakitList
+                        .map((item) => item.namaPenyakit)
+                        .toList(),
+                    selectedValue: _selectedPenyakit != null
+                        ? _penyakitList
+                            .firstWhere((p) => p.id == _selectedPenyakit)
+                            .namaPenyakit
+                        : null,
+                    onChanged: _onDropdownChanged,
+                    validator: (_) => _selectedPenyakit == null
+                        ? 'Harap pilih penyakit'
+                        : null,
+                  ),
+                  const SizedBox(height: 16),
+                ],
 
                 InputFieldWidget(
                     key: const Key('catatan_ternak'),
@@ -230,6 +253,7 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
                     ImagePickerWidget(
                       label: '',
                       image: _image,
+                      imageUrl: widget.penanganan?['gambar'],
                       onPickImage: _onPickImage,
                     ),
                   ],
@@ -251,7 +275,7 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
           child: CustomButton(
             key: const Key('submitKomoditasButton'),
             onPressed: _isSubmitting ? null : _submitForm,
-            buttonText: 'Tambah Penanganan',
+            buttonText: _isEditMode ? 'Simpan Perubahan' : 'Tambah Penanganan',
             backgroundColor: green1,
             textStyle: semibold16.copyWith(color: white),
             isLoading: _isSubmitting,

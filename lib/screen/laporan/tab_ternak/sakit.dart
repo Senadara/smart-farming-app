@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/model/chart_data_state.dart';
+import 'package:smart_farming_app/widget/chart_comparison.dart';
 import 'package:smart_farming_app/widget/chart_section.dart';
 import 'package:smart_farming_app/widget/newest.dart';
 import 'package:smart_farming_app/utils/detail_laporan_redirect.dart';
@@ -250,7 +251,14 @@ class SakitTab extends StatelessWidget {
             displayedDateRangeText: formattedDisplayedDateRange,
             onChartFilterTypeChanged: onChartFilterTypeChanged,
           ),
-
+          
+          const SizedBox(height: 12),
+          // Perbandingan Tren Penyakit
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16),
+            child: ChartComparison(),
+          ),
+          
           const SizedBox(height: 12),
           // Rangkuman Statistik Ternak Sakit
           Padding(
