@@ -3,12 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_gejala.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_penanganan.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_penyakit_ayam.dart';
-import 'package:smart_farming_app/screen/penyakit_ayam/tambah_gejala_screen.dart';
-import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penanganan_penyakit_ayam.dart';
-import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penyakit_ayam_screen.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/banner.dart';
-import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/widget/menu_btn.dart';
 
@@ -82,7 +78,7 @@ class _MenuManajemenPenyakitAyamState extends State<MenuManajemenPenyakitAyam> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 100),
+            padding: const EdgeInsets.only(bottom: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -104,6 +100,7 @@ class _MenuManajemenPenyakitAyamState extends State<MenuManajemenPenyakitAyam> {
                       setState(() {
                         selectedReport = report['title'];
                       });
+                      navigateBasedOnSelection();
                     },
                   ),
               ],
@@ -111,19 +108,7 @@ class _MenuManajemenPenyakitAyamState extends State<MenuManajemenPenyakitAyam> {
           ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: CustomButton(
-              onPressed: () {
-                navigateBasedOnSelection();
-              },
-              buttonText: 'Selanjutnya',
-              backgroundColor: green1,
-              textStyle: semibold16.copyWith(color: white),
-              key: const Key('next_button')),
-        ),
-      ),
+
     );
   }
 }

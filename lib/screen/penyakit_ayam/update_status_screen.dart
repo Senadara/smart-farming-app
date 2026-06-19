@@ -97,6 +97,11 @@ class _UpdateStatusScreenState extends State<UpdateStatusScreen> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return const Scaffold(
+        body: Center(child: CircularProgressIndicator()),
+      );
+    }
     final laporan = _laporan!['laporan'] as Map<String, dynamic>;
     final namaPenyakit = _laporan!['namaPenyakit'] as Map<String, dynamic>?;
     final listGejala = (_laporan!['listGejala'] as List?) ?? [];

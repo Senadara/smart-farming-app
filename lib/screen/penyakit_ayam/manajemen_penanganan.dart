@@ -4,7 +4,6 @@ import 'package:smart_farming_app/screen/penyakit_ayam/pilih_penanganan.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penanganan_penyakit_ayam.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/banner.dart';
-import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/widget/menu_btn.dart';
 
@@ -24,13 +23,9 @@ class _ManajemenPenangananState extends State<ManajemenPenanganan> {
         context.push('/tambah-penanganan-penyakit-ayam',
             extra: const TambahPenangananPenyakitAyamScreen());
         break;
-      case 'Edit Penanganan':
+      case 'Kelola Penanganan':
         context.push('/pilih-penanganan',
-            extra: const PilihPenanganan(mode: 'edit'));
-        break;
-      case 'Hapus Penanganan':
-        context.push('/pilih-penanganan-hapus',
-            extra: const PilihPenanganan(mode: 'hapus'));
+            extra: const PilihPenanganan());
         break;
     }
   }
@@ -43,16 +38,10 @@ class _ManajemenPenangananState extends State<ManajemenPenanganan> {
           'Tambah penanganan penyakit ayam hasil konsultasi dengan pakar',
     },
     {
-      'title': 'Edit Penanganan',
+      'title': 'Kelola Penanganan',
       'icon': 'assets/icons/set/panen-filled.png',
       'description':
-          'Edit penanganan penyakit ayam hasil konsultasi dengan pakar',
-    },
-    {
-      'title': 'Hapus Penanganan',
-      'icon': 'assets/icons/set/panen-filled.png',
-      'description':
-          'Hapus penanganan penyakit ayam hasil konsultasi dengan pakar',
+          'Edit atau hapus penanganan penyakit ayam hasil konsultasi dengan pakar',
     },
   ];
 
@@ -98,6 +87,7 @@ class _ManajemenPenangananState extends State<ManajemenPenanganan> {
                       setState(() {
                         selectedMenu = menu['title'];
                       });
+                      navigateBasedOnSelection();
                     },
                   ),
             ],
@@ -105,19 +95,7 @@ class _ManajemenPenangananState extends State<ManajemenPenanganan> {
         )
       ),
 
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: CustomButton(
-              onPressed: () {
-                navigateBasedOnSelection();
-              },
-              buttonText: 'Selanjutnya',
-              backgroundColor: green1,
-              textStyle: semibold16.copyWith(color: white),
-              key: const Key('next_button')),
-        ),
-      ),
+
       
     );
   }

@@ -23,6 +23,8 @@ class _PilihGejalaEditScreenState extends State<PilihGejalaEditScreen> {
   Future<void> _fetchData() async {
     try {
       final data = await _gejalaService.getGejala();
+      data.sort((a, b) => (b.updatedAt ?? DateTime(0)).compareTo(a.updatedAt ?? DateTime(0)));
+      debugPrint('Data gejala: $data');
       setState(() {
         _gejala = data;
       });
@@ -112,15 +114,18 @@ class _PilihGejalaEditScreenState extends State<PilihGejalaEditScreen> {
                               style: semibold14.copyWith(color: Colors.black87),
                             ),
                             subtitle: Text(
-                              'Dibuat: ${DateFormat('dd MMMM yyyy', 'id_ID').format(gejala.createdAt!)}',
+                              'Diubah: ${DateFormat('dd MMMM yyyy HH:mm:ss', 'id_ID').format(gejala.updatedAt ?? gejala.createdAt ?? DateTime.now())}',
                               style: regular12.copyWith(color: Colors.grey),
                             ),
                             trailing: Icon(Icons.edit_outlined, color: green1),
-                            onTap: () {
-                              context.push(
+                            onTap: () async {
+                              final result = await context.push(
                                 '/edit-gejala-ayam',
                                 extra: TambahGejalaScreen(gejala: gejala),
                               );
+                              if (result == true) {
+                                _fetchData();
+                              }
                             },
                           ),
                         );

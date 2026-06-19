@@ -93,7 +93,64 @@ class _DeleteGejalaScreenState extends State<DeleteGejalaScreen> {
 
     if (confirm != true) return;
 
-    // TODO: lakukan proses delete di sini
+    setState(() {
+      _isLoading = true;
+    });
+
+    try {
+      bool allSuccessful = true;
+      String? errorMessage;
+      final selectedIndices = _selectedGejala.toList();
+
+      for (final index in selectedIndices) {
+        final gejala = _daftarGejala[index];
+        final response = await _gejalaService.deleteGejalaAyam(gejala.id);
+        if (response['status'] != true) {
+          allSuccessful = false;
+          errorMessage = response['message'];
+          break;
+        }
+      }
+
+      if (allSuccessful) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Gejala berhasil dihapus'),
+              backgroundColor: Colors.green,
+            ),
+          );
+        }
+        setState(() {
+          _selectedGejala.clear();
+        });
+        await _fetchGejala();
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(errorMessage ?? 'Gagal menghapus gejala'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+        setState(() {
+          _isLoading = false;
+        });
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Terjadi kesalahan: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override

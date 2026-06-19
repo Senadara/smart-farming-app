@@ -33,6 +33,35 @@ class _PilihPenangananState extends State<PilihPenanganan> {
   Future<void> _fetchData() async {
     try {
       final data = await _gejalaService.getPenyakitWithPenanganan();
+      data.sort((a, b) {
+        // Prioritas 1: penyakit yang ada penanganan muncul duluan
+        final aHas = a.penanganan.isNotEmpty ? 0 : 1;
+        final bHas = b.penanganan.isNotEmpty ? 0 : 1;
+        if (aHas != bHas) return aHas.compareTo(bHas);
+
+        // Prioritas 2: urutkan berdasarkan updatedAt terbaru
+        final aTime =
+            a.penanganan.isNotEmpty && a.penanganan.first['updatedAt'] != null
+                ? DateTime.parse(a.penanganan.first['updatedAt'])
+                : (a.updatedAt ?? DateTime(0));
+        final bTime =
+            b.penanganan.isNotEmpty && b.penanganan.first['updatedAt'] != null
+                ? DateTime.parse(b.penanganan.first['updatedAt'])
+                : (b.updatedAt ?? DateTime(0));
+        return bTime.compareTo(aTime);
+      });
+      for (var penyakit in data) {
+        penyakit.penanganan.sort((a, b) {
+          final aTime = a['updatedAt'] != null
+              ? DateTime.parse(a['updatedAt'])
+              : DateTime(0);
+          final bTime = b['updatedAt'] != null
+              ? DateTime.parse(b['updatedAt'])
+              : DateTime(0);
+          return bTime.compareTo(aTime);
+        });
+      }
+      debugPrint('Data Penanganan: $data');
       if (mounted) {
         setState(() {
           _penyakitList = data;
@@ -52,7 +81,8 @@ class _PilihPenangananState extends State<PilihPenanganan> {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Konfirmasi Hapus'),
-        content: const Text('Apakah Anda yakin ingin menghapus penanganan ini?'),
+        content:
+            const Text('Apakah Anda yakin ingin menghapus penanganan ini?'),
         actions: [
           TextButton(
             onPressed: () => Navigator.of(ctx).pop(false),
@@ -68,7 +98,8 @@ class _PilihPenangananState extends State<PilihPenanganan> {
     if (confirm != true || !mounted) return;
 
     try {
-      final response = await _gejalaService.deletePenangananPenyakitAyam(item['id']);
+      final response =
+          await _gejalaService.deletePenangananPenyakitAyam(item['id']);
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
           content: Text(response['status']
@@ -87,6 +118,7 @@ class _PilihPenangananState extends State<PilihPenanganan> {
       }
     }
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -100,20 +132,18 @@ class _PilihPenangananState extends State<PilihPenanganan> {
           toolbarHeight: 80,
           title: const Header(
               headerType: HeaderType.back,
-              title: 'Pilih Penanganan Penyakit Ayam',
-              greeting: 'Menu Utama'),
+              title: 'Kelola Penanganan Penyakit Ayam',
+              greeting: 'Kelola Penanganan'),
         ),
       ),
-
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
               BannerWidget(
-                title: _isHapusMode ? 'Hapus Penanganan' : 'Edit Penanganan',
-                subtitle: _isHapusMode
-                    ? 'Pilih penanganan yang ingin dihapus'
-                    : 'Pilih penanganan penyakit ayam yang akan diedit',
+                title: 'Kelola Penanganan',
+                subtitle:
+                    'Pilih penanganan penyakit ayam yang ingin diedit atau dihapus',
               ),
               if (_isLoading)
                 const Padding(
@@ -129,7 +159,8 @@ class _PilihPenangananState extends State<PilihPenanganan> {
                 ListView.builder(
                   shrinkWrap: true,
                   physics: const NeverScrollableScrollPhysics(),
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   itemCount: _penyakitList.length,
                   itemBuilder: (context, index) {
                     final penyakit = _penyakitList[index];
@@ -143,7 +174,8 @@ class _PilihPenangananState extends State<PilihPenanganan> {
                       ),
                       child: Theme(
                         data: Theme.of(context).copyWith(
-                          dividerColor: Colors.transparent, // Menghilangkan garis pembatas
+                          dividerColor: Colors
+                              .transparent, // Menghilangkan garis pembatas
                         ),
                         child: ExpansionTile(
                           tilePadding: const EdgeInsets.symmetric(
@@ -159,18 +191,32 @@ class _PilihPenangananState extends State<PilihPenanganan> {
                               if (hasPenanganan)
                                 Text(
                                   'Penanganan tersedia',
-                                  style: regular12.copyWith(color: green1),
+                                  style:
+                                      regular12.copyWith(color: Colors.green),
                                 )
                               else
                                 Text(
                                   'Belum ada penanganan',
-                                  style: regular12.copyWith(color: Colors.orange),
+                                  style:
+                                      regular12.copyWith(color: Colors.orange),
                                 ),
-                              const SizedBox(height: 2),
-                              Text(
-                                'Dibuat: ${DateFormat('dd MMMM yyyy', 'id_ID').format(penyakit.createdAt!)}',
-                                style: regular12.copyWith(color: Colors.grey),
-                              ),
+                              if (penyakit.penanganan.isNotEmpty) ...[
+                                const SizedBox(height: 2),
+                                Text(
+                                  () {
+                                    final t = penyakit.penanganan
+                                                .first['updatedAt'] !=
+                                            null
+                                        ? DateTime.parse(penyakit
+                                            .penanganan.first['updatedAt'])
+                                        : penyakit.updatedAt;
+                                    return t != null
+                                        ? 'Diupdate: ${DateFormat('dd MMMM yyyy', 'id_ID').format(t)}'
+                                        : '';
+                                  }(),
+                                  style: regular12.copyWith(color: Colors.grey),
+                                ),
+                              ],
                             ],
                           ),
                           children: [
@@ -184,19 +230,25 @@ class _PilihPenangananState extends State<PilihPenanganan> {
                                 ),
                               )
                             else
-                              ...penyakit.penanganan.asMap().entries.map((entry) {
+                              ...penyakit.penanganan
+                                  .asMap()
+                                  .entries
+                                  .map((entry) {
                                 final i = entry.key;
                                 final item = entry.value;
                                 return Container(
-                                  margin: const EdgeInsets.fromLTRB(16, 4, 16, 4),
+                                  margin:
+                                      const EdgeInsets.fromLTRB(16, 4, 16, 4),
                                   padding: const EdgeInsets.all(12),
                                   decoration: BoxDecoration(
                                     color: Colors.grey.shade50,
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.grey.shade200),
+                                    border:
+                                        Border.all(color: Colors.grey.shade200),
                                   ),
                                   child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Row(
                                         children: [
@@ -205,33 +257,55 @@ class _PilihPenangananState extends State<PilihPenanganan> {
                                                 horizontal: 8, vertical: 2),
                                             decoration: BoxDecoration(
                                               color: green1.withOpacity(0.12),
-                                              borderRadius: BorderRadius.circular(6),
+                                              borderRadius:
+                                                  BorderRadius.circular(6),
                                             ),
                                             child: Text(
-                                              'Penanganan ${i + 1}',
-                                              style: semibold12.copyWith(color: green1),
+                                              item['updatedAt'] != null
+                                                  ? DateFormat(
+                                                          'dd MMMM yyyy',
+                                                          'id_ID')
+                                                      .format(DateTime.parse(
+                                                          item['updatedAt']))
+                                                  : 'Penanganan ${i + 1}',
+                                              style: semibold12.copyWith(
+                                                  color: green1),
                                             ),
                                           ),
                                           const Spacer(),
-                                          GestureDetector(
-                                            onTap: () {
-                                              if (_isHapusMode) {
-                                                _deletePenanganan(item);
-                                              } else {
-                                                context.push(
-                                                  '/edit-penanganan',
-                                                  extra: TambahPenangananPenyakitAyamScreen(
-                                                      penanganan: item),
-                                                );
-                                              }
-                                            },
-                                            child: Icon(
-                                              _isHapusMode
-                                                  ? Icons.delete_outline
-                                                  : Icons.edit_outlined,
-                                              size: 18,
-                                              color: _isHapusMode ? Colors.red : green1,
-                                            ),
+                                          Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              GestureDetector(
+                                                onTap: () async {
+                                                  final result =
+                                                      await context.push(
+                                                    '/edit-penanganan',
+                                                    extra:
+                                                        TambahPenangananPenyakitAyamScreen(
+                                                            penanganan: item),
+                                                  );
+                                                  if (result == true) {
+                                                    _fetchData();
+                                                  }
+                                                },
+                                                child: Icon(
+                                                  Icons.edit_outlined,
+                                                  size: 18,
+                                                  color: green1,
+                                                ),
+                                              ),
+                                              const SizedBox(width: 12),
+                                              GestureDetector(
+                                                onTap: () =>
+                                                    _deletePenanganan(item),
+                                                child: const Icon(
+                                                  Icons.delete_outline,
+                                                  size: 18,
+                                                  color: Colors.red,
+                                                ),
+                                              ),
+                                            ],
                                           ),
                                         ],
                                       ),
@@ -242,30 +316,40 @@ class _PilihPenangananState extends State<PilihPenanganan> {
                                         textAlign: TextAlign.justify,
                                       ),
                                       if (item['gambar'] != null &&
-                                          (item['gambar'] as String).isNotEmpty) ...[
+                                          (item['gambar'] as String)
+                                              .isNotEmpty) ...[
                                         const SizedBox(height: 10),
                                         ClipRRect(
-                                          borderRadius: BorderRadius.circular(8),
+                                          borderRadius:
+                                              BorderRadius.circular(8),
                                           child: Image.network(
                                             item['gambar'],
                                             width: double.infinity,
                                             fit: BoxFit.fitWidth,
-                                            loadingBuilder: (ctx, child, progress) {
-                                              if (progress == null) return child;
+                                            loadingBuilder:
+                                                (ctx, child, progress) {
+                                              if (progress == null)
+                                                return child;
                                               return const SizedBox(
                                                 height: 120,
                                                 child: Center(
-                                                    child: CircularProgressIndicator(strokeWidth: 2)),
+                                                    child:
+                                                        CircularProgressIndicator(
+                                                            strokeWidth: 2)),
                                               );
                                             },
-                                            errorBuilder: (ctx, err, st) => Container(
+                                            errorBuilder: (ctx, err, st) =>
+                                                Container(
                                               height: 200,
                                               decoration: BoxDecoration(
                                                 color: Colors.grey.shade100,
-                                                borderRadius: BorderRadius.circular(8),
+                                                borderRadius:
+                                                    BorderRadius.circular(8),
                                               ),
                                               child: const Center(
-                                                  child: Icon(Icons.broken_image_outlined,
+                                                  child: Icon(
+                                                      Icons
+                                                          .broken_image_outlined,
                                                       color: Colors.grey)),
                                             ),
                                           ),

@@ -27,6 +27,8 @@ class _PilihPenyakitAyamState extends State<PilihPenyakitAyam> {
   Future<void> _fetchData() async {
     try {
       final data = await _gejalaService.getPenyakitWithGejala();
+      data.sort((a, b) =>
+    (b.updatedAt ?? DateTime(0)).compareTo(a.updatedAt ?? DateTime(0)));
       setState(() {
         _penyakit = data;
         _isLoading = false;
@@ -101,11 +103,13 @@ class _PilihPenyakitAyamState extends State<PilihPenyakitAyam> {
       }
     }
   }
+
   @override
   void initState() {
     super.initState();
     _fetchData();
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -117,22 +121,19 @@ class _PilihPenyakitAyamState extends State<PilihPenyakitAyam> {
           titleSpacing: 0,
           elevation: 0,
           toolbarHeight: 80,
-          title: Header(
+          title: const Header(
               headerType: HeaderType.back,
               title: 'Manajemen Penyakit Ayam',
-              greeting: _isHapusMode ? 'Hapus Penyakit Ayam' : 'Edit Penyakit Ayam'),
+              greeting: 'Kelola Penyakit Ayam'),
         ),
       ),
-
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: [
               BannerWidget(
-                title: _isHapusMode ? 'Hapus Penyakit Ayam' : 'Edit Penyakit Ayam',
-                subtitle: _isHapusMode
-                    ? 'Pilih penyakit ayam yang ingin dihapus'
-                    : 'Pilih penyakit ayam yang ingin diedit',
+                title: 'Kelola Penyakit Ayam',
+                subtitle: 'Pilih penyakit ayam yang ingin diedit atau dihapus',
               ),
               if (_isLoading)
                 const Padding(
@@ -144,51 +145,69 @@ class _PilihPenyakitAyamState extends State<PilihPenyakitAyam> {
                   padding: EdgeInsets.symmetric(vertical: 40),
                   child: Center(child: Text('Tidak ada data penyakit')),
                 ),
-              
               if (!_isLoading && _penyakit.isNotEmpty)
-              ListView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                itemCount: _penyakit.length,
-                itemBuilder: (context, index) {
-                  final penyakit = _penyakit[index];
-                  return Card(
-                    elevation: 0,
-                    margin: const EdgeInsets.only(bottom: 12),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      side: BorderSide(color: Colors.grey.shade200),
-                    ),
-                    child: ListTile(
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 8),
-                      title: Text(
-                        penyakit.namaPenyakit,
-                        style: semibold14.copyWith(color: Colors.black87),
+                ListView.builder(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  itemCount: _penyakit.length,
+                  itemBuilder: (context, index) {
+                    final penyakit = _penyakit[index];
+                    return Card(
+                      elevation: 0,
+                      margin: const EdgeInsets.only(bottom: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                        side: BorderSide(color: Colors.grey.shade200),
                       ),
-                      subtitle: Text(
-                        'Dibuat: ${DateFormat('dd MMMM yyyy', 'id_ID').format(penyakit.createdAt!)}',
-                        style: regular12.copyWith(color: Colors.grey),
-                      ),
-                      trailing: Icon(
-                        _isHapusMode ? Icons.delete_outline : Icons.edit_outlined,
-                        color: _isHapusMode ? Colors.red : green1,
-                      ),
-                      onTap: () {
-                        if (_isHapusMode) {
-                          _deletePenyakit(penyakit);
-                        } else {
-                          context.push(
+                      child: ListTile(
+                        contentPadding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 8),
+                        title: Text(
+                          penyakit.namaPenyakit,
+                          style: semibold14.copyWith(color: Colors.black87),
+                        ),
+                        subtitle: Text(
+                          'Diupdate: ${DateFormat('dd MMMM yyyy', 'id_ID').format(penyakit.updatedAt!)}',
+                          style: regular12.copyWith(color: Colors.grey),
+                        ),
+                        trailing: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            IconButton(
+                              icon: Icon(Icons.edit_outlined, color: green1),
+                              onPressed: () async {
+                                final result = await context.push(
+                                  '/edit-penyakit-ayam',
+                                  extra: TambahPenyakitAyamScreen(
+                                      penyakit: penyakit),
+                                );
+                                if (result == true) {
+                                  _fetchData();
+                                }
+                              },
+                            ),
+                            IconButton(
+                              icon: const Icon(Icons.delete_outline,
+                                  color: Colors.red),
+                              onPressed: () => _deletePenyakit(penyakit),
+                            ),
+                          ],
+                        ),
+                        onTap: () async {
+                          final result = await context.push(
                             '/edit-penyakit-ayam',
                             extra: TambahPenyakitAyamScreen(penyakit: penyakit),
                           );
-                        }
-                      },
-                    ),
-                  );
-                },
-              )
+                          if (result == true) {
+                            _fetchData();
+                          }
+                        },
+                      ),
+                    );
+                  },
+                )
             ],
           ),
         ),

@@ -5,7 +5,6 @@ import 'package:smart_farming_app/screen/penyakit_ayam/pilih_gejala_edit_screen.
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_gejala_screen.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/banner.dart';
-import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/widget/menu_btn.dart';
 
@@ -80,7 +79,7 @@ class _ManajemenGejalaState extends State<ManajemenGejala> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 100),
+            padding: const EdgeInsets.only(bottom: 16),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -102,6 +101,7 @@ class _ManajemenGejalaState extends State<ManajemenGejala> {
                       setState(() {
                         selectedReport = report['title'];
                       });
+                      navigateBasedOnSelection();
                     },
                   ),
               ],
@@ -109,19 +109,7 @@ class _ManajemenGejalaState extends State<ManajemenGejala> {
           ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: CustomButton(
-              onPressed: () {
-                navigateBasedOnSelection();
-              },
-              buttonText: 'Selanjutnya',
-              backgroundColor: green1,
-              textStyle: semibold16.copyWith(color: white),
-              key: const Key('next_button')),
-        ),
-      ),
+
     );
   }
 }

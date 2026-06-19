@@ -124,7 +124,7 @@ class _TambahGejalaScreenState extends State<TambahGejalaScreen> {
               backgroundColor: Colors.green,
             ),
           );
-          Navigator.of(context).pop();
+          Navigator.of(context).pop(true);
         }
       } else {
         if (mounted) {

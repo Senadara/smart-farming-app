@@ -106,10 +106,10 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
             content: Text(_isEditMode
                 ? 'Penanganan berhasil diperbarui'
                 : 'Penanganan penyakit berhasil ditambahkan'),
-            backgroundColor: green1,
+            backgroundColor: Colors.green,
           ),
         );
-        Navigator.pop(context);
+        Navigator.pop(context, true);
       }
     } catch (_) {
       if (mounted) {

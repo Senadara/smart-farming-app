@@ -53,7 +53,14 @@ class GejalaPenyakitAyam {
       if (response.statusCode == 200) {
         final Map<String, dynamic> decodedData = jsonDecode(response.body);
         final List<dynamic> data = decodedData['data'];
-        return data.map((json) => PenyakitAyam.fromJson(json)).toList();
+        final list = data.map((json) => PenyakitAyam.fromJson(json)).toList();
+        list.sort((a, b) {
+          if (a.updatedAt == null && b.updatedAt == null) return 0;
+          if (a.updatedAt == null) return 1;
+          if (b.updatedAt == null) return -1;
+          return b.updatedAt!.compareTo(a.updatedAt!);
+        });
+        return list;
       } else {
         throw Exception('Failed to load penyakit: ${response.statusCode}');
       }
@@ -77,7 +84,15 @@ class GejalaPenyakitAyam {
       if (response.statusCode == 200) {
         final Map<String, dynamic> decodedData = jsonDecode(response.body);
         final List<dynamic> data = decodedData['data'];
-        return data.map((json) => PenyakitAyam.fromJson(json)).toList();
+        debugPrint('Data: $data');
+        final list = data.map((json) => PenyakitAyam.fromJson(json)).toList();
+        list.sort((a, b) {
+          if (a.updatedAt == null && b.updatedAt == null) return 0;
+          if (a.updatedAt == null) return 1;
+          if (b.updatedAt == null) return -1;
+          return b.updatedAt!.compareTo(a.updatedAt!);
+        });
+        return list;
       } else {
         throw Exception('Failed to load penyakit: ${response.statusCode}');
       }
@@ -352,7 +367,16 @@ class GejalaPenyakitAyam {
       if (response.statusCode == 200) {
         final Map<String, dynamic> decodedData = jsonDecode(response.body);
         final List<dynamic> data = decodedData['data'];
-        return data.map((json) => PenyakitAyam.fromJson(json)).toList();
+        debugPrint('data penyakit with penanganan: ${data.toString()}');
+        final list = data.map((json) => PenyakitAyam.fromJson(json)).toList();
+        list.sort((a, b) {
+          if (a.updatedAt == null && b.updatedAt == null) return 0;
+          if (a.updatedAt == null) return 1;
+          if (b.updatedAt == null) return -1;
+          return b.updatedAt!.compareTo(a.updatedAt!);
+          
+        });
+        return list;
       } else {
         throw Exception('Failed to load penyakit with penanganan: ${response.statusCode}');
       }
@@ -478,6 +502,36 @@ class GejalaPenyakitAyam {
       return {
         'status': false,
         'message': 'An error occurred: ${e.toString()}',
+      };
+    }
+  }
+
+  Future<Map<String, dynamic>> deleteGejalaAyam(String id) async {
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json',
+    };
+    final url = Uri.parse('$baseUrl/penyakit-ayam/delete-gejala/$id');
+
+    try {
+      final response = await http.delete(url, headers: headers);
+      debugPrint('response body delete gejala: ${response.body}');
+
+      if (response.statusCode == 200 || response.statusCode == 204) {
+        return {'status': true, 'message': 'Gejala berhasil dihapus'};
+      } else {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        return {
+          'status': false,
+          'message': decodedData['message'] ??
+              'Gagal menghapus gejala: ${response.statusCode}',
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'Error: ${e.toString()}',
       };
     }
   }

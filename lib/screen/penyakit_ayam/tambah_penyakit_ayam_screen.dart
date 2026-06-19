@@ -137,18 +137,15 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
 
       if (response['status']) {
         if (mounted) {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (_) => LaporanBerhasilScreen(
-                title: _isEditMode
-                    ? 'Penyakit Ayam Berhasil Diperbarui'
-                    : 'Penyakit Ayam Berhasil Ditambahkan',
-                message: _isEditMode
-                    ? 'Data penyakit ayam telah berhasil diperbarui.'
-                    : 'Data penyakit ayam baru telah berhasil disimpan ke sistem.',
-              ),
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(_isEditMode
+                  ? 'Penyakit Ayam Berhasil Diperbarui'
+                  : 'Penyakit Ayam Berhasil Ditambahkan'),
+              backgroundColor: Colors.green,
             ),
           );
+          Navigator.of(context).pop(true);
         }
       } else {
         throw Exception(response['message'] ??

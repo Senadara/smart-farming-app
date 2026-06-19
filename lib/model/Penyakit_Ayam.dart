@@ -18,9 +18,8 @@ class PenyakitGejala {
       id: json['id'] ?? '',
       penyakitId: json['penyakit_id'] ?? '',
       gejalaId: json['gejala_id'] ?? '',
-      gejala: json['gejala'] != null
-          ? GejalaModel.fromJson(json['gejala'])
-          : null,
+      gejala:
+          json['gejala'] != null ? GejalaModel.fromJson(json['gejala']) : null,
     );
   }
 }
@@ -56,8 +55,8 @@ class PenyakitAyam {
               .toList()
           : [],
       penanganan: json['penanganan'] != null
-          ? List<Map<String, dynamic>>.from(
-              (json['penanganan'] as List).map((e) => Map<String, dynamic>.from(e)))
+          ? List<Map<String, dynamic>>.from((json['penanganan'] as List)
+              .map((e) => Map<String, dynamic>.from(e)))
           : [],
     );
   }

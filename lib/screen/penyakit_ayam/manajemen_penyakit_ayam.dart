@@ -4,7 +4,6 @@ import 'package:smart_farming_app/screen/penyakit_ayam/pilih_penyakit_ayam.dart'
 import 'package:smart_farming_app/screen/penyakit_ayam/tambah_penyakit_ayam_screen.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/banner.dart';
-import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/widget/menu_btn.dart';
 
@@ -24,11 +23,7 @@ class _ManajemenPenyakitAyamState extends State<ManajemenPenyakitAyam> {
         context.push('/tambah-penyakit-ayam',
             extra: const TambahPenyakitAyamScreen());
         break;
-      case 'Hapus Penyakit Ayam':
-        context.push('/pilih-penyakit-hapus',
-            extra: const PilihPenyakitAyam(mode: 'hapus'));
-        break;
-      case 'Edit Penyakit Ayam':
+      case 'Kelola Penyakit Ayam':
         context.push('/pilih-penyakit-edit',
             extra: const PilihPenyakitAyam());
         break;
@@ -45,16 +40,10 @@ class _ManajemenPenyakitAyamState extends State<ManajemenPenyakitAyam> {
             'Tambah penyakit ayam sesuai arahan pakar',
       },
       {
-        'title': 'Hapus Penyakit Ayam',
+        'title': 'Kelola Penyakit Ayam',
         'icon': 'assets/icons/set/sick-chicken-filled.png',
         'description':
-            'Hapus penyakit ayam sesuai arahan pakar',
-      },
-      {
-        'title': 'Edit Penyakit Ayam',
-        'icon': 'assets/icons/set/sick-chicken-filled.png',
-        'description':
-            'Edit penyakit ayam sesuai arahan pakar',
+            'Edit atau hapus penyakit ayam sesuai arahan pakar',
       },
     ];
     return Scaffold(
@@ -80,7 +69,7 @@ class _ManajemenPenyakitAyamState extends State<ManajemenPenyakitAyam> {
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.only(bottom: 16),
             child: Column(
               children: [
                 BannerWidget(
@@ -101,6 +90,7 @@ class _ManajemenPenyakitAyamState extends State<ManajemenPenyakitAyam> {
                       setState(() {
                         selectedReport = report['title'];
                       });
+                      navigateBasedOnSelection();
                     },
                   ),
               ],
@@ -108,19 +98,7 @@ class _ManajemenPenyakitAyamState extends State<ManajemenPenyakitAyam> {
           ),
         ),
       ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: CustomButton(
-              onPressed: () {
-                navigateBasedOnSelection();
-              },
-              buttonText: 'Selanjutnya',
-              backgroundColor: green1,
-              textStyle: semibold16.copyWith(color: white),
-              key: const Key('next_button')),
-        ),
-      ),
+
     );
   }
 }
