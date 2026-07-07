@@ -5,12 +5,14 @@ class DiagnosisCard extends StatelessWidget {
   final String namaPenyakit;
   final List<dynamic> gejala;
   final double? cfScore;
+  final List<String> selectedAyamIds;
 
   const DiagnosisCard({
     super.key,
     required this.namaPenyakit,
     required this.gejala,
     this.cfScore,
+    this.selectedAyamIds = const [],
   });
 
   @override
@@ -77,7 +79,57 @@ class DiagnosisCard extends StatelessWidget {
                   namaPenyakit,
                   style: semibold20.copyWith(color: dark1, fontSize: 22),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
+
+                // Ayam yang dipilih
+                if (selectedAyamIds.isNotEmpty) ...[
+                  Row(
+                    children: [
+                      Icon(Icons.pets_outlined, size: 14, color: green1),
+                      const SizedBox(width: 6),
+                      Text(
+                        'Petak Dilaporkan (${selectedAyamIds.length} petak)',
+                        style: semibold14.copyWith(color: green1),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 8),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 6,
+                    children: selectedAyamIds
+                        .map(
+                          (label) => Container(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 10, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: green1.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(20),
+                              border:
+                                  Border.all(color: green1.withOpacity(0.4)),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(Icons.circle,
+                                    size: 7, color: green1),
+                                const SizedBox(width: 5),
+                                Text(
+                                  label,
+                                  style: regular14.copyWith(
+                                      color: green1,
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                        .toList(),
+                  ),
+                  const SizedBox(height: 12),
+                ],
+                const SizedBox(height: 2),
                 
                 if (cfScore != null) ...[
                   const SizedBox(height: 8),

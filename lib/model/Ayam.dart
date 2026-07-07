@@ -4,8 +4,13 @@ class Ayam {
   final List<String> ayamIds;
   final LivestockStatus status;
   final String? displayLabel;
+  final String? sickStatus; // "" = belum ditangani, "Sudah ditangani" = sudah
 
-  Ayam({required this.ayamIds, required this.status, this.displayLabel});
+  Ayam(
+      {required this.ayamIds,
+      required this.status,
+      this.displayLabel,
+      this.sickStatus});
 }
 
 List<List<Ayam>> generateAyamLayout({
@@ -42,9 +47,12 @@ List<List<Ayam>> generateAyamLayout({
   });
 }
 
+/// [sickIds] adalah Map<objekBudidayaId, statusPenanganan>
+/// contoh: {"abc-123": "", "def-456": "Sudah ditangani"}
 List<List<Ayam>> generateAyamLayoutFromApi({
   required List<dynamic> dataApi,
   required int kapasitas,
+  Map<String, String> sickIds = const {},
 }) {
   const letters = ['A', 'B', 'C', 'G', 'D', 'E', 'F'];
   const effectiveCols = 6;
@@ -68,10 +76,13 @@ List<List<Ayam>> generateAyamLayoutFromApi({
       if (dataIndex < dataApi.length) {
         final item = dataApi[dataIndex];
         dataIndex++;
+        final id = item['id'].toString();
+        final isSick = sickIds.containsKey(id);
         return Ayam(
-            ayamIds: [item['id'].toString()],
-            status: LivestockStatus.AVAILABLE,
-            displayLabel: '$letter$number');
+            ayamIds: [id],
+            status: isSick ? LivestockStatus.SICK : LivestockStatus.AVAILABLE,
+            displayLabel: '$letter$number',
+            sickStatus: isSick ? sickIds[id] : null);
       } else {
         return Ayam(
             ayamIds: [],
@@ -81,3 +92,4 @@ List<List<Ayam>> generateAyamLayoutFromApi({
     }).toList();
   });
 }
+

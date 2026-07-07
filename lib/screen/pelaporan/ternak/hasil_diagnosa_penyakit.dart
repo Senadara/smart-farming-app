@@ -52,6 +52,12 @@ class _HasilDiagnosisPenyakitScreenState
     final namaPenyakit =
         widget.data['namaPenyakit'] as String? ?? 'Tidak diketahui';
     final gejala = widget.data['gejala'] as List<dynamic>? ?? [];
+    final selectedAyamLabels =
+        (widget.data['selectedAyamLabels'] as List<dynamic>?)
+            ?.map((e) => e.toString())
+            .toList() ?? [];
+
+    debugPrint('[HasilDiagnosa] selectedAyamLabels: $selectedAyamLabels');
 
     final rawPenanganan = widget.data['penanganan'] as List<dynamic>? ?? [];
     final penangananList = rawPenanganan.map((p) {
@@ -90,6 +96,7 @@ class _HasilDiagnosisPenyakitScreenState
               namaPenyakit: namaPenyakit,
               gejala: gejala,
               cfScore: cfScore,
+              selectedAyamIds: selectedAyamLabels,
             ),
 
             const SizedBox(height: 4),

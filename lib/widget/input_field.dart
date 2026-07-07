@@ -59,8 +59,13 @@ class InputFieldWidget extends StatelessWidget {
             hintStyle: medium14.copyWith(color: grey),
             border: OutlineInputBorder(
               borderRadius: BorderRadius.circular(8),
-              borderSide: BorderSide.none,
+              borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
             ),
+            enabledBorder: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(8),
+              borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+            ),
+            
             filled: true,
             // fillColor: TelkomColors.card,
             fillColor: Colors.white,

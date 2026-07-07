@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_farming_app/model/ayam.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_gejala_screen.dart';
+import 'package:smart_farming_app/service/laporan_service.dart';
 import 'package:smart_farming_app/service/objek_budidaya_service.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
@@ -31,32 +32,64 @@ class PilihAyamScreen extends StatefulWidget {
 
 class _PilihAyamScreenState extends State<PilihAyamScreen> {
   final ObjekBudidayaService _objekBudidayaService = ObjekBudidayaService();
+  final LaporanService _laporanService = LaporanService();
 
   List<dynamic> _listTernak = [];
   final List<Map<String, dynamic>> _selectedTernak = [];
   List<String> _selectedAyamIds =
       []; // ID ayam yang dipilih dari layout kandang
+  List<String> _selectedAyamLabels =
+      []; // Kode petak ayam yang dipilih (misal A1, B2)
+
+  // Map<objekBudidayaId, statusPenanganan> dari riwayat laporan sakit
+  Map<String, String> _sickIds = {};
 
   // Layout kandang dibuat setelah fetch API selesai
   List<List<Ayam>> _ayamLayout = [];
 
   Future<void> _fetchData() async {
     try {
-      Map<String, dynamic> response = {};
-
       final unitBudidaya = widget.data?['unitBudidaya'];
+      final String unitId = unitBudidaya?['id'] ?? '';
       final int kapasitas = unitBudidaya?['kapasitas'] ?? 0;
 
-      response = await _objekBudidayaService
-          .getObjekBudidayaByUnitBudidaya(unitBudidaya['id']);
+      // Fetch data ayam dan riwayat sakit secara paralel
+      final results = await Future.wait([
+        _objekBudidayaService.getObjekBudidayaByUnitBudidaya(unitId),
+        _laporanService.getRiwayatLaporanAyamSakit(unitId),
+      ]);
 
-      debugPrint("[Debug] Response: ${response.toString()}");
+      final response = results[0];
+      final riwayatResponse = results[1];
+
+      // Bangun map sickIds dari riwayat laporan: {objekBudidayaId: status}
+      final Map<String, String> sickIds = {};
+      if (riwayatResponse['status'] == true) {
+        final List<dynamic> riwayat = riwayatResponse['data'] ?? [];
+        for (final laporan in riwayat) {
+          final List<dynamic> objekList = laporan['objekBudidayaList'] ?? [];
+          final String status = laporan['Sakit']?['status'] ?? '';
+          for (final objek in objekList) {
+            final String id = objek['id']?.toString() ?? '';
+            if (id.isNotEmpty) {
+              // Simpan status; jika sudah ada & salah satu belum ditangani,
+              // prioritaskan "belum ditangani" (string kosong)
+              if (!sickIds.containsKey(id) || sickIds[id] == 'Sudah ditangani') {
+                sickIds[id] = status;
+              }
+            }
+          }
+        }
+      }
+
       if (response['status']) {
         setState(() {
           _listTernak = response['data'] ?? [];
+          _sickIds = sickIds;
           _ayamLayout = generateAyamLayoutFromApi(
             dataApi: _listTernak,
             kapasitas: kapasitas,
+            sickIds: _sickIds,
           );
         });
       }
@@ -78,6 +111,7 @@ class _PilihAyamScreenState extends State<PilihAyamScreen> {
 
     final updatedData = Map<String, dynamic>.from(widget.data ?? {});
     updatedData['selectedAyamIds'] = _selectedAyamIds;
+    updatedData['selectedAyamLabels'] = _selectedAyamLabels;
 
     context.push('/pilih-gejala',
         extra: PilihGejalaScreen(
@@ -130,9 +164,13 @@ class _PilihAyamScreenState extends State<PilihAyamScreen> {
               child: Container(
                 child: KandangLayoutWidget(
                   ayamLayout: _ayamLayout,
-                  onSelectionChanged: (ids) {
+                  onSelectionChanged: (ids, ayamList) {
                     setState(() {
                       _selectedAyamIds = ids;
+                      _selectedAyamLabels = ayamList
+                          .map((a) => a.displayLabel ?? '')
+                          .where((label) => label.isNotEmpty)
+                          .toList();
                     });
                   },
                 ),

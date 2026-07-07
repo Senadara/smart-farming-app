@@ -49,6 +49,7 @@ class _ListLaporanAyamSakitScreenState
             data.map((e) => LaporanAyamSakit.fromJson(e)).toList();
         _isLoading = false;
       });
+      debugPrint('[list_laporan_ayam_sakit]: ${_laporanList.toString()}');
     } else {
       setState(() {
         _errorMessage = result['message']?.toString() ?? 'Terjadi kesalahan';
@@ -142,9 +143,6 @@ class _ListLaporanAyamSakitScreenState
     );
   }
 
-  // ---------------------------------------------------------------------------
-  // Build
-  // ---------------------------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(

@@ -89,19 +89,31 @@ class _PetakKandangLayoutState extends State<PetakKandangLayout> {
 
                 final isSelected = widget.selectedAyam.contains(block);
 
+                Color boxColor;
+                if (isSelected) {
+                  boxColor = Colors.blue;
+                } else if (status == LivestockStatus.SICK) {
+                  final sudahDitangani =
+                      block.sickStatus == 'Sudah ditangani';
+                  boxColor =
+                      sudahDitangani ? Colors.green : Colors.red.shade600;
+                } else if (status == LivestockStatus.AVAILABLE) {
+                  boxColor = Colors.green;
+                } else {
+                  boxColor = Colors.grey;
+                }
+
+                final bool isSelectable = status == LivestockStatus.AVAILABLE;
+
                 return GestureDetector(
-                  onTap: () {
-                    widget.onAyamSelected?.call(block);
-                  },
+                  onTap: isSelectable
+                      ? () => widget.onAyamSelected?.call(block)
+                      : null,
                   child: Container(
                     width: width,
                     height: height,
                     decoration: BoxDecoration(
-                      color: isSelected
-                          ? Colors.blue
-                          : status == LivestockStatus.AVAILABLE
-                              ? Colors.green
-                              : Colors.grey,
+                      color: boxColor,
                       borderRadius: BorderRadius.circular(4),
                     ),
                     alignment: Alignment.center,
@@ -109,12 +121,10 @@ class _PetakKandangLayoutState extends State<PetakKandangLayout> {
                       block.displayLabel ?? ayam.join(" | "),
                       overflow: TextOverflow.clip,
                       maxLines: 1,
-                      style: Theme.of(
-                        context,
-                      )
+                      style: Theme.of(context)
                           .textTheme
                           .labelSmall
-                          ?.copyWith(color: Colors.white, fontSize: 8),
+                          ?.copyWith(color: Colors.white, fontSize: 15),
                     ),
                   ),
                 );

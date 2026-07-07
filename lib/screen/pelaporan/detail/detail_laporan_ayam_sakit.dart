@@ -58,7 +58,7 @@ class _DetailLaporanAyamSakitState extends State<DetailLaporanAyamSakit> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: white,
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: AppBar(
@@ -120,9 +120,14 @@ class _DetailLaporanAyamSakitState extends State<DetailLaporanAyamSakit> {
                                       fit: BoxFit.cover)),
                             ),
                           DiagnosisCard(
-                            namaPenyakit: laporanSakit?['namaPenyakit']?['nama_penyakit'] ?? '-',
+                            key: ValueKey(
+                                'diagnosis_${laporanSakit?['objekBudidayaList']?.length ?? 0}'),
+                            namaPenyakit: laporanSakit?['namaPenyakit']
+                                    ?['nama_penyakit'] ??
+                                '-',
                             gejala: _getGejalaStrings(),
                             cfScore: laporanSakit?['cfScore']?.toDouble(),
+                            selectedAyamIds: _getObjekBudidayaLabels(),
                           ),
 
                           const SizedBox(height: 4),
@@ -152,5 +157,29 @@ class _DetailLaporanAyamSakitState extends State<DetailLaporanAyamSakit> {
       }
     }
     return result;
+  }
+
+  List<String> _getObjekBudidayaLabels() {
+    final list = laporanSakit?['objekBudidayaList'] as List?;
+    if (list == null || list.isEmpty) return [];
+
+    // Kolom efektif: A, B, C, D, E, F (G = lorong, tidak dihitung)
+    // Sama dengan generateAyamLayout di model/Ayam.dart
+    const effectiveLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+
+    return list.map((item) {
+      final namaId = item['namaId']?.toString() ?? '';
+      // Ekstrak nomor dari "Ayam #N"
+      final match = RegExp(r'#(\d+)$').firstMatch(namaId);
+      if (match == null) return namaId; // fallback ke namaId asli
+
+      final n = int.tryParse(match.group(1)!) ?? 0;
+      if (n <= 0) return namaId;
+
+      final idx = n - 1; // 0-based index
+      final row = (idx ~/ 6) + 1;
+      final col = idx % 6;
+      return '${effectiveLetters[col]}$row';
+    }).toList();
   }
 }

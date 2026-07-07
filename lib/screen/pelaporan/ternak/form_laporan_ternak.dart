@@ -123,10 +123,11 @@ class _FormLaporanTernakState extends State<FormLaporanTernak> {
 
       final formData = {
         'unitBudidayaId': widget.data['unitBudidaya']?['id'] ?? '',
-        'objekBudidayaId':
-            (widget.data['selectedAyamIds'] as List?)?.firstOrNull ??
-                widget.data['objekBudidayaId'] ??
-                '',
+        'objekBudidayaIds':
+            (widget.data['selectedAyamIds'] as List<dynamic>?)
+                ?.map((e) => e.toString())
+                .toList() ??
+            [],
         'tipe': widget.tipe,
         'judul': widget.data['judul'] ?? 'Laporan Sakit',
         'gambar': imageUrl['data'],
@@ -198,16 +199,23 @@ class _FormLaporanTernakState extends State<FormLaporanTernak> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Kartu diagnosis
-              DiagnosisCard(
-                namaPenyakit: widget.data['namaPenyakit'] ?? 'Tidak Diketahui',
-                gejala: widget.data['gejala'] as List<dynamic>? ?? [],
-              ),
+              Builder(builder: (context) {
+                debugPrint('[FormLaporanTernak] selectedAyamLabels: ${widget.data['selectedAyamLabels']}');
+                return DiagnosisCard(
+                  namaPenyakit: widget.data['namaPenyakit'] ?? 'Tidak Diketahui',
+                  gejala: widget.data['gejala'] as List<dynamic>? ?? [],
+                  selectedAyamIds: (widget.data['selectedAyamLabels'] as List<dynamic>?)
+                      ?.map((e) => e.toString())
+                      .toList() ?? [],
+                );
+              }),
 
               const SizedBox(height: 4),
 
               // Tanggal Kejadian
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
+                
                 child: DatePickerField(
                   label: 'Tanggal Kejadian',
                   isRequired: true,
@@ -225,7 +233,7 @@ class _FormLaporanTernakState extends State<FormLaporanTernak> {
                   children: [
                     Row(
                       children: [
-                        Text('Status Penanganan', style: bold16),
+                        Text('Status Penanganan', style: bold16.copyWith(color: dark1)),
                         const SizedBox(width: 4),
                         Text(
                           '*',
@@ -280,9 +288,6 @@ class _FormLaporanTernakState extends State<FormLaporanTernak> {
                   validator: (value) {
                     if (value == null || value.trim().isEmpty) {
                       return 'Catatan tidak boleh kosong';
-                    }
-                    if (value.trim().length < 10) {
-                      return 'Catatan terlalu singkat (min. 10 karakter)';
                     }
                     return null;
                   },

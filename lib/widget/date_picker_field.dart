@@ -79,7 +79,7 @@ class _DatePickerFieldState extends State<DatePickerField> {
         // Label dengan tanda wajib
         Row(
           children: [
-            Text(widget.label, style: bold16),
+            Text(widget.label, style: bold16.copyWith(color: dark1)),
             if (widget.isRequired) ...[
               const SizedBox(width: 4),
               Text('*', style: bold16.copyWith(color: Colors.red)),

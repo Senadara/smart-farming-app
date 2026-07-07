@@ -47,6 +47,7 @@ class _ManajemenPenyakitAyamState extends State<ManajemenPenyakitAyam> {
       },
     ];
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(100),
         child: AppBar(

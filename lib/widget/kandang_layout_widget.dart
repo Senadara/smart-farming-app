@@ -13,7 +13,7 @@ class KandangLayoutWidget extends StatefulWidget {
   });
 
   final List<List<Ayam>> ayamLayout;
-  final void Function(List<String> selectedIds)? onSelectionChanged;
+  final void Function(List<String> selectedIds, List<Ayam> selectedAyam)? onSelectionChanged;
 
   @override
   State<KandangLayoutWidget> createState() => _KandangLayoutWidgetState();
@@ -60,7 +60,7 @@ class _KandangLayoutWidgetState extends State<KandangLayoutWidget> {
     final selectedIds =
         selectedAyamNotifier.value.expand((ayam) => ayam.ayamIds).toList();
     print('Kotak terpilih: $selectedIds');
-    widget.onSelectionChanged?.call(selectedIds);
+    widget.onSelectionChanged?.call(selectedIds, List.of(selectedAyamNotifier.value));
   }
 
   @override

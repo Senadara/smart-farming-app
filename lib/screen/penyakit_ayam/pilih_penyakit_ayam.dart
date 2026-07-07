@@ -113,6 +113,7 @@ class _PilihPenyakitAyamState extends State<PilihPenyakitAyam> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: AppBar(
