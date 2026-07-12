@@ -62,6 +62,16 @@ class _PelaporanHarianTernakScreenState
   final TextEditingController _jumlahPakanController = TextEditingController();
   final TextEditingController _satuanPakanController = TextEditingController();
 
+  double? _parsePositiveNumber(String value) {
+    final normalized = value.trim().replaceAll(',', '.');
+    return double.tryParse(normalized);
+  }
+
+  double _toDouble(dynamic value) {
+    if (value is num) return value.toDouble();
+    return double.tryParse(value?.toString() ?? '') ?? 0.0;
+  }
+
   Future<void> _pickImage(
       BuildContext context, Function(File) onImagePicked) async {
     showModalBottomSheet(
@@ -285,6 +295,10 @@ class _PelaporanHarianTernakScreenState
 
       formKey.currentState!.save();
 
+      final jumlahPakan = statusPakan == 'Ya'
+          ? (_parsePositiveNumber(_jumlahPakanController.text) ?? 0.0)
+          : 0.0;
+
       final imageUrl = await _imageService.uploadImage(_imageTernak!);
       if (!imageUrl['status']) {
         showAppToast(context,
@@ -301,7 +315,7 @@ class _PelaporanHarianTernakScreenState
         "gambar": imageUrl['data'],
         "catatan": _catatanController.text,
         "harianTernak": {
-          "pakan": statusPakan == 'Ya',
+          "pakanKg": jumlahPakan,
           "cekKandang": statusKandang == 'Ya',
         }
       };
@@ -343,7 +357,7 @@ class _PelaporanHarianTernakScreenState
               "Penggunaan ${selectedKategoriPakan?.toLowerCase() ?? 'inventaris'} untuk ${widget.data?['unitBudidaya']['name']} - ${_catatanController.text}",
           "penggunaanInv": {
             "inventarisId": selectedPakan['id'],
-            "jumlah": double.tryParse(_jumlahPakanController.text) ?? 0.0,
+            "jumlah": jumlahPakan,
           }
         };
 
@@ -542,14 +556,12 @@ class _PelaporanHarianTernakScreenState
                                   label: 'Pilih item inventaris',
                                   hint: 'Pilih inventaris yang akan digunakan',
                                   items: listPakan.map((item) {
-                                    final stok =
-                                        (item['stok'] as num?)?.toDouble() ??
-                                            0.0;
+                                    final stok = _toDouble(item['stok']);
                                     final satuanNama = item['satuanNama'] ?? '';
                                     return '${item['name']} (Stok: ${stok.toStringAsFixed(1)} $satuanNama)';
                                   }).toList(),
                                   selectedValue: selectedPakan.isNotEmpty
-                                      ? '${selectedPakan['name']} (Stok: ${(selectedPakan['stok'] as num?)?.toDouble().toStringAsFixed(1) ?? '0.0'} ${selectedPakan['satuanNama'] ?? ''})'
+                                      ? '${selectedPakan['name']} (Stok: ${_toDouble(selectedPakan['stok']).toStringAsFixed(1)} ${selectedPakan['satuanNama'] ?? ''})'
                                       : null,
                                   onChanged: (value) {
                                     if (value == null) {
@@ -563,9 +575,7 @@ class _PelaporanHarianTernakScreenState
                                     Map<String, dynamic> findPakan(
                                         List<Map<String, dynamic>> list) {
                                       for (var item in list) {
-                                        final stok = (item['stok'] as num?)
-                                                ?.toDouble() ??
-                                            0.0;
+                                        final stok = _toDouble(item['stok']);
                                         final satuanNama =
                                             item['satuanNama'] ?? '';
                                         final displayText =
@@ -606,16 +616,14 @@ class _PelaporanHarianTernakScreenState
                                     if (value == null || value.isEmpty) {
                                       return 'Masukkan jumlah inventaris';
                                     }
-                                    final number = double.tryParse(value);
+                                    final number = _parsePositiveNumber(value);
                                     if (number == null || number <= 0) {
                                       return 'Masukkan jumlah yang valid';
                                     }
                                     // Check if amount exceeds available stock
                                     if (selectedPakan.isNotEmpty) {
                                       final stok =
-                                          (selectedPakan['stok'] as num?)
-                                                  ?.toDouble() ??
-                                              0.0;
+                                          _toDouble(selectedPakan['stok']);
                                       if (number > stok) {
                                         final satuanNama =
                                             selectedPakan['satuanNama'] ?? '';
