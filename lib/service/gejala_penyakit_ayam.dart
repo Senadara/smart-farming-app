@@ -141,7 +141,9 @@ class GejalaPenyakitAyam {
     }
   }
 
-  Future createPenyakitAyam(String namaPenyakit, List<String> idGejala) async{
+  Future createPenyakitAyam(
+      String namaPenyakit,
+      List<Map<String, dynamic>> gejala) async {
 
     final resolvedToken = await _authService.getToken();
     final headers = {
@@ -152,7 +154,7 @@ class GejalaPenyakitAyam {
 
     final payload = {
       'nama_penyakit': namaPenyakit,
-      'gejala_ids': idGejala.map((id) => id).toList()
+      'gejala': gejala,
     };
     
     try {
@@ -182,7 +184,9 @@ class GejalaPenyakitAyam {
   }
 
   Future<Map<String, dynamic>> updatePenyakitAyam(
-      String id, String namaPenyakit, List<String> idGejala) async {
+      String id,
+      String namaPenyakit,
+      List<Map<String, dynamic>> gejala) async {
     final resolvedToken = await _authService.getToken();
     final headers = {
       'Authorization': 'Bearer $resolvedToken',
@@ -192,7 +196,7 @@ class GejalaPenyakitAyam {
 
     final payload = {
       'nama_penyakit': namaPenyakit,
-      'gejala_ids': idGejala,
+      'gejala': gejala,
     };
     debugPrint('payload update penyakit: $payload');
 
@@ -533,6 +537,43 @@ class GejalaPenyakitAyam {
         'status': false,
         'message': 'Error: ${e.toString()}',
       };
+    }
+  }
+
+  /// GET /penyakit-ayam/penanganan/by-gejala?gejala_ids=uuid1,uuid2,...
+  /// Mengembalikan list penanganan yang terkait dengan gejala tertentu.
+  /// Setiap item berisi data penanganan + informasi gejala terkait.
+  Future<List<Map<String, dynamic>>> getPenangananByGejala(
+      List<String> gejalaIds) async {
+    if (gejalaIds.isEmpty) return [];
+
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json',
+    };
+
+    final queryParam = gejalaIds.join(',');
+    final url = Uri.parse(
+        '$baseUrl/penyakit-ayam/penanganan/by-gejala?gejala_ids=$queryParam');
+
+    debugPrint('Fetching penanganan by gejala: $url');
+
+    try {
+      final response = await http.get(url, headers: headers);
+      debugPrint('response body penanganan by gejala: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final Map<String, dynamic> decodedData = jsonDecode(response.body);
+        final List<dynamic> data = decodedData['data'] ?? [];
+        return List<Map<String, dynamic>>.from(
+            data.map((e) => Map<String, dynamic>.from(e)));
+      } else {
+        throw Exception(
+            'Failed to load penanganan by gejala: ${response.statusCode}');
+      }
+    } catch (e) {
+      rethrow;
     }
   }
 }

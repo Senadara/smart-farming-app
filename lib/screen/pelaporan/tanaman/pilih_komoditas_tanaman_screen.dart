@@ -37,6 +37,7 @@ class _PilihKomoditasTanamanScreenState
   Future<void> _fetchData() async {
     try {
       final response = await _komoditasService.getKomoditasByTipe(tipe: 'tumbuhan');
+      debugPrint('res pilih komoditas: $response');
       if (response['status']) {
         setState(() {
           _listKomoditas = response['data'];

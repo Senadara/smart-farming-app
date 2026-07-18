@@ -4,7 +4,6 @@ import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_ayam_screem.dart
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_ternak_screen.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/banner.dart';
-import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/header.dart';
 
 class PilihLayoutTernakScreen extends StatefulWidget {
@@ -27,8 +26,6 @@ class PilihLayoutTernakScreen extends StatefulWidget {
 
 class _PilihLayoutTernakScreenState extends State<PilihLayoutTernakScreen> {
 
-  String? _selectedLayout;
-
   final List<Map<String, String>> _layouts = [
     {
       'value': 'list',
@@ -44,15 +41,15 @@ class _PilihLayoutTernakScreenState extends State<PilihLayoutTernakScreen> {
     },
   ];
 
-  Future<void> _submitForm() async {
-    if (_selectedLayout == 'list') {
+  void _navigateTo(String value) {
+    if (value == 'list') {
       context.push('/pilih-ternak',
         extra: PilihTernakScreen(
             greeting: widget.greeting,
             data: widget.data,
             tipe: widget.tipe,
             step: widget.step + 1));
-    } else if (_selectedLayout == 'grid') {
+    } else if (value == 'grid') {
       context.push('/pilih-ayam',
         extra: PilihAyamScreen(
             greeting: widget.greeting,
@@ -107,8 +104,6 @@ class _PilihLayoutTernakScreenState extends State<PilihLayoutTernakScreen> {
                   const SizedBox(height: 12),
                   Row(
                     children: _layouts.map((layout) {
-                      final isSelected =
-                          _selectedLayout == layout['value'];
                       return Expanded(
                         child: Padding(
                           padding: EdgeInsets.only(
@@ -119,10 +114,8 @@ class _PilihLayoutTernakScreenState extends State<PilihLayoutTernakScreen> {
                             label: layout['label']!,
                             subtitle: layout['subtitle']!,
                             imagePath: layout['image']!,
-                            isSelected: isSelected,
-                            onTap: () => setState(
-                              () => _selectedLayout = layout['value'],
-                            ),
+                            isSelected: false,
+                            onTap: () => _navigateTo(layout['value']!),
                           ),
                         ),
                       );
@@ -131,20 +124,9 @@ class _PilihLayoutTernakScreenState extends State<PilihLayoutTernakScreen> {
                   const SizedBox(height: 32),
                 ],
               ),
-            ),            
+            ),
           ],
         )
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: CustomButton(
-              onPressed: _submitForm,
-              buttonText: 'Selanjutnya',
-              backgroundColor: green1,
-              textStyle: semibold16.copyWith(color: white),
-              key: const Key('submit_pilih_kandang_button')),
-        ),
       ),
     );
   }

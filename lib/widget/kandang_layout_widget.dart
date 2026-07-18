@@ -13,85 +13,111 @@ class KandangLayoutWidget extends StatefulWidget {
   });
 
   final List<List<Ayam>> ayamLayout;
-  final void Function(List<String> selectedIds, List<Ayam> selectedAyam)? onSelectionChanged;
+  final void Function(List<String> selectedIds, List<Ayam> selectedAyam)?
+      onSelectionChanged;
 
   @override
-  State<KandangLayoutWidget> createState() => _KandangLayoutWidgetState();
+  State<KandangLayoutWidget> createState() => KandangLayoutWidgetState();
 }
 
-class _KandangLayoutWidgetState extends State<KandangLayoutWidget> {
-  final scrollController = ScrollController();
-  final selectedAyamNotifier = ValueNotifier<List<Ayam>>([]);
+class KandangLayoutWidgetState extends State<KandangLayoutWidget> {
+  final _scrollController = ScrollController();
+  final _selectedAyamNotifier = ValueNotifier<List<Ayam>>(const []);
+  final _scrollNotifier = ValueNotifier<bool>(false);
+  final Set<Ayam> _selected = {};
 
-  Timer? hideTimer;
-  final scrollNotifier = ValueNotifier(false);
+  Timer? _hideTimer;
+
+  void selectAll() {
+    setState(() {
+      _selected.clear();
+      for (final row in widget.ayamLayout) {
+        for (final block in row) {
+          final status = block.status;
+          final sudahDitangani = status == LivestockStatus.SICK && block.sickStatus == 'Sudah ditangani';
+          if (status == LivestockStatus.AVAILABLE || sudahDitangani) {
+            _selected.add(block);
+          }
+        }
+      }
+      final selectedList = _selected.toList();
+      _selectedAyamNotifier.value = selectedList;
+
+      final selectedIds = selectedList.expand((a) => a.ayamIds).toList();
+      widget.onSelectionChanged?.call(selectedIds, selectedList);
+    });
+  }
+
+  void deselectAll() {
+    setState(() {
+      _selected.clear();
+      _selectedAyamNotifier.value = const [];
+      widget.onSelectionChanged?.call(const [], const []);
+    });
+  }
 
   @override
   void dispose() {
-    scrollController.dispose();
-    selectedAyamNotifier.dispose();
-    scrollNotifier.dispose();
+    _scrollController.dispose();
+    _selectedAyamNotifier.dispose();
+    _scrollNotifier.dispose();
+    _hideTimer?.cancel();
     super.dispose();
   }
 
-  void onScroll(bool scrolling) async {
-    hideTimer?.cancel();
+  void _onScroll(bool scrolling) {
+    _hideTimer?.cancel();
 
     if (scrolling) {
-      scrollNotifier.value = scrolling;
-    } else {
-      hideTimer = Timer(const Duration(seconds: 2), () {
-        if (!mounted) return;
-        scrollNotifier.value = false;
-      });
+      _scrollNotifier.value = true;
+      return;
     }
+
+    _hideTimer = Timer(const Duration(seconds: 2), () {
+      if (mounted) _scrollNotifier.value = false;
+    });
   }
 
-  void onAyamClicked(Ayam ayam) {
-    final isSelected = selectedAyamNotifier.value.contains(ayam);
-    final latesSelected = List.of(selectedAyamNotifier.value);
-    if (isSelected) {
-      latesSelected.remove(ayam);
-    } else {
-      latesSelected.add(ayam);
+  void _onAyamClicked(Ayam ayam) {
+    if (!_selected.remove(ayam)) {
+      _selected.add(ayam);
     }
-    selectedAyamNotifier.value = latesSelected;
 
-    final selectedIds =
-        selectedAyamNotifier.value.expand((ayam) => ayam.ayamIds).toList();
-    print('Kotak terpilih: $selectedIds');
-    widget.onSelectionChanged?.call(selectedIds, List.of(selectedAyamNotifier.value));
+    final selectedList = _selected.toList();
+    _selectedAyamNotifier.value = selectedList;
+
+    final selectedIds = selectedList.expand((a) => a.ayamIds).toList();
+    widget.onSelectionChanged?.call(selectedIds, selectedList);
   }
 
   @override
   Widget build(BuildContext context) {
-    return ValueListenableBuilder(
-      valueListenable: selectedAyamNotifier,
+    return ValueListenableBuilder<List<Ayam>>(
+      valueListenable: _selectedAyamNotifier,
       builder: (context, selectedAyam, _) {
         return Stack(
           children: [
             PetakKandangLayout(
-              scrollController: scrollController,
+              scrollController: _scrollController,
               ayamLayout: widget.ayamLayout,
               selectedAyam: selectedAyam,
-              onScrolling: onScroll,
-              onAyamSelected: onAyamClicked,
+              onScrolling: _onScroll,
+              onAyamSelected: _onAyamClicked,
             ),
             Positioned(
               left: 16,
-              child: ValueListenableBuilder(
-                valueListenable: scrollNotifier,
+              child: ValueListenableBuilder<bool>(
+                valueListenable: _scrollNotifier,
                 builder: (context, isScrolling, child) {
                   return AnimatedSwitcher(
                     duration: const Duration(milliseconds: 500),
+                    transitionBuilder: (child, animation) =>
+                        FadeTransition(opacity: animation, child: child),
                     child: isScrolling ? child : const SizedBox(),
-                    transitionBuilder: (child, animation) {
-                      return FadeTransition(opacity: animation, child: child);
-                    },
                   );
                 },
                 child: PetakKandangMiniMapWidget(
-                  scrollController: scrollController,
+                  scrollController: _scrollController,
                   ayamLayout: widget.ayamLayout,
                   selectedAyam: selectedAyam,
                 ),

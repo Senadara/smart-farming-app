@@ -3,10 +3,8 @@ import 'package:go_router/go_router.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/menu_pelaporan_sakit_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_kandang_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_komoditas_screen.dart';
-import 'package:smart_farming_app/screen/penyakit_ayam/list_laporan_ayam_sakit.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/banner.dart';
-import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/widget/menu_btn.dart';
 
@@ -21,10 +19,9 @@ class PelaporanKhususTernakScreen extends StatefulWidget {
 class _PelaporanKhususTernakScreenState
     extends State<PelaporanKhususTernakScreen> {
   final _step = 1;
-  String? selectedReport;
 
-  void navigateBasedOnSelection() {
-    switch (selectedReport) {
+  void _navigateTo(String title) {
+    switch (title) {
       case 'Pelaporan Panen Ternak':
         context.push('/pilih-komoditas',
             extra: PilihKomoditasScreen(
@@ -56,8 +53,6 @@ class _PelaporanKhususTernakScreenState
               tipe: 'vitamin',
               greeting: 'Pelaporan Pemberian Nutrisi',
             ));
-        break;
-      default:
         break;
     }
   }
@@ -110,9 +105,8 @@ class _PelaporanKhususTernakScreenState
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 100),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: Column(
-                
               children: [
                 BannerWidget(
                   title: 'Step $_step - Apa yang ingin kamu laporkan?',
@@ -136,29 +130,11 @@ class _PelaporanKhususTernakScreenState
                     icon: item['icon'],
                     backgroundColor: Colors.grey.shade200,
                     iconColor: green1,
-                    isSelected: selectedReport == item['title'],
-                    onTap: () {
-                      setState(() {
-                        selectedReport = item['title'];
-                      });
-                    },
+                    onTap: () => _navigateTo(item['title']),
                   ),
               ],
             ),
           ),
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: CustomButton(
-              onPressed: () {
-                navigateBasedOnSelection();
-              },
-              buttonText: 'Selanjutnya',
-              backgroundColor: green1,
-              textStyle: semibold16.copyWith(color: white),
-              key: const Key('next_button')),
         ),
       ),
     );

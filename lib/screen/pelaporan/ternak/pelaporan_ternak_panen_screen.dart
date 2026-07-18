@@ -75,6 +75,7 @@ class _PelaporanTernakPanenScreenState
   bool isLoadingObjek = false;
   bool _isAnimalSelectionExpanded = false; // For collapsible animal selection
 
+
   Future<void> _fetchData() async {
     try {
       final response = await _satuanService
@@ -257,6 +258,7 @@ class _PelaporanTernakPanenScreenState
   @override
   void initState() {
     super.initState();
+    debugPrint('data ayam terpilih : ${widget.data}');
     _fetchData();
     _fetchGradeMaster();
 

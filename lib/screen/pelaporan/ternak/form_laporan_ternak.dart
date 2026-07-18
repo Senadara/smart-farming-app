@@ -34,6 +34,7 @@ class FormLaporanTernak extends StatefulWidget {
 class _FormLaporanTernakState extends State<FormLaporanTernak> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _catatanController = TextEditingController();
+  final TextEditingController _dateController = TextEditingController();
   final ImageService _imageService = ImageService();
   final LaporanService _laporanService = LaporanService();
 
@@ -43,8 +44,17 @@ class _FormLaporanTernakState extends State<FormLaporanTernak> {
   bool _isSubmitting = false;
 
   @override
+  void initState() {
+    super.initState();
+    final now = DateTime.now();
+    _selectedDate = '${now.day.toString().padLeft(2, '0')}/${now.month.toString().padLeft(2, '0')}/${now.year}';
+    _dateController.text = _selectedDate!;
+  }
+
+  @override
   void dispose() {
     _catatanController.dispose();
+    _dateController.dispose();
     super.dispose();
   }
 
@@ -112,6 +122,24 @@ class _FormLaporanTernakState extends State<FormLaporanTernak> {
       return;
     }
 
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: const Row(
+            children: [
+              Icon(Icons.warning_amber_rounded, color: Colors.white),
+              SizedBox(width: 8),
+              Text('Foto bukti ternak wajib disertakan'),
+            ],
+          ),
+          backgroundColor: Colors.red.shade600,
+          behavior: SnackBarBehavior.floating,
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+        ),
+      );
+      return;
+    }
+
     // Validasi semua field dalam Form
     if (!_formKey.currentState!.validate()) return;
 
@@ -132,7 +160,9 @@ class _FormLaporanTernakState extends State<FormLaporanTernak> {
         'judul': widget.data['judul'] ?? 'Laporan Sakit',
         'gambar': imageUrl['data'],
         'catatan': _catatanController.text.trim(),
-        'status': _statusPenanganan == StatusPenanganan.sudahDitangani ? '1' : '0',
+        'status': _statusPenanganan == StatusPenanganan.sudahDitangani
+            ? 'Pemantauan'
+            : 'Belum Ditangani',
         'sakit': {
           'penyakitAyamId': widget.data['penyakitId'] ?? widget.data['id'] ?? '',
           'gejala': (widget.data['selectedGejalaIds'] as List<String>?)
@@ -158,6 +188,7 @@ class _FormLaporanTernakState extends State<FormLaporanTernak> {
         }
       }
     } catch (e) {
+      debugPrint('Form submitted: $e');
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -215,11 +246,33 @@ class _FormLaporanTernakState extends State<FormLaporanTernak> {
               // Tanggal Kejadian
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16),
-                
-                child: DatePickerField(
-                  label: 'Tanggal Kejadian',
-                  isRequired: true,
-                  onChanged: (value) => setState(() => _selectedDate = value),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Text('Tanggal Kejadian', style: bold16.copyWith(color: dark1)),
+                        const SizedBox(width: 4),
+                        Text('*', style: bold16.copyWith(color: Colors.red)),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    TextFormField(
+                      controller: _dateController,
+                      readOnly: true,
+                      style: regular14.copyWith(color: dark1),
+                      decoration: InputDecoration(
+                        filled: true,
+                        fillColor: Colors.grey.shade100,
+                        prefixIcon: Icon(Icons.calendar_today_outlined, color: Colors.grey, size: 20),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(10),
+                          borderSide: BorderSide.none,
+                        ),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                      ),
+                    ),
+                  ],
                 ),
               ),
 

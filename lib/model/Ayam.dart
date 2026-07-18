@@ -1,95 +1,112 @@
+import 'package:flutter/material.dart';
+
 enum LivestockStatus { AVAILABLE, EMPTY, SICK, ALLEY }
 
 class Ayam {
   final List<String> ayamIds;
   final LivestockStatus status;
   final String? displayLabel;
-  final String? sickStatus; // "" = belum ditangani, "Sudah ditangani" = sudah
+  final String? sickStatus;
 
-  Ayam(
-      {required this.ayamIds,
-      required this.status,
-      this.displayLabel,
-      this.sickStatus});
+  Ayam({
+    required this.ayamIds,
+    required this.status,
+    this.displayLabel,
+    this.sickStatus,
+  });
+}
+
+String getAyamLabelFromNamaId(String namaId) {
+  const effectiveLetters = ['A', 'B', 'C', 'D', 'E', 'F'];
+  final match = RegExp(r'#(\d+)$').firstMatch(namaId);
+  if (match == null) return namaId;
+
+  final n = int.tryParse(match.group(1)!) ?? 0;
+  if (n <= 0) return namaId;
+
+  final idx = n - 1;
+  final row = (idx ~/ 6) + 1;
+  final col = idx % 6;
+  return '${effectiveLetters[col]}$row';
+}
+
+const _kLetters = ['A', 'B', 'C', 'G', 'D', 'E', 'F'];
+const _kEffectiveCols = 6;
+
+List<List<Ayam>> _generateLayout({
+  required int totalCount,
+  required Ayam Function(int index, String letter, int number) cellBuilder,
+}) {
+  final totalRows = totalCount > 0 ? (totalCount / _kEffectiveCols).ceil() : 0;
+
+  var index = 0;
+  return List.generate(totalRows, (rowIndex) {
+    final number = rowIndex + 1;
+    return _kLetters.map((letter) {
+      if (letter == 'G') {
+        return Ayam(
+          ayamIds: const [],
+          status: LivestockStatus.ALLEY,
+          displayLabel: '$letter$number',
+        );
+      }
+      return cellBuilder(index++, letter, number);
+    }).toList();
+  });
 }
 
 List<List<Ayam>> generateAyamLayout({
   required int kapasitas,
   required int jumlah,
 }) {
-  const letters = ['A', 'B', 'C', 'G', 'D', 'E', 'F'];
-  const effectiveCols = 6;
+  var filled = jumlah;
 
-  final totalRows = (kapasitas / effectiveCols).ceil();
-
-  int filled = jumlah;
-
-  return List.generate(totalRows, (rowIndex) {
-    final number = rowIndex + 1;
-
-    return letters.map((letter) {
-      if (letter == 'G') {
-        return Ayam(
-            ayamIds: ['$letter$number'],
-            status: LivestockStatus.ALLEY,
-            displayLabel: '$letter$number');
-      }
-
+  return _generateLayout(
+    totalCount: kapasitas,
+    cellBuilder: (index, letter, number) {
       final status =
           filled > 0 ? LivestockStatus.AVAILABLE : LivestockStatus.EMPTY;
       if (filled > 0) filled--;
 
       return Ayam(
-          ayamIds: ['$letter$number'],
-          status: status,
-          displayLabel: '$letter$number');
-    }).toList();
-  });
+        ayamIds: ['$letter$number'],
+        status: status,
+        displayLabel: '$letter$number',
+      );
+    },
+  );
 }
 
-/// [sickIds] adalah Map<objekBudidayaId, statusPenanganan>
-/// contoh: {"abc-123": "", "def-456": "Sudah ditangani"}
 List<List<Ayam>> generateAyamLayoutFromApi({
   required List<dynamic> dataApi,
   required int kapasitas,
   Map<String, String> sickIds = const {},
 }) {
-  const letters = ['A', 'B', 'C', 'G', 'D', 'E', 'F'];
-  const effectiveCols = 6;
+  final totalCount = kapasitas > 0 ? kapasitas : dataApi.length;
 
-  // Menghitung baris berdasarkan kapasitas (kalau 0, pakai jumlah data api)
-  final count = kapasitas > 0 ? kapasitas : dataApi.length;
-  final totalRows = count > 0 ? (count / effectiveCols).ceil() : 0;
-
-  int dataIndex = 0;
-
-  return List.generate(totalRows, (rowIndex) {
-    final number = rowIndex + 1;
-    return letters.map((letter) {
-      if (letter == 'G') {
+  return _generateLayout(
+    totalCount: totalCount,
+    cellBuilder: (index, letter, number) {
+      if (index >= dataApi.length) {
         return Ayam(
-            ayamIds: [],
-            status: LivestockStatus.ALLEY,
-            displayLabel: '$letter$number');
+          ayamIds: const [],
+          status: LivestockStatus.EMPTY,
+          displayLabel: '$letter$number',
+        );
       }
 
-      if (dataIndex < dataApi.length) {
-        final item = dataApi[dataIndex];
-        dataIndex++;
-        final id = item['id'].toString();
-        final isSick = sickIds.containsKey(id);
-        return Ayam(
-            ayamIds: [id],
-            status: isSick ? LivestockStatus.SICK : LivestockStatus.AVAILABLE,
-            displayLabel: '$letter$number',
-            sickStatus: isSick ? sickIds[id] : null);
-      } else {
-        return Ayam(
-            ayamIds: [],
-            status: LivestockStatus.EMPTY,
-            displayLabel: '$letter$number');
-      }
-    }).toList();
-  });
+      final id = dataApi[index]['id'].toString();
+      final isSick = sickIds.containsKey(id) && 
+                     sickIds[id] != 'Sembuh' && 
+                     sickIds[id] != 'Sudah ditangani';
+    
+
+      return Ayam(
+        ayamIds: [id],
+        status: isSick ? LivestockStatus.SICK : LivestockStatus.AVAILABLE,
+        displayLabel: '$letter$number',
+        sickStatus: isSick ? sickIds[id] : null,
+      );
+    },
+  );
 }
-

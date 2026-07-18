@@ -20,7 +20,7 @@ class MenuButton extends StatefulWidget {
     required this.icon,
     required this.backgroundColor,
     required this.iconColor,
-    required this.isSelected,
+    this.isSelected = false,
     required this.onTap,
   });
 

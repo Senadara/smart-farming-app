@@ -4,7 +4,7 @@ import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_harian_terna
 import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_kematian_ternak_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_nutrisi_ternak_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_ternak_panen_screen.dart';
-import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_ternak_sakit_screen.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_ayam_screem.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_layout_ternak.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_ternak_screen.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/list_laporan_ayam_sakit.dart';
@@ -12,7 +12,6 @@ import 'package:smart_farming_app/service/unit_budidaya_service.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
 import 'package:smart_farming_app/widget/banner.dart';
-import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/widget/list_item_selectable.dart';
 
@@ -60,81 +59,74 @@ class _PilihKandangScreenState extends State<PilihKandangScreen> {
     }
   }
 
-  Future<void> _submitForm() async {
-    if (_selectedUnitBudidaya != null) {
-      final updatedData = Map<String, dynamic>.from(widget.data ?? {});
-      updatedData['unitBudidaya'] = _selectedUnitBudidaya;
+  Future<void> _navigateWithData(Map<String, dynamic> item) async {
+    final updatedData = Map<String, dynamic>.from(widget.data ?? {});
+    updatedData['unitBudidaya'] = item;
 
-      if (widget.tipe == "harian") {
-        context.push('/pelaporan-harian-ternak',
-            extra: PelaporanHarianTernakScreen(
-                greeting: widget.greeting,
-                data: updatedData,
-                tipe: widget.tipe,
-                step: widget.step + 1));
-      } else if (widget.tipe == "panen") {
-        if (widget.data!['komoditas']['tipeKomoditas'] == "individu") {
-          if (_selectedUnitBudidaya!['tipe'] == "kolektif") {
-            showAppToast(
-              context,
-              "Tipe kandang kolektif tidak dapat digunakan untuk panen individu",
-              title: 'Tipe Kandang Tidak Sesuai',
-            );
-          } else {
-            context.push('/pilih-ternak',
-                extra: PilihTernakScreen(
-                    greeting: widget.greeting,
-                    data: updatedData,
-                    tipe: widget.tipe,
-                    step: widget.step + 1));
-          }
+    if (widget.tipe == "harian") {
+      context.push('/pelaporan-harian-ternak',
+          extra: PelaporanHarianTernakScreen(
+              greeting: widget.greeting,
+              data: updatedData,
+              tipe: widget.tipe,
+              step: widget.step + 1));
+    } else if (widget.tipe == "panen") {
+      if (widget.data!['komoditas']['tipeKomoditas'] == "individu") {
+        if (item['tipe'] == "kolektif") {
+          showAppToast(
+            context,
+            "Tipe kandang kolektif tidak dapat digunakan untuk panen individu",
+            title: 'Tipe Kandang Tidak Sesuai',
+          );
         } else {
-          context.push('/pelaporan-panen-ternak',
-              extra: PelaporanTernakPanenScreen(
+          context.push('/pilih-ayam',
+              extra: PilihAyamScreen(
                   greeting: widget.greeting,
                   data: updatedData,
                   tipe: widget.tipe,
                   step: widget.step + 1));
         }
-      } else if (widget.tipe == "sakit") {
-        context.push('/pilih-layout-ternak',
-            extra: PilihLayoutTernakScreen(
-                greeting: widget.greeting,
-                data: updatedData,
-                tipe: widget.tipe,
-                step: widget.step + 1));
-      } else if (widget.tipe == "lihat-sakit") {
-        context.push('/riwayat-laporan-ayam-sakit',
-            extra: ListLaporanAyamSakitScreen(
-                unitId: _selectedUnitBudidaya!['id'],
-            ));
-      } else if (_selectedUnitBudidaya!['tipe'] == "individu") {
-        context.push('/pilih-ternak',
-            extra: PilihTernakScreen(
-                greeting: widget.greeting,
-                data: updatedData,
-                tipe: widget.tipe,
-                step: widget.step + 1));
-      } else if (widget.tipe == "kematian") {
-        context.push('/pelaporan-kematian-ternak',
-            extra: PelaporanKematianTernakScreen(
-                greeting: widget.greeting,
-                data: updatedData,
-                tipe: widget.tipe,
-                step: widget.step + 1));
-      } else if (widget.tipe == "vitamin") {
-        context.push('/pelaporan-nutrisi-ternak',
-            extra: PelaporanNutrisiTernakScreen(
+      } else {
+        context.push('/pelaporan-panen-ternak',
+            extra: PelaporanTernakPanenScreen(
                 greeting: widget.greeting,
                 data: updatedData,
                 tipe: widget.tipe,
                 step: widget.step + 1));
       }
-    } else {
-      showAppToast(
-        context,
-        'Silakan pilih kandang terlebih dahulu',
-      );
+    } else if (widget.tipe == "sakit") {
+      context.push('/pilih-layout-ternak',
+          extra: PilihLayoutTernakScreen(
+              greeting: widget.greeting,
+              data: updatedData,
+              tipe: widget.tipe,
+              step: widget.step + 1));
+    } else if (widget.tipe == "lihat-sakit") {
+      context.push('/riwayat-laporan-ayam-sakit',
+          extra: ListLaporanAyamSakitScreen(
+            unitId: item['id'],
+          ));
+    } else if (item['tipe'] == "individu") {
+      context.push('/pilih-ternak',
+          extra: PilihTernakScreen(
+              greeting: widget.greeting,
+              data: updatedData,
+              tipe: widget.tipe,
+              step: widget.step + 1));
+    } else if (widget.tipe == "kematian") {
+      context.push('/pelaporan-kematian-ternak',
+          extra: PelaporanKematianTernakScreen(
+              greeting: widget.greeting,
+              data: updatedData,
+              tipe: widget.tipe,
+              step: widget.step + 1));
+    } else if (widget.tipe == "vitamin") {
+      context.push('/pelaporan-nutrisi-ternak',
+          extra: PelaporanNutrisiTernakScreen(
+              greeting: widget.greeting,
+              data: updatedData,
+              tipe: widget.tipe,
+              step: widget.step + 1));
     }
   }
 
@@ -165,7 +157,6 @@ class _PilihKandangScreenState extends State<PilihKandangScreen> {
       ),
       body: SafeArea(
         child: ListView(
-          padding: const EdgeInsets.only(bottom: 100),
           children: [
             BannerWidget(
               title: 'Step ${widget.step} - Pilih Kandang',
@@ -205,24 +196,11 @@ class _PilihKandangScreenState extends State<PilihKandangScreen> {
                             })
                         .toList(),
                     onItemTap: (context, item) {
-                      setState(() {
-                        _selectedUnitBudidaya = item; // Update local state
-                      });
+                      _navigateWithData(item);
                     },
                   ),
             const SizedBox(height: 16),
           ],
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: CustomButton(
-              onPressed: _submitForm,
-              buttonText: 'Selanjutnya',
-              backgroundColor: green1,
-              textStyle: semibold16.copyWith(color: white),
-              key: const Key('submit_pilih_kandang_button')),
         ),
       ),
     );

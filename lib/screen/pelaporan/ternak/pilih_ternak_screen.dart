@@ -109,6 +109,7 @@ class _PilihTernakScreenState extends State<PilihTernakScreen> {
 
   @override
   Widget build(BuildContext context) {
+    debugPrint('Render Woi');
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: PreferredSize(

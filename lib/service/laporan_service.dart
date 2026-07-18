@@ -121,6 +121,43 @@ class LaporanService {
     }
   }
 
+  Future<Map<String, dynamic>> createLaporanPanenSimple(
+      Map<String, dynamic> data) async {
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json'
+    };
+    final url = Uri.parse('$baseUrl/panen-simple');
+
+    try {
+      final response =
+          await http.post(url, headers: headers, body: json.encode(data));
+      final body = json.decode(response.body);
+
+      if (response.statusCode == 201) {
+        return {
+          'status': true,
+          'message': 'success',
+          'data': body['data'],
+        };
+      } else if (response.statusCode == 401) {
+        await _authService.refreshToken();
+        return await createLaporanPanenSimple(data);
+      } else {
+        return {
+          'status': false,
+          'message': body,
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'An error occurred: ${e.toString()}',
+      };
+    }
+  }
+
   Future<Map<String, dynamic>> getLastHarianKebunByObjekBudidayaId(
       String objekBudidayaId) async {
     final resolvedToken = await _authService.getToken();
@@ -1087,6 +1124,7 @@ class LaporanService {
     final url = Uri.parse(
       '$baseUrl/laporan/riwayat-penyakit-ayam/$idLaporanAyamSakit',
     );
+    print("DEBUG: Laporan URL: $url");
 
     try {
       final response = await http.get(url, headers: headers);

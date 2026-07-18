@@ -3,7 +3,7 @@ import 'package:smart_farming_app/theme.dart';
 
 enum StatusPenanganan {
   belumDitangani('Belum Ditangani', 'Perlu tindakan segera'),
-  sudahDitangani('Sudah Ditangani', 'Ternak telah ditangani');
+  sudahDitangani('Sedang Ditangani', 'Ternak sedang dalam penanganan');
 
   final String label;
   final String description;

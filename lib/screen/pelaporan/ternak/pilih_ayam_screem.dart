@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_farming_app/model/ayam.dart';
-import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_gejala_screen.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_menu_laporan_sakit.dart';
 import 'package:smart_farming_app/service/laporan_service.dart';
 import 'package:smart_farming_app/service/objek_budidaya_service.dart';
 import 'package:smart_farming_app/theme.dart';
@@ -11,6 +11,7 @@ import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/widget/info_ayam.dart';
 import 'package:smart_farming_app/widget/kandang_layout_widget.dart';
+import 'package:smart_farming_app/widget/input_field.dart';
 
 class PilihAyamScreen extends StatefulWidget {
   final Map<String, dynamic>? data;
@@ -46,6 +47,7 @@ class _PilihAyamScreenState extends State<PilihAyamScreen> {
 
   // Layout kandang dibuat setelah fetch API selesai
   List<List<Ayam>> _ayamLayout = [];
+  final GlobalKey<KandangLayoutWidgetState> _kandangLayoutKey = GlobalKey<KandangLayoutWidgetState>();
 
   Future<void> _fetchData() async {
     try {
@@ -72,10 +74,24 @@ class _PilihAyamScreenState extends State<PilihAyamScreen> {
           for (final objek in objekList) {
             final String id = objek['id']?.toString() ?? '';
             if (id.isNotEmpty) {
-              // Simpan status; jika sudah ada & salah satu belum ditangani,
-              // prioritaskan "belum ditangani" (string kosong)
-              if (!sickIds.containsKey(id) || sickIds[id] == 'Sudah ditangani') {
+              // Prioritas status penyakit (semakin butuh perhatian, semakin diprioritaskan untuk dioverwrite)
+              // 1. Belum Ditangani
+              // 2. Pemantauan
+              // 3. Sembuh / Sudah ditangani
+              final currentStatus = sickIds[id];
+
+              if (currentStatus == null) {
                 sickIds[id] = status;
+              } else if (currentStatus == 'Sembuh' ||
+                  currentStatus == 'Sudah ditangani') {
+                sickIds[id] =
+                    status; // Overwrite sembuh dengan status apapun yang baru ditemukan (jika ayam ternyata sakit lagi)
+              } else if (currentStatus == 'Pemantauan' &&
+                  (status == 'Belum Ditangani' ||
+                      status == 'Belum ditangani' ||
+                      status.isEmpty)) {
+                sickIds[id] =
+                    status; // Overwrite pemantauan jika ada yang belum ditangani
               }
             }
           }
@@ -113,13 +129,218 @@ class _PilihAyamScreenState extends State<PilihAyamScreen> {
     updatedData['selectedAyamIds'] = _selectedAyamIds;
     updatedData['selectedAyamLabels'] = _selectedAyamLabels;
 
-    context.push('/pilih-gejala',
-        extra: PilihGejalaScreen(
-          greeting: widget.greeting,
-          data: updatedData,
-          tipe: widget.tipe,
-          step: widget.step + 1,
-        ));
+    final selectedObjek = _listTernak
+        .where((item) => _selectedAyamIds.contains(item['id']?.toString() ?? ''))
+        .map((item) => {
+              'id': item['id'],
+              'name': item['namaId'] ?? item['id']?.toString(),
+            })
+        .toList();
+    updatedData['objekBudidaya'] = selectedObjek;
+
+    if (widget.tipe == "panen") {
+      final unitName = widget.data?['unitBudidaya']?['name'] ?? '';
+      final defaultJudul = 'Laporan Panen $unitName Cepat';
+      final judulController = TextEditingController(text: defaultJudul);
+      final jumlahController = TextEditingController(text: _selectedAyamIds.length.toString());
+      final beratController = TextEditingController();
+      final formKey = GlobalKey<FormState>();
+
+      print('[DEBUG] PilihAyamScreen: Showing dialog Panen. Selected Ayam: $_selectedAyamIds, Labels: $_selectedAyamLabels');
+      showDialog(
+        context: context,
+        builder: (dialogCtx) {
+          return Dialog(
+            backgroundColor: Colors.white,
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(20),
+              child: Form(
+                key: formKey,
+                child: SingleChildScrollView(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        'Simpan Hasil Panen',
+                        style: bold18.copyWith(color: dark1),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 8),
+                      Text(
+                        'Masukkan detail hasil panen untuk petak kandang yang dipilih.',
+                        style: regular12.copyWith(color: dark3),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      InputFieldWidget(
+                        label: 'Judul Laporan',
+                        hint: 'Masukkan judul laporan',
+                        controller: judulController,
+                        validator: (value) {
+                          if (value == null || value.trim().isEmpty) {
+                            return 'Judul laporan tidak boleh kosong';
+                          }
+                          return null;
+                        },
+                      ),
+                      InputFieldWidget(
+                        label: 'Jumlah',
+                        hint: 'Masukkan jumlah',
+                        controller: jumlahController,
+                        keyboardType: TextInputType.number,
+                        isDisabled: true,
+                        isGrayed: true,
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Jumlah tidak boleh kosong';
+                          }
+                          if (int.tryParse(value) == null) {
+                            return 'Jumlah harus berupa angka bulat';
+                          }
+                          return null;
+                        },
+                      ),
+                      InputFieldWidget(
+                        label: 'Berat (kg)',
+                        hint: 'Masukkan berat',
+                        controller: beratController,
+                        keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return 'Berat tidak boleh kosong';
+                          }
+                          if (double.tryParse(value) == null) {
+                            return 'Berat harus berupa angka';
+                          }
+                          return null;
+                        },
+                      ),
+                      const SizedBox(height: 12),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: OutlinedButton(
+                              onPressed: () => Navigator.pop(dialogCtx),
+                              style: OutlinedButton.styleFrom(
+                                side: BorderSide(color: grey),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                              child: Text(
+                                'Batal',
+                                style: semibold14.copyWith(color: dark2),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: ElevatedButton(
+                              onPressed: () async {
+                                if (formKey.currentState?.validate() ?? false) {
+                                  final judul = judulController.text.trim();
+                                  final jumlah = int.parse(jumlahController.text.trim());
+                                  final berat = double.parse(beratController.text.trim());
+
+                                  Navigator.pop(dialogCtx); // Close dialog
+
+                                  // Show loading
+                                  showDialog(
+                                    context: context,
+                                    barrierDismissible: false,
+                                    builder: (context) => const Center(
+                                      child: CircularProgressIndicator(),
+                                    ),
+                                  );
+
+                                  try {
+                                    final reqBody = {
+                                      "unitBudidayaId": widget.data?['unitBudidaya']?['id'],
+                                      "judul": judul,
+                                      "panen": {
+                                        "komoditasId": widget.data?['komoditas']?['id'],
+                                        "jumlah": jumlah,
+                                        "berat": berat,
+                                      },
+                                      "detailPanen": _selectedAyamIds,
+                                    };
+
+                                    final response = await _laporanService.createLaporanPanenSimple(reqBody);
+
+                                    if (context.mounted) {
+                                      Navigator.pop(context); // Close loading
+                                    }
+
+                                    if (response['status'] == true) {
+                                      if (context.mounted) {
+                                        showAppToast(
+                                          context,
+                                          'Laporan panen berhasil disimpan!',
+                                          isError: false,
+                                        );
+                                        context.go('/laporan-berhasil', extra: {
+                                          'title': 'Laporan Panen Berhasil',
+                                          'message': 'Laporan hasil panen berhasil disimpan.',
+                                        });
+                                      }
+                                    } else {
+                                      if (context.mounted) {
+                                        showAppToast(
+                                          context,
+                                          'Gagal menyimpan laporan: ${response['message']}',
+                                          isError: true,
+                                        );
+                                      }
+                                    }
+                                  } catch (e) {
+                                    if (context.mounted) {
+                                      Navigator.pop(context); // Close loading
+                                      showAppToast(
+                                        context,
+                                        'Terjadi kesalahan: $e',
+                                        isError: true,
+                                      );
+                                    }
+                                  }
+                                }
+                              },
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: green1,
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                padding: const EdgeInsets.symmetric(vertical: 12),
+                              ),
+                              child: Text(
+                                'Simpan',
+                                style: semibold14.copyWith(color: Colors.white),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          );
+        },
+      );
+    } else {
+      context.push('/pilih-menu-laporan-sakit',
+          extra: PilihMenuLaporanSakit(
+            greeting: widget.greeting,
+            data: updatedData,
+            tipe: widget.tipe,
+            step: widget.step + 1,
+          ));
+    }
   }
 
   @override
@@ -160,9 +381,40 @@ class _PilihAyamScreenState extends State<PilihAyamScreen> {
               showDate: true,
             ),
             const SizedBox(height: 16),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  TextButton.icon(
+                    onPressed: () {
+                      _kandangLayoutKey.currentState?.selectAll();
+                    },
+                    icon: Icon(Icons.select_all, color: green1),
+                    label: Text(
+                      'Pilih Semua',
+                      style: semibold14.copyWith(color: green1),
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  TextButton.icon(
+                    onPressed: () {
+                      _kandangLayoutKey.currentState?.deselectAll();
+                    },
+                    icon: const Icon(Icons.deselect, color: Colors.red),
+                    label: Text(
+                      'Batal Pilih Semua',
+                      style: semibold14.copyWith(color: Colors.red),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 8),
             Expanded(
               child: Container(
                 child: KandangLayoutWidget(
+                  key: _kandangLayoutKey,
                   ayamLayout: _ayamLayout,
                   onSelectionChanged: (ids, ayamList) {
                     setState(() {

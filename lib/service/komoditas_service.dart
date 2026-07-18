@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:smart_farming_app/service/auth_service.dart';
 import 'package:http/http.dart' as http;
@@ -16,7 +17,7 @@ class KomoditasService {
     final resolvedToken = await _authService.getToken();
     final headers = {'Authorization': 'Bearer $resolvedToken'};
     final url = Uri.parse('$baseUrl?page=$page&limit=$limit');
-
+    debugPrint('res kom: $url');
     try {
       final response = await http.get(url, headers: headers);
       final body = json.decode(response.body);
@@ -96,6 +97,7 @@ class KomoditasService {
     final resolvedToken = await _authService.getToken();
     final headers = {'Authorization': 'Bearer $resolvedToken'};
     final url = Uri.parse('$baseUrl/tipe/$tipe?page=$page&limit=$limit');
+    debugPrint('res kom: $url');
 
     try {
       final response = await http.get(url, headers: headers);

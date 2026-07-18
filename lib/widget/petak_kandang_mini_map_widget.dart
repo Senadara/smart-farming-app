@@ -118,6 +118,11 @@ class _PetakKandangMiniMapWidgetState extends State<PetakKandangMiniMapWidget> {
             }
 
             final isSelected = widget.selectedAyam.contains(block);
+            final sudahDitangani =
+                status == LivestockStatus.SICK &&
+                    block.sickStatus == 'Sudah ditangani';
+            final isGreen =
+                status == LivestockStatus.AVAILABLE || sudahDitangani;
 
             return Container(
               width: width,
@@ -125,7 +130,7 @@ class _PetakKandangMiniMapWidgetState extends State<PetakKandangMiniMapWidget> {
               decoration: BoxDecoration(
                 color: isSelected
                     ? Colors.blue
-                    : status == LivestockStatus.AVAILABLE
+                    : isGreen
                         ? Colors.green
                         : Colors.grey,
                 borderRadius: BorderRadius.circular(4),

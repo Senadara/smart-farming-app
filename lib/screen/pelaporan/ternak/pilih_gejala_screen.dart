@@ -103,14 +103,21 @@ class _PilihGejalaScreenState extends State<PilihGejalaScreen> {
         final updatedData = Map<String, dynamic>.from(widget.data);
 
         updatedData['namaPenyakit'] = result['penyakit'];
-        updatedData['penyakitId'] =
-            result['id']; // Assuming 'id' is the disease ID
+        updatedData['penyakitId'] = result['id'];
         updatedData['cfScore'] = (result['cf_score'] as num).toDouble();
+
+        // Penanganan berdasarkan penyakit
         final rawPenanganan = result['penanganan'] as List<dynamic>? ?? [];
         updatedData['penanganan'] = rawPenanganan.map((p) => {
           'nama': p['nama'] ?? 'Penanganan',
           'deskripsi': p['penanganan'] ?? p['deskripsi'] ?? '',
+          'gambar': p['gambar'],
         }).toList();
+
+        // Penanganan berdasarkan gejala — teruskan data mentah agar screen
+        // bisa mengambil info gejala (nama_gejala) dari tiap item
+        updatedData['penangananGejala'] =
+            result['penangananGejala'] as List<dynamic>? ?? [];
 
         updatedData['gejala'] = result['gejala_terdeteksi'] ??
             _selectedGejala

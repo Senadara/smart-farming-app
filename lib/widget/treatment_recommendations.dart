@@ -17,8 +17,17 @@ class PenangananPenyakit {
 
 class TreatmentRecommendations extends StatefulWidget {
   final List<dynamic>? customPenanganan;
+  final String? title;
+  final String? subtitle;
+  final bool showDisclaimer;
 
-  const TreatmentRecommendations({super.key, this.customPenanganan});
+  const TreatmentRecommendations({
+    super.key,
+    this.customPenanganan,
+    this.title,
+    this.subtitle,
+    this.showDisclaimer = true,
+  });
 
   @override
   State<TreatmentRecommendations> createState() =>
@@ -96,9 +105,11 @@ class _TreatmentRecommendationsState extends State<TreatmentRecommendations> {
                     ),
                   ),
                   const SizedBox(width: 10),
-                  Text(
-                    'Rekomendasi Penanganan',
-                    style: semibold16.copyWith(color: dark1),
+                  Expanded(
+                    child: Text(
+                      widget.title ?? 'Rekomendasi Penanganan',
+                      style: semibold16.copyWith(color: dark1),
+                    ),
                   ),
                   const SizedBox(width: 8),
                   Container(
@@ -136,39 +147,40 @@ class _TreatmentRecommendationsState extends State<TreatmentRecommendations> {
           ),
         ),
 
-        const SizedBox(height: 12),
-
-        // Disclaimer
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: Colors.amber.shade50,
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.amber.shade200),
-            ),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Icon(Icons.info_outline_rounded,
-                    size: 16, color: Colors.amber.shade700),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: Text(
-                    'Diagnosis ini bersifat pendukung. Selalu konsultasikan '
-                    'dengan dokter hewan untuk penanganan lebih lanjut.',
-                    style: regular14.copyWith(
-                      fontSize: 12,
-                      color: Colors.amber.shade800,
-                      height: 1.5,
+        if (widget.showDisclaimer) ...[  
+          const SizedBox(height: 12),
+          // Disclaimer
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Container(
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: Colors.amber.shade50,
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(color: Colors.amber.shade200),
+              ),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(Icons.info_outline_rounded,
+                      size: 16, color: Colors.amber.shade700),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: Text(
+                      'Diagnosis ini bersifat pendukung. Selalu konsultasikan '
+                      'dengan dokter hewan untuk penanganan lebih lanjut.',
+                      style: regular14.copyWith(
+                        fontSize: 12,
+                        color: Colors.amber.shade800,
+                        height: 1.5,
+                      ),
                     ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
-        ),
+        ],
       ],
     );
   }

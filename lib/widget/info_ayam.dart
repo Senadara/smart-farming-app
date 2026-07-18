@@ -23,7 +23,7 @@ class InfoAyam extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              const Text("Available")
+              const Text("Tersedia")
             ],
           ),
           Row(
@@ -38,7 +38,7 @@ class InfoAyam extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              const Text("Empty")
+              const Text("Kosong")
             ],
           ),
           Row(
@@ -53,7 +53,22 @@ class InfoAyam extends StatelessWidget {
                   borderRadius: BorderRadius.circular(4),
                 ),
               ),
-              const Text("Sick")
+              const Text("Sakit")
+            ],
+          ),
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            spacing: 4,
+            children: [
+              Container(
+                width: 24,
+                height: 24,
+                decoration: BoxDecoration(
+                  color: Colors.blue,
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const Text("Terpilih")
             ],
           ),
         ],

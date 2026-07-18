@@ -18,6 +18,7 @@ import 'package:smart_farming_app/screen/pelaporan/ternak/laporan_berhasil_scree
 import 'package:smart_farming_app/screen/pelaporan/ternak/menu_pelaporan_sakit_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_ayam_screem.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_gejala_screen.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_menu_laporan_sakit.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/delete_gejala_screen.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/list_laporan_ayam_sakit.dart';
 import 'package:smart_farming_app/screen/penyakit_ayam/manajemen_gejala.dart';
@@ -850,6 +851,13 @@ final _router = GoRouter(
       path: '/pilih-gejala',
       builder: (context, state) {
         final extra = state.extra as PilihGejalaScreen;
+        return extra;
+      },
+    ),
+    GoRoute(
+      path: '/pilih-menu-laporan-sakit',
+      builder: (context, state) {
+        final extra = state.extra as PilihMenuLaporanSakit;
         return extra;
       },
     ),

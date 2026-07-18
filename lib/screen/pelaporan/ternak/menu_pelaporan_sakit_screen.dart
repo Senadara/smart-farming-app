@@ -1,10 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_kandang_screen.dart';
-import 'package:smart_farming_app/screen/penyakit_ayam/list_laporan_ayam_sakit.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/banner.dart';
-import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/widget/menu_btn.dart';
 
@@ -25,11 +23,10 @@ class MenuPelaporanSakitScreen extends StatefulWidget {
 }
 
 class _MenuPelaporanSakitScreenState extends State<MenuPelaporanSakitScreen> {
-  String? selectedReport;
   final _step = 1;
 
-  void navigateBasedOnSelection() {
-    switch (selectedReport){
+  void _navigateTo(String title) {
+    switch (title) {
       case 'Buat Laporan Ayam Sakit':
         context.push('/pilih-kandang',
             extra: PilihKandangScreen(
@@ -83,11 +80,10 @@ class _MenuPelaporanSakitScreenState extends State<MenuPelaporanSakitScreen> {
               greeting: 'Menu Utama'),
         ),
       ),
-
       body: SafeArea(
         child: SingleChildScrollView(
           child: Padding(
-            padding: const EdgeInsets.only(bottom: 100),
+            padding: const EdgeInsets.symmetric(vertical: 8),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
@@ -96,37 +92,19 @@ class _MenuPelaporanSakitScreenState extends State<MenuPelaporanSakitScreen> {
                   subtitle: 'Pilih menu di bawah untuk membuat laporan penyakit ayam',
                 ),
                 const SizedBox(height: 12),
-                for(var report in reports)
-                MenuButton(
+                for (var report in reports)
+                  MenuButton(
                     key: Key(report['title']),
                     title: report['title'],
                     subtext: report['description'],
                     icon: report['icon'],
                     backgroundColor: Colors.grey.shade200,
                     iconColor: green1,
-                    isSelected: selectedReport == report['title'],
-                    onTap: () {
-                      setState(() {
-                        selectedReport = report['title'];
-                      });
-                    },
+                    onTap: () => _navigateTo(report['title']),
                   ),
               ],
             ),
           ),
-        ),
-      ),
-      bottomNavigationBar: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: CustomButton(
-              onPressed: () {
-                navigateBasedOnSelection();
-              },
-              buttonText: 'Selanjutnya',
-              backgroundColor: green1,
-              textStyle: semibold16.copyWith(color: white),
-              key: const Key('next_button')),
         ),
       ),
     );

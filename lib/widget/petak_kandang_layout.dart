@@ -90,11 +90,13 @@ class _PetakKandangLayoutState extends State<PetakKandangLayout> {
                 final isSelected = widget.selectedAyam.contains(block);
 
                 Color boxColor;
+                final sudahDitangani =
+                    status == LivestockStatus.SICK &&
+                        block.sickStatus == 'Sudah ditangani';
+
                 if (isSelected) {
                   boxColor = Colors.blue;
                 } else if (status == LivestockStatus.SICK) {
-                  final sudahDitangani =
-                      block.sickStatus == 'Sudah ditangani';
                   boxColor =
                       sudahDitangani ? Colors.green : Colors.red.shade600;
                 } else if (status == LivestockStatus.AVAILABLE) {
@@ -103,7 +105,8 @@ class _PetakKandangLayoutState extends State<PetakKandangLayout> {
                   boxColor = Colors.grey;
                 }
 
-                final bool isSelectable = status == LivestockStatus.AVAILABLE;
+                final bool isSelectable =
+                    status == LivestockStatus.AVAILABLE || sudahDitangani;
 
                 return GestureDetector(
                   onTap: isSelectable
@@ -124,7 +127,10 @@ class _PetakKandangLayoutState extends State<PetakKandangLayout> {
                       style: Theme.of(context)
                           .textTheme
                           .labelSmall
-                          ?.copyWith(color: Colors.white, fontSize: 15),
+                          ?.copyWith(
+                              color: Colors.white,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold),
                     ),
                   ),
                 );

@@ -22,14 +22,15 @@ class TambahPenyakitAyamScreen extends StatefulWidget {
 }
 
 class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
-  final _formKey        = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();
-  final _gejalaService  = GejalaPenyakitAyam();
+  final _gejalaService = GejalaPenyakitAyam();
 
-  List<GejalaModel> _gejalaList          = [];
-  List<String>      _selectedGejalaNames = [];
+  List<GejalaModel> _gejalaList = [];
+  List<String> _selectedGejalaNames = [];
+  final Map<String, TextEditingController> _bobotControllers = {};
 
-  bool _isLoading    = true;
+  bool _isLoading = true;
   bool _isSubmitting = false;
 
   bool get _isEditMode => widget.penyakit != null;
@@ -48,7 +49,10 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
     try {
       final data = await _gejalaService.getGejala();
       if (mounted) {
-        setState(() { _gejalaList = data; _isLoading = false; });
+        setState(() {
+          _gejalaList = data;
+          _isLoading = false;
+        });
       }
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
@@ -74,8 +78,8 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
             ]),
             backgroundColor: dark1,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
             duration: const Duration(seconds: 2),
           ),
         );
@@ -111,16 +115,20 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
             ]),
             backgroundColor: Colors.orange.shade800,
             behavior: SnackBarBehavior.floating,
-            shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10)),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
           ),
         );
       return;
     }
 
-    final idGejala = _gejalaList
+    final gejalaWithBobot = _gejalaList
         .where((g) => _selectedGejalaNames.contains(g.namaGejala))
-        .map((g) => g.id)
+        .map((g) {
+          final bobotText = _bobotControllers[g.namaGejala]?.text.trim() ?? '0.90';
+          final bobot = double.tryParse(bobotText) ?? 0.90;
+          return {'id': g.id, 'bobot': bobot};
+        })
         .toList();
 
     setState(() => _isSubmitting = true);
@@ -129,10 +137,10 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
 
       if (_isEditMode) {
         response = await _gejalaService.updatePenyakitAyam(
-            widget.penyakit!.id, _nameController.text.trim(), idGejala);
+            widget.penyakit!.id, _nameController.text.trim(), gejalaWithBobot);
       } else {
         response = await _gejalaService.createPenyakitAyam(
-            _nameController.text.trim(), idGejala);
+            _nameController.text.trim(), gejalaWithBobot);
       }
 
       if (response['status']) {
@@ -149,7 +157,9 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
         }
       } else {
         throw Exception(response['message'] ??
-            (_isEditMode ? 'Gagal memperbarui penyakit' : 'Gagal menambahkan penyakit'));
+            (_isEditMode
+                ? 'Gagal memperbarui penyakit'
+                : 'Gagal menambahkan penyakit'));
       }
     } catch (e) {
       if (mounted) {
@@ -177,6 +187,9 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
   @override
   void dispose() {
     _nameController.dispose();
+    for (final controller in _bobotControllers.values) {
+      controller.dispose();
+    }
     super.dispose();
   }
 
@@ -184,7 +197,6 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-
       appBar: PreferredSize(
         preferredSize: const Size.fromHeight(80),
         child: AppBar(
@@ -196,11 +208,11 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
           title: Header(
             headerType: HeaderType.back,
             title: 'Manajemen Penyakit Ayam',
-            greeting: _isEditMode ? 'Edit Penyakit Ayam' : 'Tambah Penyakit Ayam',
+            greeting:
+                _isEditMode ? 'Edit Penyakit Ayam' : 'Tambah Penyakit Ayam',
           ),
         ),
       ),
-
       body: SafeArea(
         child: Form(
           key: _formKey,
@@ -209,7 +221,6 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-
                 InputFieldWidget(
                   key: const Key('nameField'),
                   label: 'Nama Penyakit Ayam',
@@ -224,11 +235,10 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
                 ),
 
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     Text('Pilih Gejala',
                         style: semibold14.copyWith(color: dark1)),
-                    const Spacer(),
                     GestureDetector(
                       onTap: _navigateToTambahGejala,
                       child: Row(
@@ -252,14 +262,14 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
                         child: Center(child: CircularProgressIndicator()),
                       )
                     : _gejalaList.isEmpty
-                        ? _EmptyGejalaState(
-                            onTambah: _navigateToTambahGejala)
+                        ? _EmptyGejalaState(onTambah: _navigateToTambahGejala)
                         : DropdownFieldWidget(
-                            key: const Key('pilihGejala'),
+                            key: ValueKey('pilihGejala_${_selectedGejalaNames.length}'),
                             hint: 'Cari dan tambah gejala...',
                             label: '',
                             items: _gejalaList
                                 .map((item) => item.namaGejala)
+                                .where((name) => !_selectedGejalaNames.contains(name))
                                 .toList(),
                             selectedValue: null,
                             onChanged: _onDropdownChanged,
@@ -270,14 +280,129 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
 
                 const SizedBox(height: 20),
 
-                TagInputField(
-                  label: 'Gejala Terpilih',
-                  placeholder: 'Pilih gejala dari dropdown di atas...',
-                  tags: _selectedGejalaNames,
-                  showClearAll: _selectedGejalaNames.length > 1,
-                  onTagsChanged: (updated) =>
-                      setState(() => _selectedGejalaNames = updated),
-                ),
+                // TagInputField(
+                //   label: 'Gejala Terpilih',
+                //   placeholder: 'Pilih gejala dari dropdown di atas...',
+                //   tags: _selectedGejalaNames,
+                //   showClearAll: _selectedGejalaNames.length > 1,
+                //   onTagsChanged: (updated) =>
+                //       setState(() => _selectedGejalaNames = updated),
+                // ),
+
+                 Text("Gejala Terpilih: ",
+                     style: semibold14.copyWith(color: dark1)),
+                 const SizedBox(height: 12),
+ 
+                 if (_selectedGejalaNames.isNotEmpty) ...[
+                   // Header Row untuk Label Kolom
+                   Row(
+                     children: [
+                       Expanded(
+                         child: Text(
+                           "Nama Gejala",
+                           style: medium12.copyWith(color: dark3),
+                         ),
+                       ),
+                       const SizedBox(width: 8),
+                       SizedBox(
+                         width: 80,
+                         child: Text(
+                           "Bobot",
+                           style: medium12.copyWith(color: dark3),
+                         ),
+                       ),
+                       const SizedBox(width: 32), // Menyelaraskan dengan lebar tombol hapus
+                     ],
+                   ),
+                   const SizedBox(height: 6),
+ 
+                   // List Gejala yang terpilih
+                   ..._selectedGejalaNames.map((gejala) {
+                     final controller = _bobotControllers.putIfAbsent(
+                       gejala,
+                       () => TextEditingController(),
+                     );
+                     return Padding(
+                       padding: const EdgeInsets.only(bottom: 8.0),
+                       child: Row(
+                         crossAxisAlignment: CrossAxisAlignment.center,
+                         children: [
+                           Expanded(
+                             child: Container(
+                               height: 48,
+                               padding: const EdgeInsets.symmetric(horizontal: 12),
+                               decoration: BoxDecoration(
+                                 color: Colors.white,
+                                 borderRadius: BorderRadius.circular(8),
+                                 border: Border.all(color: Colors.grey.shade300, width: 1),
+                               ),
+                               alignment: Alignment.centerLeft,
+                               child: Text(
+                                 gejala,
+                                 style: medium14.copyWith(color: dark1),
+                               ),
+                             ),
+                           ),
+                           const SizedBox(width: 8),
+                           SizedBox(
+                             width: 80,
+                             height: 48,
+                             child: TextFormField(
+                               controller: controller,
+                               keyboardType: const TextInputType.numberWithOptions(decimal: true),
+                               style: medium14.copyWith(color: dark1),
+                               decoration: InputDecoration(
+                                 hintText: "0.90",
+                                 hintStyle: medium14.copyWith(color: grey),
+                                 contentPadding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                                 filled: true,
+                                 fillColor: Colors.white,
+                                 border: OutlineInputBorder(
+                                   borderRadius: BorderRadius.circular(8),
+                                   borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                                 ),
+                                 enabledBorder: OutlineInputBorder(
+                                   borderRadius: BorderRadius.circular(8),
+                                   borderSide: BorderSide(color: Colors.grey.shade300, width: 1),
+                                 ),
+                               ),
+                             ),
+                           ),
+                           const SizedBox(width: 8),
+                           GestureDetector(
+                             onTap: () {
+                               setState(() {
+                                 _selectedGejalaNames.remove(gejala);
+                                 _bobotControllers[gejala]?.dispose();
+                                 _bobotControllers.remove(gejala);
+                               });
+                             },
+                             child: const SizedBox(
+                               width: 24,
+                               height: 48,
+                               child: Icon(Icons.close, color: Colors.red, size: 20),
+                             ),
+                           ),
+                         ],
+                       ),
+                     );
+                   }),
+                 ] else ...[
+                   Container(
+                     width: double.infinity,
+                     padding: const EdgeInsets.all(16),
+                     decoration: BoxDecoration(
+                       color: const Color(0xFFFAFAFA),
+                       borderRadius: BorderRadius.circular(8),
+                       border: Border.all(color: Colors.grey.shade200, width: 1),
+                     ),
+                     child: Text(
+                       "Belum ada gejala terpilih",
+                       style: regular14.copyWith(color: dark3),
+                     ),
+                   ),
+                 ],
+
 
                 const SizedBox(height: 100),
               ],
@@ -285,7 +410,6 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
           ),
         ),
       ),
-
       bottomNavigationBar: SafeArea(
         child: Container(
           padding: const EdgeInsets.fromLTRB(16, 12, 16, 16),
@@ -336,8 +460,7 @@ class _EmptyGejalaState extends StatelessWidget {
           GestureDetector(
             onTap: onTambah,
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: green1.withOpacity(0.08),
                 borderRadius: BorderRadius.circular(8),

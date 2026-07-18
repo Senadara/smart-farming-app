@@ -48,6 +48,7 @@ class _HasilDiagnosisPenyakitScreenState
   @override
   Widget build(BuildContext context) {
     debugPrint('[Hasil Diagnosa Penyakit] ${widget.data}');
+
     final cfScore = widget.data['cfScore'] as double?;
     final namaPenyakit =
         widget.data['namaPenyakit'] as String? ?? 'Tidak diketahui';
@@ -55,17 +56,35 @@ class _HasilDiagnosisPenyakitScreenState
     final selectedAyamLabels =
         (widget.data['selectedAyamLabels'] as List<dynamic>?)
             ?.map((e) => e.toString())
-            .toList() ?? [];
+            .toList() ??
+        [];
 
     debugPrint('[HasilDiagnosa] selectedAyamLabels: $selectedAyamLabels');
 
+    // ── Penanganan by penyakit ────────────────────────────────────────────
     final rawPenanganan = widget.data['penanganan'] as List<dynamic>? ?? [];
     final penangananList = rawPenanganan.map((p) {
-      // Mendukung dua format: raw API (key 'penanganan') atau format yang sudah dipetakan (key 'deskripsi')
       return {
         'nama': p['nama'] as String? ?? 'Penanganan',
         'deskripsi':
             p['deskripsi'] as String? ?? p['penanganan'] as String? ?? '',
+        'gambar': p['gambar'] as String?,
+      };
+    }).toList();
+
+    // ── Penanganan by gejala (field baru dari API) ─────────────────────────
+    final rawPenangananGejala =
+        widget.data['penangananGejala'] as List<dynamic>? ?? [];
+    final penangananGejalaList = rawPenangananGejala.map((p) {
+      // Gunakan nama gejala sebagai judul item penanganan
+      final namaGejala = p['gejala'] != null
+          ? (p['gejala']['nama_gejala'] as String? ?? '')
+          : '';
+      return {
+        'nama': namaGejala.isNotEmpty ? namaGejala : 'Penanganan Gejala',
+        'deskripsi':
+            p['deskripsi'] as String? ?? p['penanganan'] as String? ?? '',
+        'gambar': p['gambar'] as String?,
       };
     }).toList();
 
@@ -101,10 +120,54 @@ class _HasilDiagnosisPenyakitScreenState
 
             const SizedBox(height: 4),
 
-            // Section rekomendasi penanganan
-            TreatmentRecommendations(
-              customPenanganan: penangananList,
-            ),
+            // ── Section 1: Penanganan berdasarkan penyakit ─────────────────
+            if (penangananList.isNotEmpty)
+              TreatmentRecommendations(
+                title: 'Penanganan Penyakit',
+                customPenanganan: penangananList,
+                showDisclaimer: penangananGejalaList.isEmpty,
+              ),
+
+            // ── Section 2: Penanganan berdasarkan gejala ───────────────────
+            if (penangananGejalaList.isNotEmpty) ...[
+              const SizedBox(height: 8),
+              // Label pemisah
+              Padding(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+                child: Row(
+                  children: [
+                    Expanded(child: Divider(color: Colors.grey.shade200)),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 10),
+                      child: Row(
+                        children: [
+                          Icon(Icons.warning_amber_rounded,
+                              size: 14, color: Colors.orange.shade400),
+                          const SizedBox(width: 4),
+                          Text(
+                            'Berdasarkan Gejala',
+                            style: regular12.copyWith(
+                              color: Colors.orange.shade600,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(child: Divider(color: Colors.grey.shade200)),
+                  ],
+                ),
+              ),
+              TreatmentRecommendations(
+                title: 'Penanganan per Gejala',
+                customPenanganan: penangananGejalaList,
+              ),
+            ],
+
+            // ── Fallback: keduanya kosong → tampilkan dummy ────────────────
+            if (penangananList.isEmpty && penangananGejalaList.isEmpty)
+              const TreatmentRecommendations(),
           ],
         ),
       ),

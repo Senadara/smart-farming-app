@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smart_farming_app/model/Penyakit_Ayam.dart';
+import 'package:smart_farming_app/model/gejala_model.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/dropdown_field.dart';
@@ -23,7 +24,9 @@ class TambahPenangananPenyakitAyamScreen extends StatefulWidget {
 class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitAyamScreen> {
   bool _isLoading    = true;
   List<PenyakitAyam> _penyakitList  = [];
-  String? _selectedPenyakit;
+  List<GejalaModel> _gejalaList = [];
+  String _penangananBy = 'Penyakit';
+  String? _selectedItem;
   final _gejalaService  = GejalaPenyakitAyam();
   final TextEditingController _catatanController = TextEditingController();
 
@@ -92,11 +95,11 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
           _image,
         );
       } else {
-        debugPrint(_selectedPenyakit);
+        debugPrint(_selectedItem);
         debugPrint(_catatanController.text);
         debugPrint(_image?.path);
         response = await _gejalaService.createPenangananPenyakitAyam(
-            _selectedPenyakit!, _catatanController.text, _image);
+            _selectedItem!, _catatanController.text, _image);
         debugPrint("Sudah terkirim");
       }
 
@@ -140,16 +143,24 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
       _catatanController.text = widget.penanganan!['penanganan'] ?? '';
       _isLoading = false;
     } else {
-      _fetchPenyakit();
+      _fetchData();
     }
   }
 
-  Future<void> _fetchPenyakit() async {
+  Future<void> _fetchData() async {
     try {
-      final data = await _gejalaService.getPenyakit();
+      final dataPenyakit = await _gejalaService.getPenyakit();
+      final dataGejala = await _gejalaService.getGejala();
+
+      debugPrint("dataPenyakit:" + dataPenyakit.toString());
+      debugPrint("dataGejala:" + dataGejala.toString());
+
       if (mounted) {
-        setState(() => _penyakitList = data);
-        setState(() => _isLoading = false);
+        setState(() {
+          _penyakitList = dataPenyakit;
+          _gejalaList = dataGejala;
+          _isLoading = false;
+        });
       }
     } catch (_) {
       if (mounted) setState(() => _isLoading = false);
@@ -158,10 +169,17 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
 
   void _onDropdownChanged(String? value) {
     if (value == null) return;
-    final selected = _penyakitList.firstWhere((p) => p.namaPenyakit == value);
-    setState(() {
-      _selectedPenyakit = selected.id;
-    });
+    if (_penangananBy == 'Penyakit') {
+      final selected = _penyakitList.firstWhere((p) => p.namaPenyakit == value);
+      setState(() {
+        _selectedItem = selected.id;
+      });
+    } else {
+      final selected = _gejalaList.firstWhere((g) => g.namaGejala == value);
+      setState(() {
+        _selectedItem = selected.id;
+      });
+    }
   }
 
   @override
@@ -196,26 +214,65 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
                   Row(
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text('Pilih Penyakit',
+                      Text('Penanganan berdasarkan',
+                          style: semibold14.copyWith(color: dark1)),
+                      const Spacer(),
+                    ],
+                  ),
+                  Row(
+                    children: [
+                      Radio<String>(
+                        value: 'Penyakit',
+                        groupValue: _penangananBy,
+                        activeColor: green1,
+                        onChanged: (value) {
+                          setState(() {
+                            _penangananBy = value!;
+                            _selectedItem = null;
+                          });
+                        },
+                      ),
+                      Text('Penyakit', style: regular14.copyWith(color: dark1)),
+                      const SizedBox(width: 16),
+                      Radio<String>(
+                        value: 'Gejala',
+                        groupValue: _penangananBy,
+                        activeColor: green1,
+                        onChanged: (value) {
+                          setState(() {
+                            _penangananBy = value!;
+                            _selectedItem = null;
+                          });
+                        },
+                      ),
+                      Text('Gejala', style: regular14.copyWith(color: dark1)),
+                    ],
+                  ),
+                  const SizedBox(height: 16),
+                  
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text('Pilih ${_penangananBy}',
                           style: semibold14.copyWith(color: dark1)),
                       const Spacer(),
                     ],
                   ),
                   DropdownFieldWidget(
-                    key: const Key('pilihPenyakit'),
-                    hint: 'Pilih penyakit ayam...',
+                    key: const Key('pilihPenyakitAtauGejala'),
+                    hint: 'Pilih ${_penangananBy.toLowerCase()} ayam...',
                     label: '',
-                    items: _penyakitList
-                        .map((item) => item.namaPenyakit)
-                        .toList(),
-                    selectedValue: _selectedPenyakit != null
-                        ? _penyakitList
-                            .firstWhere((p) => p.id == _selectedPenyakit)
-                            .namaPenyakit
+                    items: _penangananBy == 'Penyakit'
+                        ? _penyakitList.map((item) => item.namaPenyakit).toList()
+                        : _gejalaList.map((item) => item.namaGejala).toList(),
+                    selectedValue: _selectedItem != null
+                        ? (_penangananBy == 'Penyakit'
+                            ? _penyakitList.firstWhere((p) => p.id == _selectedItem).namaPenyakit
+                            : _gejalaList.firstWhere((g) => g.id == _selectedItem).namaGejala)
                         : null,
                     onChanged: _onDropdownChanged,
-                    validator: (_) => _selectedPenyakit == null
-                        ? 'Harap pilih penyakit'
+                    validator: (_) => _selectedItem == null
+                        ? 'Harap pilih ${_penangananBy.toLowerCase()}'
                         : null,
                   ),
                   const SizedBox(height: 16),
