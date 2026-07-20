@@ -89,6 +89,7 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
       final Map<String, dynamic> response;
 
       if (_isEditMode) {
+        debugPrint('editing penanganan penyakit ayam ${widget.penanganan}, ${_catatanController.text}, ${_image}');
         response = await _gejalaService.updatePenangananPenyakitAyam(
           widget.penanganan!['id'],
           _catatanController.text,
@@ -99,8 +100,8 @@ class _TambahPenangananPenyakitAyamState extends State<TambahPenangananPenyakitA
         debugPrint(_catatanController.text);
         debugPrint(_image?.path);
         response = await _gejalaService.createPenangananPenyakitAyam(
-            _selectedItem!, _catatanController.text, _image);
-        debugPrint("Sudah terkirim");
+            _selectedItem!, _catatanController.text, _image, tipe: _penangananBy.toLowerCase());
+        debugPrint("Sudah terkirim ${_selectedItem}");
       }
 
       if (mounted) {

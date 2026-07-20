@@ -76,7 +76,7 @@ class GejalaPenyakitAyam {
       'Authorization': 'Bearer $resolvedToken',
       'Content-Type': 'application/json',
     };
-    final url = Uri.parse('$baseUrl/penyakit-ayam/with-gejala');
+    final url = Uri.parse('$baseUrl/penyakit-ayam/bobot-gejala');
 
     try {
       final response = await http.get(url, headers: headers);
@@ -307,7 +307,7 @@ class GejalaPenyakitAyam {
     }
   }
 
-  Future createPenangananPenyakitAyam(String idPenyakit, String catatan, File? imageFile) async {
+  Future createPenangananPenyakitAyam(String idPenyakit, String catatan, File? imageFile, {String tipe = 'penyakit'}) async {
     String? imageUrl;
     if (imageFile != null) {
       final ImageService imageService = ImageService();
@@ -326,11 +326,17 @@ class GejalaPenyakitAyam {
     };
     final url = Uri.parse('$baseUrl/penyakit-ayam/penanganan');
 
-    final payload = {
-      'id_penyakit': idPenyakit,
+    final payload = <String, dynamic>{
       'catatan': catatan,
       'gambar': imageUrl,
+      'tipe': tipe,
     };
+
+    if (tipe == 'gejala') {
+      payload['id_gejala'] = idPenyakit;
+    } else {
+      payload['id_penyakit'] = idPenyakit;
+    }
 
     try {
       final response = await http.post(url, headers: headers, body: json.encode(payload));

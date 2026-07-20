@@ -4,7 +4,9 @@ import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_kematian_ter
 import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_nutrisi_ternak_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_ternak_panen_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pelaporan_ternak_sakit_screen.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_menu_laporan_sakit.dart';
 import 'package:smart_farming_app/service/objek_budidaya_service.dart';
+import 'package:smart_farming_app/model/Ayam.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
 import 'package:smart_farming_app/widget/banner.dart';
@@ -36,6 +38,13 @@ class _PilihTernakScreenState extends State<PilihTernakScreen> {
   List<Map<String, dynamic>> _selectedTernak = []; // Simpan data yang dipilih
 
   Future<void> _fetchData() async {
+    if (widget.data != null && widget.data!['overrideListTernak'] != null) {
+      setState(() {
+        _listTernak = widget.data!['overrideListTernak'];
+      });
+      return;
+    }
+
     try {
       Map<String, dynamic> response = {};
 
@@ -75,8 +84,8 @@ class _PilihTernakScreenState extends State<PilihTernakScreen> {
             step: widget.step + 1,
           ));
     } else if (widget.tipe == "sakit") {
-      context.push('/pelaporan-ternak-sakit',
-          extra: PelaporanTernakSakitScreen(
+      context.push('/pilih-menu-laporan-sakit',
+          extra: PilihMenuLaporanSakit(
             greeting: widget.greeting,
             data: updatedData,
             tipe: widget.tipe,
@@ -159,11 +168,9 @@ class _PilihTernakScreenState extends State<PilihTernakScreen> {
                     type: ListItemType.basic,
                     items: _listTernak
                         .map((item) => {
-                              'name': item['namaId'],
-                              'category': item['UnitBudidaya']['JenisBudidaya']
-                                  ['nama'],
-                              'icon': item['UnitBudidaya']['JenisBudidaya']
-                                  ['gambar'],
+                              'name': getAyamLabelFromNamaId(item['namaId'] ?? ''),
+                              'category': item['UnitBudidaya']?['JenisBudidaya']?['nama'] ?? 'Ayam Petelur',
+                              'icon': item['UnitBudidaya']?['JenisBudidaya']?['gambar'] ?? 'https://res.cloudinary.com/drahjrjr6/image/upload/v1727763785/chicken-6_iyln4v.png',
                               'id': item['id'],
                             })
                         .toList(),

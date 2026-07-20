@@ -6,6 +6,7 @@ class DiagnosisCard extends StatelessWidget {
   final List<dynamic> gejala;
   final double? cfScore;
   final List<String> selectedAyamIds;
+  final List<dynamic> penyakitLain;
 
   const DiagnosisCard({
     super.key,
@@ -13,10 +14,60 @@ class DiagnosisCard extends StatelessWidget {
     required this.gejala,
     this.cfScore,
     this.selectedAyamIds = const [],
+    this.penyakitLain = const [],
   });
+
+  Widget _buildDiseaseItem(String nama, double cf, {bool isTopTied = false}) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 8.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(nama, style: regular14.copyWith(color: dark2)),
+          const SizedBox(height: 4),
+          Row(
+            children: [
+              Expanded(
+                child: ClipRRect(
+                  borderRadius: BorderRadius.circular(3),
+                  child: LinearProgressIndicator(
+                    value: cf,
+                    backgroundColor: Colors.grey.shade300,
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                        isTopTied ? green1 : Colors.orange.shade400),
+                    minHeight: 4,
+                  ),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                '${(cf * 100).toStringAsFixed(1)}%',
+                style: semibold12.copyWith(
+                    color: isTopTied ? green1 : Colors.orange.shade600),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
+    final mainDiseaseScore = cfScore ?? 0.0;
+
+    final tiedDiseases = penyakitLain.where((p) {
+      final cf = (p['cf_score'] as num?)?.toDouble() ?? 0.0;
+      return (cf - mainDiseaseScore).abs() < 0.01;
+    }).toList();
+
+    final otherDiseases = penyakitLain.where((p) {
+      final cf = (p['cf_score'] as num?)?.toDouble() ?? 0.0;
+      return (cf - mainDiseaseScore).abs() >= 0.01;
+    }).toList();
+
+    final hasTies = tiedDiseases.isNotEmpty;
+
     return Container(
       margin: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -75,11 +126,26 @@ class DiagnosisCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 // Nama penyakit
-                Text(
-                  namaPenyakit,
-                  style: semibold20.copyWith(color: dark1, fontSize: 22),
-                ),
-                const SizedBox(height: 10),
+                if (hasTies) ...[
+                  Text(
+                    'Beberapa Kemungkinan Penyakit:',
+                    style: semibold16.copyWith(color: dark1),
+                  ),
+                  const SizedBox(height: 12),
+                  _buildDiseaseItem(namaPenyakit, mainDiseaseScore, isTopTied: true),
+                  ...tiedDiseases.map((p) {
+                    final nama = p['penyakit'] as String? ?? '-';
+                    final cf = (p['cf_score'] as num?)?.toDouble() ?? 0.0;
+                    return _buildDiseaseItem(nama, cf, isTopTied: true);
+                  }).toList(),
+                  const SizedBox(height: 10),
+                ] else ...[
+                  Text(
+                    namaPenyakit,
+                    style: semibold20.copyWith(color: dark1, fontSize: 22),
+                  ),
+                  const SizedBox(height: 10),
+                ],
 
                 // Ayam yang dipilih
                 if (selectedAyamIds.isNotEmpty) ...[
@@ -131,7 +197,7 @@ class DiagnosisCard extends StatelessWidget {
                 ],
                 const SizedBox(height: 2),
                 
-                if (cfScore != null) ...[
+                if (cfScore != null && !hasTies) ...[
                   const SizedBox(height: 8),
                   Row(
                     children: [
@@ -155,6 +221,18 @@ class DiagnosisCard extends StatelessWidget {
                       ),
                     ],
                   ),
+                ],
+
+                if (otherDiseases.isNotEmpty) ...[
+                  const SizedBox(height: 16),
+                  Text('Kemungkinan Penyakit Lainnya:', style: semibold14.copyWith(color: dark1)),
+                  const SizedBox(height: 8),
+                  ...otherDiseases.map((p) {
+                    final nama = p['penyakit'] as String? ?? '-';
+                    final cf = (p['cf_score'] as num?)?.toDouble() ?? 0.0;
+                    return _buildDiseaseItem(nama, cf, isTopTied: false);
+                  }).toList(),
+                  const SizedBox(height: 8),
                 ],
 
                 // Gejala

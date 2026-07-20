@@ -40,7 +40,7 @@ class _TreatmentRecommendationsState extends State<TreatmentRecommendations> {
   @override
   void initState() {
     super.initState();
-    final rawList = widget.customPenanganan ?? _dummyPenanganan();
+    final rawList = widget.customPenanganan ?? [];
     _penangananList = rawList.asMap().entries.map((entry) {
       final index = entry.key;
       final e = entry.value;
@@ -54,29 +54,6 @@ class _TreatmentRecommendationsState extends State<TreatmentRecommendations> {
     }).toList();
   }
 
-  List<Map<String, String>> _dummyPenanganan() => [
-        {
-          'nama': 'Isolasi ternak yang terinfeksi',
-          'deskripsi':
-              'Pisahkan ayam yang menunjukkan gejala ke kandang terpisah segera. '
-                  'Hindari kontak dengan unggas sehat. Gunakan alat pelindung diri '
-                  'saat menangani ternak yang terinfeksi.'
-        },
-        {
-          'nama': 'Hubungi dokter hewan setempat',
-          'deskripsi':
-              'Laporkan kejadian kepada dokter hewan atau dinas peternakan '
-                  'setempat untuk mendapat penanganan profesional dan mencegah '
-                  'penyebaran lebih lanjut.'
-        },
-        {
-          'nama': 'Desinfeksi kandang dan peralatan',
-          'deskripsi':
-              'Bersihkan dan semprot seluruh kandang dengan disinfektan. '
-                  'Cuci semua peralatan kandang secara menyeluruh. Lakukan '
-                  'biosekuriti ketat untuk mencegah penularan.'
-        },
-      ];
 
   @override
   Widget build(BuildContext context) {

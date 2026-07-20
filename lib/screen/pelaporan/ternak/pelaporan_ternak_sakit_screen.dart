@@ -130,10 +130,7 @@ class _PelaporanTernakSakitScreenState
           'unitBudidayaId': widget.data['unitBudidaya']?['id'],
           'objekBudidayaId': list[i]?['id'],
           'tipe': widget.tipe,
-          'judul': (list[i]?['name'] != null &&
-                  (list[i]?['name'] as String).isNotEmpty)
-              ? "Laporan Sakit ${widget.data['unitBudidaya']?['name'] ?? ''} - ${list[i]?['name']}"
-              : "Laporan Sakit ${widget.data['unitBudidaya']?['name'] ?? ''}",
+          'judul': _nameController[i].text,
           'gambar': imageUrl['data'],
           'catatan': _catatanController[i].text,
           'sakit': {
@@ -141,7 +138,12 @@ class _PelaporanTernakSakitScreenState
           }
         };
 
-        final response = await _laporanService.createLaporanSakit(data);
+        debugPrint('DEBUG PELAPORAN TERNAK SAKIT: $data');
+
+        final response =
+            await _laporanService.createLaporanSakitTanpaDiagnosa(data);
+
+        debugPrint('DEBUG PELAPORAN TERNAK SAKIT RESPONSE: $response');
 
         if (response['status']) {
           showAppToast(
@@ -159,6 +161,7 @@ class _PelaporanTernakSakitScreenState
         Navigator.pop(context);
       }
     } catch (e) {
+      debugPrint('DEBUG ERROR PELAPORAN TERNAK SAKIT: $e');
       showAppToast(context, 'Terjadi kesalahan: $e. Silakan coba lagi',
           title: 'Error Tidak Terduga 😢');
     } finally {
@@ -292,12 +295,11 @@ class _PelaporanTernakSakitScreenState
         child: Padding(
           padding: const EdgeInsets.all(16),
           child: CustomButton(
-            onPressed: _submitForm,
-            backgroundColor: green1,
-            textStyle: semibold16.copyWith(color: white),
-            isLoading: _isLoading,
-            key: const Key('submit_pelaporan_ternak_sakit_button')
-          ),
+              onPressed: _submitForm,
+              backgroundColor: green1,
+              textStyle: semibold16.copyWith(color: white),
+              isLoading: _isLoading,
+              key: const Key('submit_pelaporan_ternak_sakit_button')),
         ),
       ),
     );

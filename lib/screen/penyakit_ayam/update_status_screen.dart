@@ -29,6 +29,7 @@ class _UpdateStatusScreenState extends State<UpdateStatusScreen> {
   bool _isSubmitting = false;
   String? _errorMessage;
   String? _selectedStatus;
+  String? _existingStatus;
 
   @override
   void initState() {
@@ -69,6 +70,7 @@ class _UpdateStatusScreenState extends State<UpdateStatusScreen> {
         } else {
           _selectedStatus = 'Belum Ditangani';
         }
+        _existingStatus = _selectedStatus;
         _isLoading = false;
       });
     } else {
@@ -529,7 +531,7 @@ class _UpdateStatusScreenState extends State<UpdateStatusScreen> {
                 activeColor: const Color(0xFFE24B4A),
                 activeBg: const Color(0xFFFCEBEB),
                 isSelected: _selectedStatus == 'Belum Ditangani',
-                onTap: () =>
+                onTap: _existingStatus == 'Mati' ? null : () =>
                     setState(() => _selectedStatus = 'Belum Ditangani'),
               ),
               const SizedBox(height: 8),
@@ -543,7 +545,7 @@ class _UpdateStatusScreenState extends State<UpdateStatusScreen> {
                 activeColor: const Color(0xFFF57F17),
                 activeBg: const Color(0xFFFFF8E1),
                 isSelected: _selectedStatus == 'Pemantauan',
-                onTap: () =>
+                onTap: _existingStatus == 'Mati' ? null : () =>
                     setState(() => _selectedStatus = 'Pemantauan'),
               ),
               const SizedBox(height: 8),
@@ -557,7 +559,7 @@ class _UpdateStatusScreenState extends State<UpdateStatusScreen> {
                 activeColor: _kPrimaryGreen,
                 activeBg: const Color(0xFFEAF3DE),
                 isSelected: _selectedStatus == 'Sembuh',
-                onTap: () =>
+                onTap: _existingStatus == 'Mati' ? null : () =>
                     setState(() => _selectedStatus = 'Sembuh'),
               ),
               const SizedBox(height: 8),
@@ -1231,7 +1233,7 @@ class _StatusPill extends StatelessWidget {
   final Color activeColor;
   final Color activeBg;
   final bool isSelected;
-  final VoidCallback onTap;
+  final VoidCallback? onTap;
 
   const _StatusPill({
     required this.label,
@@ -1248,6 +1250,7 @@ class _StatusPill extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final bool isDisabled = onTap == null;
     return Material(
       color: Colors.transparent,
       child: InkWell(
@@ -1257,16 +1260,18 @@ class _StatusPill extends StatelessWidget {
           duration: const Duration(milliseconds: 150),
           padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 11),
           decoration: BoxDecoration(
-            color: isSelected ? activeBg : Colors.grey[50],
+            color: isSelected ? activeBg : (isDisabled ? Colors.grey[100] : Colors.grey[50]),
             borderRadius: BorderRadius.circular(10),
             border: Border.all(
               color: isSelected
                   ? activeColor.withOpacity(0.4)
-                  : Colors.grey[300]!,
+                  : (isDisabled ? Colors.grey[200]! : Colors.grey[300]!),
               width: isSelected ? 1.5 : 0.5,
             ),
           ),
-          child: Row(
+          child: Opacity(
+            opacity: isDisabled && !isSelected ? 0.4 : 1.0,
+            child: Row(
             children: [
               AnimatedContainer(
                 duration: const Duration(milliseconds: 150),
@@ -1330,7 +1335,8 @@ class _StatusPill extends StatelessWidget {
                 ),
               ),
             ],
-          ),
+          ), 
+          ), 
         ),
       ),
     );

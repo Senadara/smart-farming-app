@@ -320,7 +320,20 @@ class _TambahPenyakitAyamScreenState extends State<TambahPenyakitAyamScreen> {
                    ..._selectedGejalaNames.map((gejala) {
                      final controller = _bobotControllers.putIfAbsent(
                        gejala,
-                       () => TextEditingController(),
+                       () {
+                         String initialValue = '0.';
+                         if (_isEditMode && widget.penyakit != null) {
+                           try {
+                             final pg = widget.penyakit!.penyakitGejala.firstWhere(
+                               (p) => p.gejala?.namaGejala == gejala,
+                             );
+                             if (pg.cfWeight != null) {
+                               initialValue = pg.cfWeight.toString();
+                             }
+                           } catch (_) {}
+                         }
+                         return TextEditingController(text: initialValue);
+                       },
                      );
                      return Padding(
                        padding: const EdgeInsets.only(bottom: 8.0),

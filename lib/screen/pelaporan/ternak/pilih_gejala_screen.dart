@@ -4,6 +4,7 @@ import 'package:smart_farming_app/model/gejala_model.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/hasil_diagnosa_penyakit.dart';
 import 'package:smart_farming_app/service/gejala_penyakit_ayam.dart';
 import 'package:smart_farming_app/theme.dart';
+import 'package:smart_farming_app/utils/app_utils.dart';
 
 import 'package:smart_farming_app/widget/banner.dart';
 import 'package:smart_farming_app/widget/button.dart';
@@ -55,6 +56,16 @@ class _PilihGejalaScreenState extends State<PilihGejalaScreen> {
       setState(() {
         _daftarGejala = gejalaList;
         _isLoading = false;
+
+        if (widget.data['lockedGejalaName'] != null) {
+          final lockedName =
+              widget.data['lockedGejalaName'].toString().toLowerCase();
+          for (int i = 0; i < _daftarGejala.length; i++) {
+            if (_daftarGejala[i].namaGejala.toLowerCase() == lockedName) {
+              _selectedGejala.add(i);
+            }
+          }
+        }
       });
     } catch (e) {
       setState(() {
@@ -65,6 +76,14 @@ class _PilihGejalaScreenState extends State<PilihGejalaScreen> {
   }
 
   void _toggleGejala(int index) {
+    if (widget.data['lockedGejalaName'] != null) {
+      final lockedName = widget.data['lockedGejalaName'].toString().toLowerCase();
+      if (_daftarGejala[index].namaGejala.toLowerCase() == lockedName) {
+        showAppToast(context, 'Gejala ini tidak dapat dihilangkan karena dipilih secara otomatis.', title: 'Perhatian', isError: true);
+        return;
+      }
+    }
+
     setState(() {
       if (_selectedGejala.contains(index)) {
         _selectedGejala.remove(index);
@@ -105,6 +124,7 @@ class _PilihGejalaScreenState extends State<PilihGejalaScreen> {
         updatedData['namaPenyakit'] = result['penyakit'];
         updatedData['penyakitId'] = result['id'];
         updatedData['cfScore'] = (result['cf_score'] as num).toDouble();
+        updatedData['penyakitLain'] = result['penyakitLain'] ?? [];
 
         // Penanganan berdasarkan penyakit
         final rawPenanganan = result['penanganan'] as List<dynamic>? ?? [];

@@ -69,7 +69,6 @@ class _PilihPenyakitAyamState extends State<PilihPenyakitAyam> {
     );
 
     if (confirm != true || !mounted) return;
-
     try {
       final response = await _gejalaService.deletePenyakitAyam(penyakit.id);
       if (response['status']) {
@@ -170,7 +169,7 @@ class _PilihPenyakitAyamState extends State<PilihPenyakitAyam> {
                           style: semibold14.copyWith(color: Colors.black87),
                         ),
                         subtitle: Text(
-                          'Diupdate: ${DateFormat('dd MMMM yyyy', 'id_ID').format(penyakit.updatedAt!)}',
+                          penyakit.updatedAt != null ? 'Diupdate: ${DateFormat('dd MMMM yyyy', 'id_ID').format(penyakit.updatedAt!)}' : '-',
                           style: regular12.copyWith(color: Colors.grey),
                         ),
                         trailing: Row(

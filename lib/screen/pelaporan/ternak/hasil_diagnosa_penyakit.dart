@@ -4,6 +4,7 @@ import 'package:smart_farming_app/screen/pelaporan/ternak/form_laporan_ternak.da
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/widget/button.dart';
 import 'package:smart_farming_app/widget/diagnosis_card.dart';
+import 'package:smart_farming_app/model/Ayam.dart';
 import 'package:smart_farming_app/widget/header.dart';
 import 'package:smart_farming_app/widget/treatment_recommendations.dart';
 
@@ -53,11 +54,18 @@ class _HasilDiagnosisPenyakitScreenState
     final namaPenyakit =
         widget.data['namaPenyakit'] as String? ?? 'Tidak diketahui';
     final gejala = widget.data['gejala'] as List<dynamic>? ?? [];
-    final selectedAyamLabels =
-        (widget.data['selectedAyamLabels'] as List<dynamic>?)
-            ?.map((e) => e.toString())
-            .toList() ??
-        [];
+    List<String> selectedAyamLabels = [];
+    if (widget.data['selectedAyamLabels'] != null) {
+      selectedAyamLabels = (widget.data['selectedAyamLabels'] as List<dynamic>)
+          .map((e) => e.toString())
+          .toList();
+    } else if (widget.data['objekBudidaya'] != null) {
+      final list = widget.data['objekBudidaya'] as List<dynamic>;
+      selectedAyamLabels = list.map((e) {
+        final namaId = e['name'] ?? e['namaId'] ?? '';
+        return getAyamLabelFromNamaId(namaId);
+      }).toList();
+    }
 
     debugPrint('[HasilDiagnosa] selectedAyamLabels: $selectedAyamLabels');
 
@@ -116,6 +124,7 @@ class _HasilDiagnosisPenyakitScreenState
               gejala: gejala,
               cfScore: cfScore,
               selectedAyamIds: selectedAyamLabels,
+              penyakitLain: widget.data['penyakitLain'] as List<dynamic>? ?? [],
             ),
 
             const SizedBox(height: 4),

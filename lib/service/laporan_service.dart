@@ -265,6 +265,41 @@ class LaporanService {
       };
     }
   }
+  Future<Map<String, dynamic>> createLaporanSakitTanpaDiagnosa(
+      Map<String, dynamic> data) async {
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json'
+    };
+    final url = Uri.parse('$baseUrl/sakit-tanpa-diagnosa');
+    try {
+      final response =
+          await http.post(url, headers: headers, body: json.encode(data));
+      final body = json.decode(response.body);
+
+      if (response.statusCode == 201) {
+        return {
+          'status': true,
+          'message': 'success',
+          'data': body['data'],
+        };
+      } else if (response.statusCode == 401) {
+        await _authService.refreshToken();
+        return await createLaporanSakit(data);
+      } else {
+        return {
+          'status': false,
+          'message': body,
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'An error occurred: ${e.toString()}',
+      };
+    }
+  }
 
   Future<Map<String, dynamic>> createLaporanAyamSakit(
     Map<String, dynamic> data)async {
@@ -368,6 +403,48 @@ class LaporanService {
       } else if (response.statusCode == 401) {
         await _authService.refreshToken();
         return await getRiwayatLaporanAyamSakit(unitId);
+      } else {
+        return {
+          'status': false,
+          'message': body,
+        };
+      }
+    } catch (e) {
+      return {
+        'status': false,
+        'message': 'An error occurred: ${e.toString()}',
+      };
+  }
+  }
+
+  Future<Map<String, dynamic>> getAyamPenurunanProduktivitas({String? unitBudidayaId}) async {
+    final resolvedToken = await _authService.getToken();
+    final headers = {
+      'Authorization': 'Bearer $resolvedToken',
+      'Content-Type': 'application/json'
+    };
+    
+    var urlString = '$baseUrl/ayam-penurunan-produktivitas';
+    if (unitBudidayaId != null) {
+      urlString += '?unitBudidayaId=$unitBudidayaId';
+    }
+    
+    final url = Uri.parse(urlString);
+
+    try {
+      final response = await http.get(url, headers: headers);
+      debugPrint(' Ayam Penurunan Produktivitas Response: ${response.body}, $urlString');
+      final body = json.decode(response.body);
+
+      if (response.statusCode == 200) {
+        return {
+          'status': true,
+          'message': body['message'] ?? 'success',
+          'data': body['data'],
+        };
+      } else if (response.statusCode == 401) {
+        await _authService.refreshToken();
+        return await getAyamPenurunanProduktivitas(unitBudidayaId: unitBudidayaId);
       } else {
         return {
           'status': false,

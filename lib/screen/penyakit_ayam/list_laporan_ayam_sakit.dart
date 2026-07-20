@@ -388,8 +388,8 @@ class _LaporanCard extends StatelessWidget {
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              laporan.sakit.diagnosisPenyakit.isEmpty
-                                  ? 'Diagnosis belum tersedia'
+                              (laporan.sakit.diagnosisPenyakit.isEmpty || laporan.sakit.diagnosisPenyakit.toLowerCase() == 'unknown')
+                                  ? laporan.judul
                                   : laporan.sakit.diagnosisPenyakit,
                               style: const TextStyle(
                                   fontSize: 12,

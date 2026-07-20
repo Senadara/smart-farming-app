@@ -144,6 +144,10 @@ class _PilihAyamScreenState extends State<PilihAyamScreen> {
       final judulController = TextEditingController(text: defaultJudul);
       final jumlahController = TextEditingController(text: _selectedAyamIds.length.toString());
       final beratController = TextEditingController();
+      final tanggalController = TextEditingController();
+      DateTime selectedDate = DateTime.now();
+      tanggalController.text =
+          "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
       final formKey = GlobalKey<FormState>();
 
       print('[DEBUG] PilihAyamScreen: Showing dialog Panen. Selected Ayam: $_selectedAyamIds, Labels: $_selectedAyamLabels');
@@ -176,6 +180,35 @@ class _PilihAyamScreenState extends State<PilihAyamScreen> {
                         textAlign: TextAlign.center,
                       ),
                       const SizedBox(height: 20),
+                      GestureDetector(
+                        onTap: () async {
+                          final picked = await showDatePicker(
+                            context: context,
+                            initialDate: selectedDate,
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                          );
+                          if (picked != null) {
+                            selectedDate = picked;
+                            tanggalController.text =
+                                "${selectedDate.year}-${selectedDate.month.toString().padLeft(2, '0')}-${selectedDate.day.toString().padLeft(2, '0')}";
+                          }
+                        },
+                        child: AbsorbPointer(
+                          child: InputFieldWidget(
+                            label: 'Tanggal Panen',
+                            hint: 'Pilih tanggal panen',
+                            controller: tanggalController,
+                            isDisabled: true,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Tanggal panen tidak boleh kosong';
+                              }
+                              return null;
+                            },
+                          ),
+                        ),
+                      ),
                       InputFieldWidget(
                         label: 'Judul Laporan',
                         hint: 'Masukkan judul laporan',
@@ -262,10 +295,12 @@ class _PilihAyamScreenState extends State<PilihAyamScreen> {
                                     final reqBody = {
                                       "unitBudidayaId": widget.data?['unitBudidaya']?['id'],
                                       "judul": judul,
+                                      "createdAt": selectedDate.toUtc().toIso8601String(),
                                       "panen": {
                                         "komoditasId": widget.data?['komoditas']?['id'],
                                         "jumlah": jumlah,
                                         "berat": berat,
+                                        "jumlahHewan": 0,
                                       },
                                       "detailPanen": _selectedAyamIds,
                                     };

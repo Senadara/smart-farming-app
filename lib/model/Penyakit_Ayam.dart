@@ -5,12 +5,14 @@ class PenyakitGejala {
   final String penyakitId;
   final String gejalaId;
   final GejalaModel? gejala;
+  final double? cfWeight;
 
   PenyakitGejala({
     required this.id,
     required this.penyakitId,
     required this.gejalaId,
     this.gejala,
+    this.cfWeight,
   });
 
   factory PenyakitGejala.fromJson(Map<String, dynamic> json) {
@@ -20,6 +22,7 @@ class PenyakitGejala {
       gejalaId: json['gejala_id'] ?? '',
       gejala:
           json['gejala'] != null ? GejalaModel.fromJson(json['gejala']) : null,
+      cfWeight: json['cf_weight'] != null ? double.tryParse(json['cf_weight'].toString()) : null,
     );
   }
 }
@@ -53,7 +56,23 @@ class PenyakitAyam {
           ? (json['penyakitGejala'] as List)
               .map((e) => PenyakitGejala.fromJson(e))
               .toList()
-          : [],
+          : (json['gejala'] != null
+              ? (json['gejala'] as List).map((e) {
+                  return PenyakitGejala(
+                    id: e['id'] ?? '',
+                    penyakitId: json['id'] ?? '',
+                    gejalaId: e['id'] ?? '',
+                    gejala: GejalaModel(
+                      id: e['id'] ?? '',
+                      namaGejala: e['nama_gejala'] ?? '',
+                      gambar: '',
+                    ),
+                    cfWeight: e['bobot'] != null
+                        ? double.tryParse(e['bobot'].toString())
+                        : null,
+                  );
+                }).toList()
+              : []),
       penanganan: json['penanganan'] != null
           ? List<Map<String, dynamic>>.from((json['penanganan'] as List)
               .map((e) => Map<String, dynamic>.from(e)))

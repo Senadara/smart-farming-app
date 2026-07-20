@@ -151,9 +151,12 @@ class _FormLaporanTernakState extends State<FormLaporanTernak> {
 
       final formData = {
         'unitBudidayaId': widget.data['unitBudidaya']?['id'] ?? '',
-        'objekBudidayaIds':
-            (widget.data['selectedAyamIds'] as List<dynamic>?)
+        'objekBudidayaIds': (widget.data['selectedAyamIds'] as List<dynamic>?)
                 ?.map((e) => e.toString())
+                .toList() ??
+            (widget.data['objekBudidaya'] as List<dynamic>?)
+                ?.map((e) => e['id']?.toString() ?? e['name']?.toString() ?? '')
+                .where((id) => id.isNotEmpty)
                 .toList() ??
             [],
         'tipe': widget.tipe,

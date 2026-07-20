@@ -195,15 +195,20 @@ class _DetailLaporanAyamSakitState extends State<DetailLaporanAyamSakit> {
                           DiagnosisCard(
                             key: ValueKey(
                                 'diagnosis_${laporanSakit?['objekBudidayaList']?.length ?? 0}'),
-                            namaPenyakit: laporanSakit?['namaPenyakit']
-                                    ?['nama_penyakit'] ??
-                                '-',
+                            namaPenyakit: (laporanSakit?['namaPenyakit']?['nama_penyakit'] == null ||
+                                    (laporanSakit!['namaPenyakit']!['nama_penyakit'] as String).isEmpty ||
+                                    (laporanSakit!['namaPenyakit']!['nama_penyakit'] as String).toLowerCase() == 'unknown')
+                                ? (laporanSakit?['laporan']?['judul'] ?? '-')
+                                : laporanSakit!['namaPenyakit']['nama_penyakit'],
                             gejala: _getGejalaStrings(),
                             cfScore: laporanSakit?['cfScore']?.toDouble(),
                             selectedAyamIds: _getObjekBudidayaLabels(),
                           ),
 
-                          const SizedBox(height: 4),
+                          // Catatan Pelaporan
+                          _buildCatatanLaporan(),
+
+                          const SizedBox(height: 16),
 
                           // Rekomendasi penanganan
                           TreatmentRecommendations(
@@ -290,6 +295,48 @@ class _DetailLaporanAyamSakitState extends State<DetailLaporanAyamSakit> {
                   ),
                 ),
               ],
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ── Catatan Pelaporan ───────────────────────────────────────────────────────
+  Widget _buildCatatanLaporan() {
+    final catatan = laporanSakit?['catatan']?.toString() ??
+        laporanSakit?['laporan']?['catatan']?.toString();
+    if (catatan == null || catatan.isEmpty) return const SizedBox();
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const _SectionLabel(text: 'CATATAN PELAPORAN'),
+          const SizedBox(height: 6),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(14),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(color: _kCardBorder),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.04),
+                  blurRadius: 8,
+                  offset: const Offset(0, 2),
+                ),
+              ],
+            ),
+            child: Text(
+              catatan,
+              style: const TextStyle(
+                fontSize: 13,
+                color: Colors.black87,
+                height: 1.4,
+              ),
             ),
           ),
         ],

@@ -303,7 +303,9 @@ class SakitTab extends StatelessWidget {
                       item['id'] as String? ??
                       '',
                   'text':
-                      item['Sakit']['diagnosisPenyakit'] as String? ?? 'Laporan Sakit Tidak Bernama',
+                      (item['Sakit']['diagnosisPenyakit'] as String).isEmpty || (item['Sakit']['diagnosisPenyakit'] as String).toLowerCase() == 'unknown'
+                          ? item['judul']
+                          : item['Sakit']['diagnosisPenyakit'],
                   'subtext': 'Catatan: ${item['catatan'] as String? ?? 'N/A'}',
                   'icon':
                       item['gambar'] as String? ?? 'assets/images/appIcon.png',

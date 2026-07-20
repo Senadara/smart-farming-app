@@ -3,7 +3,11 @@ import 'package:go_router/go_router.dart';
 import 'package:smart_farming_app/screen/pelaporan/tanaman/pilih_kebun_screen.dart';
 import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_kandang_screen.dart';
 import 'package:smart_farming_app/service/dashboard_service.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_gejala_screen.dart';
+import 'package:smart_farming_app/screen/pelaporan/ternak/pilih_ternak_screen.dart';
 import 'package:smart_farming_app/service/sensor_cp.dart';
+import 'package:smart_farming_app/service/laporan_service.dart';
+import 'package:smart_farming_app/model/Ayam.dart';
 import 'package:smart_farming_app/theme.dart';
 import 'package:smart_farming_app/utils/app_utils.dart';
 import 'package:smart_farming_app/utils/detail_laporan_redirect.dart';
@@ -26,9 +30,11 @@ class HomeScreenPetugas extends StatefulWidget {
 class _HomeScreenPetugasState extends State<HomeScreenPetugas> {
   final DashboardService _dashboardService = DashboardService();
   final SensorService _sensorService = SensorService();
+  final LaporanService _laporanService = LaporanService();
   Map<String, dynamic>? _perkebunanData;
   Map<String, dynamic>? _peternakanData;
   Map<String, dynamic>? _sensorMelonData;
+  List<dynamic> _ayamPenurunan = [];
   bool _isLoading = true;
 
   final GlobalKey<RefreshIndicatorState> _refreshIndicatorPerkebunanKey =
@@ -64,13 +70,60 @@ class _HomeScreenPetugasState extends State<HomeScreenPetugas> {
         // Sensor data fetch failed, continue with null
       }
 
+      // Fetch penurunan produktivitas & riwayat sakit
+      List<dynamic> penurunanDataList = [];
+      try {
+        final daftarUnit = results[1]?['daftarUnit'] as List<dynamic>?;
+        final unitId = (daftarUnit != null && daftarUnit.isNotEmpty)
+            ? daftarUnit[0]['id']
+            : 'ad917d8c-531e-4867-90d7-8bfedf5e1c3a';
+        final penurunanRes = await _laporanService
+            .getAyamPenurunanProduktivitas(unitBudidayaId: unitId);
+        final riwayatRes =
+            await _laporanService.getRiwayatLaporanAyamSakit(unitId);
+
+        final Map<String, String> sickIds = {};
+        if (riwayatRes['status'] == true) {
+          final List<dynamic> riwayat = riwayatRes['data'] ?? [];
+          for (final laporan in riwayat) {
+            final List<dynamic> objekList = laporan['objekBudidayaList'] ?? [];
+            final String status = laporan['Sakit']?['status'] ?? '';
+            for (final objek in objekList) {
+              final String id = objek['id']?.toString() ?? '';
+              if (id.isNotEmpty) {
+                final currentStatus = sickIds[id];
+                if (currentStatus == null) {
+                  sickIds[id] = status;
+                } else if (currentStatus == 'Sembuh' ||
+                    currentStatus == 'Sudah ditangani') {
+                  sickIds[id] = status;
+                } else if (currentStatus == 'Pemantauan' &&
+                    (status == 'Belum Ditangani' ||
+                        status == 'Belum ditangani' ||
+                        status.isEmpty)) {
+                  sickIds[id] = status;
+                }
+              }
+            }
+          }
+        }
+
+        if (penurunanRes['status'] == true) {
+          penurunanDataList = penurunanRes['data'] as List<dynamic>? ?? [];
+        }
+      } catch (_) {
+        // Ignored
+      }
+
       if (!mounted) return;
       setState(() {
         _perkebunanData = results[0];
         _peternakanData = results[1];
         _sensorMelonData = sensorData;
+        _ayamPenurunan = penurunanDataList;
         _isLoading = false;
       });
+      debugPrint('ayam penurunan: ${_ayamPenurunan.length}');
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
         if (mounted && _pageController.hasClients) {
@@ -532,6 +585,101 @@ class _HomeScreenPetugasState extends State<HomeScreenPetugas> {
               ],
             ),
             const SizedBox(height: 12),
+            NewestReports(
+              key: const Key('ayam_penurunan_produktivitas'),
+              title: 'Ayam Penurunan Produktivitas',
+              reports: [
+                {
+                  'id': 'penurunan-all',
+                  'text': _ayamPenurunan.isNotEmpty 
+                      ? _ayamPenurunan
+                          .map((ayam) =>
+                              getAyamLabelFromNamaId(ayam['namaId'] ?? ''))
+                          .join(', ')
+                      : 'Data Kosong (Belum ada penurunan)',
+                  'time': _ayamPenurunan.isNotEmpty 
+                      ? _ayamPenurunan.first['createdAt'] 
+                      : DateTime.now().toIso8601String(),
+                  'subtext': _ayamPenurunan.isNotEmpty 
+                      ? 'Terdapat ${_ayamPenurunan.length} ekor ayam yang mengalami penurunan produktivitas'
+                      : 'Tidak ada data ayam yang mengalami penurunan',
+                  'icon': 'assets/icons/set/chicken-filled.png',
+                    'tipe': 'penurunan-produktivitas',
+                    'isActive': true,
+                  }
+                ],
+                onItemTap: (context, item) {
+                  showModalBottomSheet(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return SafeArea(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              ListTile(
+                                leading: const Icon(Icons.person),
+                                title: const Text('Diagnosa masing-masing'),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  context
+                                      .push('/pilih-ternak',
+                                          extra: PilihTernakScreen(
+                                            greeting: "Pelaporan Penyakit Ayam",
+                                            tipe: "sakit",
+                                            data: {
+                                              'unitBudidaya': {
+                                                'id': (_peternakanData?['daftarUnit'] as List<dynamic>?)?.isNotEmpty == true
+                                                    ? _peternakanData!['daftarUnit'][0]['id']
+                                                    : 'ad917d8c-531e-4867-90d7-8bfedf5e1c3a'
+                                              },
+                                              'overrideListTernak':
+                                                  _ayamPenurunan,
+                                              'lockedGejalaName':
+                                                  'produksi telur menurun',
+                                            },
+                                          ))
+                                      .then((_) {
+                                    _fetchData(isRefresh: true);
+                                  });
+                                },
+                              ),
+                              ListTile(
+                                leading: const Icon(Icons.group),
+                                title: const Text('Diagnosa sekaligus'),
+                                onTap: () {
+                                  Navigator.pop(context);
+                                  context
+                                      .push('/pilih-gejala',
+                                          extra: PilihGejalaScreen(
+                                            greeting: "Pelaporan Penyakit Ayam",
+                                            tipe: "sakit",
+                                            step: 1,
+                                            data: {
+                                              'unitBudidaya': {
+                                                'id': (_peternakanData?['daftarUnit'] as List<dynamic>?)?.isNotEmpty == true
+                                                    ? _peternakanData!['daftarUnit'][0]['id']
+                                                    : 'ad917d8c-531e-4867-90d7-8bfedf5e1c3a'
+                                              },
+                                              'objekBudidaya': _ayamPenurunan,
+                                              'selectedAyamIds': _ayamPenurunan
+                                                  .map((a) => a['id'])
+                                                  .toList(),
+                                              'lockedGejalaName':
+                                                  'produksi telur menurun',
+                                            },
+                                          ))
+                                      .then((_) {
+                                    _fetchData(isRefresh: true);
+                                  });
+                                },
+                              ),
+                            ],
+                          ),
+                        );
+                      });
+                },
+              ),
+              const SizedBox(height: 12),
             NewestReports(
               key: const Key('aktivitas_terbaru_peternakan'),
               title: 'Aktivitas Terbaru',
